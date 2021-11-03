@@ -6,6 +6,7 @@ public class PlayerMove : MonoBehaviour
 {
     // movement
     float moveSpeed = 6f;
+    
     float jumpForce = 9f;
     public float movementMultiplier = 10f;
     float airMultiplier = 0.4f;
@@ -21,14 +22,24 @@ public class PlayerMove : MonoBehaviour
     float groundDrag = 6f;
     float airDrag = 2f;
 
+    //crouch
+    Vector3 crouchScale = new Vector3(1, 0.5f, 1);
+    Vector3 playerScale;
+    float crouchSpeed = 2f;
+    float crouchingMultiplier = 2f;
+    bool isCrouching;
+
     Vector3 moveDirection;
 
     Rigidbody rb;
+    CapsuleCollider playercol;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        playerScale =  transform.localScale;
+        playercol = GetComponent<CapsuleCollider>();
     }
 
     void Update()
@@ -41,6 +52,21 @@ public class PlayerMove : MonoBehaviour
         {
             Jump();
         }
+
+        if(Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            Crouch();
+            if(isCrouching == true)
+            {
+                rb.AddForce(moveDirection.normalized * crouchSpeed * crouchingMultiplier, ForceMode.Acceleration);
+            }
+        }
+
+        if(Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            Uncrouch();
+        }
+
     }
 
     void MyInput()
@@ -54,6 +80,21 @@ public class PlayerMove : MonoBehaviour
     void Jump()
     {
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+    }
+
+    void Crouch()
+    {
+        transform.localScale = crouchScale;
+        transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+        isCrouching = true;
+        
+    }
+
+    void Uncrouch()
+    {
+        transform.localScale = playerScale;
+        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        isCrouching = false;
     }
 
     void ControlDrag()

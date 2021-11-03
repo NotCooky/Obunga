@@ -1275,7 +1275,6 @@ GameObject:
   - component: {fileID: 1963095964267513341}
   - component: {fileID: 1963095964267513340}
   - component: {fileID: 1963095964267513342}
-  - component: {fileID: 1963095964267513343}
   m_Layer: 0
   m_Name: bread
   m_TagString: Untagged
@@ -1322,18 +1321,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbc42c0e761e27a4cb088877bdce2b27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1963095964267513343
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1963095964267513339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7fc55c26a336dd44af80b6b39e2309c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!33 &2109373722197253771
@@ -1469,6 +1456,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd19cf7ca5b79f6478c99cb6193e6932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  range: 100
+  shootStrength: 500
   playerCam: {fileID: 963194227}
 --- !u!1 &6032807601006268394
 GameObject:
