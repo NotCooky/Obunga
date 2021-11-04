@@ -6,10 +6,11 @@ public class PlayerMove : MonoBehaviour
 {
     // movement
     float moveSpeed = 6f;
-    float crouchSpeed = 1f;
+    float crouchSpeed = 7f;
     
     float jumpForce = 5f;
     public float movementMultiplier = 10f;
+    public float sprintingMultiplier = 30f;
 
     float horizontalMovement;
     float verticalMovement;
@@ -37,7 +38,7 @@ public class PlayerMove : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        playerScale =  transform.localScale;
+       // playerScale =  transform.localScale;
         playercol = GetComponent<CapsuleCollider>();
     }
 
@@ -73,6 +74,7 @@ public class PlayerMove : MonoBehaviour
 
         moveDirection = transform.forward * verticalMovement + transform.right * horizontalMovement;
     }
+    
 
     void Jump()
     {

@@ -289,6 +289,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementMultiplier: 10
+  sprintingMultiplier: 30
 --- !u!136 &67356421
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -808,7 +809,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
+  m_TargetTexture: {fileID: 8400000, guid: bd98415d8f452534b8b7780eb1c14509, type: 2}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
