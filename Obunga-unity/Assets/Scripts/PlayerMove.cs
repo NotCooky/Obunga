@@ -6,6 +6,7 @@ public class PlayerMove : MonoBehaviour
 {
     // movement
     float moveSpeed = 6f;
+    float crouchSpeed = 2f;
     
     float jumpForce = 5f;
     public float movementMultiplier = 10f;
@@ -23,8 +24,9 @@ public class PlayerMove : MonoBehaviour
     float crouchDrag = 10f;
 
     //crouch
-    Vector3 crouchScale = new Vector3(1, 0.5f, 1);
-    Vector3 playerScale;
+    //Vector3 crouchScale = new Vector3(1, 0.5f, 1);
+   // Vector3 playerScale;
+    float wantedheight;
     Vector3 moveDirection;
     bool isCrouching;
 
@@ -35,7 +37,7 @@ public class PlayerMove : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        playerScale =  transform.localScale;
+       // playerScale =  transform.localScale;
         playercol = GetComponent<CapsuleCollider>();
     }
 
@@ -45,7 +47,11 @@ public class PlayerMove : MonoBehaviour
         MyInput();
         ControlDrag();
 
-        if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        
+
+        playercol.height = Mathf.Lerp(playercol.height, wantedheight, Time.deltaTime * crouchSpeed);
+
+        if(Input.GetKeyDown(KeyCode.Space) && isGrounded && !isCrouching)
         {
             Jump();
         }
@@ -60,6 +66,7 @@ public class PlayerMove : MonoBehaviour
             Uncrouch();
         }
 
+        
     }
 
     void MyInput()
@@ -77,16 +84,18 @@ public class PlayerMove : MonoBehaviour
 
     void Crouch()
     {
-        transform.localScale = crouchScale;
-        transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-        isCrouching = true;
+      // transform.localScale = crouchScale;
+      // transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+       wantedheight = 1f;
+       isCrouching = true;
         
     }
 
     void Uncrouch()
     {
-        transform.localScale = playerScale;
-        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+       // transform.localScale = playerScale;
+       // transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        wantedheight = 2f;
         isCrouching = false;
     }
 
@@ -105,7 +114,6 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = crouchDrag;
         }
-        
     }
 
   
