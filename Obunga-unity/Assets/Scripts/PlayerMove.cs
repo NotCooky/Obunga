@@ -6,9 +6,9 @@ public class PlayerMove : MonoBehaviour
 {
     // movement
     float moveSpeed = 6f;
-    float jumpForce = 9f;
+    
+    float jumpForce = 5f;
     public float movementMultiplier = 10f;
-    float airMultiplier = 0.4f;
 
     float horizontalMovement;
     float verticalMovement;
@@ -19,16 +19,24 @@ public class PlayerMove : MonoBehaviour
 
     //Drag
     float groundDrag = 6f;
-    float airDrag = 2f;
+    float airDrag = 0f;
+    float crouchDrag = 10f;
 
+    //crouch
+    Vector3 crouchScale = new Vector3(1, 0.5f, 1);
+    Vector3 playerScale;
     Vector3 moveDirection;
+    bool isCrouching;
 
     Rigidbody rb;
+    CapsuleCollider playercol;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        playerScale =  transform.localScale;
+        playercol = GetComponent<CapsuleCollider>();
     }
 
     void Update()
@@ -41,6 +49,17 @@ public class PlayerMove : MonoBehaviour
         {
             Jump();
         }
+
+        if(Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            Crouch();
+        }
+
+        if(Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            Uncrouch();
+        }
+
     }
 
     void MyInput()
@@ -56,6 +75,21 @@ public class PlayerMove : MonoBehaviour
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
+    void Crouch()
+    {
+        transform.localScale = crouchScale;
+        transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+        isCrouching = true;
+        
+    }
+
+    void Uncrouch()
+    {
+        transform.localScale = playerScale;
+        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        isCrouching = false;
+    }
+
     void ControlDrag()
     {
         if(isGrounded)
@@ -65,6 +99,11 @@ public class PlayerMove : MonoBehaviour
         else
         {
             rb.drag = airDrag;
+        }
+
+        if(isCrouching)
+        {
+            rb.drag = crouchDrag;
         }
         
     }
@@ -80,11 +119,6 @@ public class PlayerMove : MonoBehaviour
         if (isGrounded)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-        }
-        else if (!isGrounded)
-        {
-            rb.AddForce(moveDirection.normalized * moveSpeed * airMultiplier, ForceMode.Acceleration);
-        }
-        
+        }     
     }
 }

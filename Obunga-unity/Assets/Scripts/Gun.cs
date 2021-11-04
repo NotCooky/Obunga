@@ -3,17 +3,30 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-    float damage = 10f;
-    float range = 100f;
+    public float range = 100f;
+    public float shootStrength;
+    public ParticleSystem muzzleFlash;
+    public Animation shootAnim;
     
     public Camera playerCam;
+
+    void Start()
+    {
+       
+    }
 
     // Update is called once per frame
     void Update()
     {
+        
+
         if(Input.GetMouseButton(0))
         {
+            muzzleFlash.Play();
+            shootAnim.Play();
             Shoot();
+            
+            
         }
     }
 
@@ -22,7 +35,10 @@ public class Gun : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(playerCam.transform.position, playerCam.transform.forward, out hit, range))
         {
-            Debug.Log(hit.transform.name);
+            hit.rigidbody.AddForce(playerCam.transform.forward * shootStrength);
+           
+            
+            
         }
     }
 }
