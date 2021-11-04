@@ -7,9 +7,8 @@ public class PlayerMove : MonoBehaviour
     // movement
     float moveSpeed = 6f;
     
-    float jumpForce = 9f;
+    float jumpForce = 5f;
     public float movementMultiplier = 10f;
-    float airMultiplier = 0.4f;
 
     float horizontalMovement;
     float verticalMovement;
@@ -20,16 +19,14 @@ public class PlayerMove : MonoBehaviour
 
     //Drag
     float groundDrag = 6f;
-    float airDrag = 2f;
+    float airDrag = 0f;
+    float crouchDrag = 10f;
 
     //crouch
     Vector3 crouchScale = new Vector3(1, 0.5f, 1);
     Vector3 playerScale;
-    float crouchSpeed = 2f;
-    float crouchingMultiplier = 2f;
-    bool isCrouching;
-
     Vector3 moveDirection;
+    bool isCrouching;
 
     Rigidbody rb;
     CapsuleCollider playercol;
@@ -56,10 +53,6 @@ public class PlayerMove : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.LeftControl))
         {
             Crouch();
-            if(isCrouching == true)
-            {
-                rb.AddForce(moveDirection.normalized * crouchSpeed * crouchingMultiplier, ForceMode.Acceleration);
-            }
         }
 
         if(Input.GetKeyUp(KeyCode.LeftControl))
@@ -107,6 +100,11 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = airDrag;
         }
+
+        if(isCrouching)
+        {
+            rb.drag = crouchDrag;
+        }
         
     }
 
@@ -121,11 +119,6 @@ public class PlayerMove : MonoBehaviour
         if (isGrounded)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-        }
-        else if (!isGrounded)
-        {
-            rb.AddForce(moveDirection.normalized * moveSpeed * airMultiplier, ForceMode.Acceleration);
-        }
-        
+        }     
     }
 }
