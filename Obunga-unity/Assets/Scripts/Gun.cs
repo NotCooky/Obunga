@@ -4,11 +4,16 @@ using System.Collections;
 
 public class Gun : MonoBehaviour
 {
+<<<<<<< HEAD
     public float range = 100f;
     public float fireRate;
     public float shootStrength;
     public ParticleSystem muzzleFlash;
     private Animator animator;
+=======
+    float damage = 10f;
+    float range = 100f;
+>>>>>>> parent of 47b7cc1 (what.)
     
     public int maxAmmo = 10;
     private int currentAmmo;
@@ -17,6 +22,7 @@ public class Gun : MonoBehaviour
 
     public Camera playerCam;
 
+<<<<<<< HEAD
     private float nextTimeToFire;
 
     void Start()
@@ -44,9 +50,14 @@ public class Gun : MonoBehaviour
         {
             muzzleFlash.Play();
             nextTimeToFire= Time.time + 1f / fireRate;
+=======
+    // Update is called once per frame
+    void Update()
+    {
+        if(Input.GetMouseButton(0))
+        {
+>>>>>>> parent of 47b7cc1 (what.)
             Shoot();
-            
-            
         }
     }
 
@@ -59,7 +70,11 @@ public class Gun : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(playerCam.transform.position, playerCam.transform.forward, out hit, range))
         {
+<<<<<<< HEAD
             hit.rigidbody.AddForce(playerCam.transform.forward * shootStrength);
+=======
+            Debug.Log(hit.transform.name);
+>>>>>>> parent of 47b7cc1 (what.)
         }
 
         animator.SetBool("shooting", false);
