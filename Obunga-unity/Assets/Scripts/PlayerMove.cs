@@ -6,7 +6,7 @@ public class PlayerMove : MonoBehaviour
 {
     // movement
     float moveSpeed = 6f;
-    float crouchSpeed = 7f;
+    float crouchSpeed = 500f;
     
     float jumpForce = 5f;
     public float movementMultiplier = 10f;
@@ -38,7 +38,7 @@ public class PlayerMove : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-       // playerScale =  transform.localScale;
+        playerScale =  transform.localScale;
         playercol = GetComponent<CapsuleCollider>();
     }
 
@@ -83,7 +83,7 @@ public class PlayerMove : MonoBehaviour
 
     void Crouch()
     {
-       // transform.localScale = crouchScale;
+        //transform.localScale = crouchScale;
         //transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
         wantedHeight = 1f;
         isCrouching = true;
@@ -92,9 +92,9 @@ public class PlayerMove : MonoBehaviour
 
     void Uncrouch()
     {
-       // transform.localScale = playerScale;
-       // transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-       wantedHeight = 2f;
+        //transform.localScale = playerScale;
+        //transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        wantedHeight = 2f;
         isCrouching = false;
     }
 
@@ -109,10 +109,6 @@ public class PlayerMove : MonoBehaviour
             rb.drag = airDrag;
         }
 
-        if(isCrouching)
-        {
-            rb.drag = crouchDrag;
-        }
         
     }
 
