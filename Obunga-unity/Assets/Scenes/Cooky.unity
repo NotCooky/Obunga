@@ -6349,7 +6349,11 @@ GameObject:
   - component: {fileID: 5148600538313280909}
   - component: {fileID: 8132475615367610920}
   - component: {fileID: 6284962627597874914}
+<<<<<<< HEAD
+  - component: {fileID: 5492228006522656572}
+=======
   - component: {fileID: 5492228006522656573}
+>>>>>>> f778888960b262e6da8dd80bdf9d70ce27696e09
   - component: {fileID: 5492228006522656568}
   m_Layer: 0
   m_Name: pistol
@@ -6358,15 +6362,26 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+<<<<<<< HEAD
 --- !u!95 &5492228006522656568
 Animator:
   serializedVersion: 3
+=======
+<<<<<<< HEAD
+--- !u!114 &5492228006522656568
+MonoBehaviour:
+=======
+--- !u!111 &5492228006522656568
+Animation:
+>>>>>>> f778888960b262e6da8dd80bdf9d70ce27696e09
+>>>>>>> 47b7cc1b443554fa3708039d5a1b45bbbc129819
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5492228006522656567}
   m_Enabled: 1
+<<<<<<< HEAD
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 98ddc2c920a22d54aaf768520e83651a, type: 2}
   m_CullingMode: 0
@@ -6377,7 +6392,26 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+=======
+<<<<<<< HEAD
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd19cf7ca5b79f6478c99cb6193e6932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerCam: {fileID: 963194227}
+--- !u!114 &5492228006522656572
+=======
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 4f5b21ffdb73279478911919f421a6c5, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 4f5b21ffdb73279478911919f421a6c5, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
+>>>>>>> 47b7cc1b443554fa3708039d5a1b45bbbc129819
 --- !u!114 &5492228006522656573
+>>>>>>> f778888960b262e6da8dd80bdf9d70ce27696e09
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6386,9 +6420,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5492228006522656567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd19cf7ca5b79f6478c99cb6193e6932, type: 3}
+  m_Script: {fileID: 11500000, guid: bbc42c0e761e27a4cb088877bdce2b27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
+=======
   range: 100
   fireRate: 4
   shootStrength: 500
@@ -6396,6 +6432,7 @@ MonoBehaviour:
   maxAmmo: 10
   reloadTime: 0.5
   playerCam: {fileID: 963194227}
+>>>>>>> f778888960b262e6da8dd80bdf9d70ce27696e09
 --- !u!1 &6032807601006268394
 GameObject:
   m_ObjectHideFlags: 0
