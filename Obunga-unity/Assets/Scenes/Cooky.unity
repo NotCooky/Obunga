@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 71edc95f75a8c924888138647596336d, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -743,7 +743,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 4.83e-43, y: 7.1e-44, z: 0, w: -6.854183}
+  m_BoundingSphereOverride: {x: 0, y: 1.4288e-41, z: 0, w: 2.140625}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -6518,14 +6518,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5492228006522656567}
-  m_LocalRotation: {x: -0, y: 0.7069834, z: 0.7072302, w: 0}
-  m_LocalPosition: {x: 0.399, y: -0.3169428, z: 0.7215729}
+  m_LocalRotation: {x: 0.00000013240823, y: 0.7071068, z: 0.7071068, w: -0.00000013240823}
+  m_LocalPosition: {x: 0.574, y: -0.456, z: 1.195}
   m_LocalScale: {x: 3.3522012, y: 3.3522012, z: 3.3522012}
   m_Children:
   - {fileID: 1049490328}
   m_Father: {fileID: 963194228}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: -89.98, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 180.00002}
 --- !u!1 &5492228006522656567
 GameObject:
   m_ObjectHideFlags: 0
@@ -6546,22 +6546,25 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!111 &5492228006522656568
-Animation:
+--- !u!95 &5492228006522656568
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5492228006522656567}
   m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 4f5b21ffdb73279478911919f421a6c5, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: 4f5b21ffdb73279478911919f421a6c5, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 98ddc2c920a22d54aaf768520e83651a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &5492228006522656573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6576,8 +6579,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   range: 100
   shootStrength: 500
+  maxAmmo: 7
+  reloadTime: 0.5
+  fireRate: 5
   muzzleFlash: {fileID: 1049490330}
-  shootAnim: {fileID: 5492228006522656568}
+  animator: {fileID: 5492228006522656568}
   playerCam: {fileID: 963194227}
 --- !u!1 &6032807601006268394
 GameObject:
