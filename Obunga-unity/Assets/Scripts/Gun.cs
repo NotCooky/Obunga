@@ -45,7 +45,7 @@ public class Gun : MonoBehaviour
             return;
         }
 
-        if(Input.GetMouseButton(0) && Time.time >= nextTimeToFire)
+        if(Input.GetMouseButtonDown(0) && Time.time >= nextTimeToFire)
         {
             nextTimeToFire = Time.time + 1f / fireRate;
             Shoot();

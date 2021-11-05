@@ -6,9 +6,11 @@ public class PlayerMove : MonoBehaviour
 {
     // movement
     float moveSpeed = 6f;
+    float inAirSpeed = 3f;
     
     float jumpForce = 5f;
     public float movementMultiplier = 10f;
+    public float airMultiplier = 5f;
     public float sprintingMultiplier = 30f;
 
     float horizontalMovement;
@@ -116,6 +118,12 @@ public class PlayerMove : MonoBehaviour
         if (isGrounded)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-        }     
+        }  
+        else
+        {
+            rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
+        }  
+
+
     }
 }
