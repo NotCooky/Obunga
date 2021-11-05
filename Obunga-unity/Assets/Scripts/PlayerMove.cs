@@ -6,7 +6,6 @@ public class PlayerMove : MonoBehaviour
 {
     // movement
     float moveSpeed = 6f;
-    float crouchSpeed = 500f;
     
     float jumpForce = 5f;
     public float movementMultiplier = 10f;
@@ -21,8 +20,7 @@ public class PlayerMove : MonoBehaviour
 
     //Drag
     float groundDrag = 6f;
-    float airDrag = 0f;
-    float crouchDrag = 10f;
+    float airDrag = 1f;
 
     //crouch
     Vector3 crouchScale = new Vector3(1, 0.5f, 1);

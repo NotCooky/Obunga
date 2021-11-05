@@ -11,28 +11,10 @@ class CameraController : MonoBehaviour
     public float mouseSens;
     public Transform playerBody;
     float xRotation = 0f;
-   /* 
-    public float MouseSensitivity;
+    RaycastHit hit;
+    GameObject grabbedObject;
+    public Transform grabPos;
 
-    private float CameraXRotation;
-
-    public float LerpSpeed;
-
-    private void Update()
-   // {
-        float MouseX = Input.GetAxis("Mouse X") * MouseSensitivity * Time.deltaTime;
-        float MouseY = Input.GetAxis("Mouse Y") * MouseSensitivity * Time.deltaTime;
-
-        CameraXRotation -= MouseY;
-        CameraXRotation = Mathf.Clamp(CameraXRotation, -90f, 90f);
-
-       // transform.localRotation = Quaternion.Euler(CameraXRotation, 0f, 0f);
-        transform.parent.Rotate(Vector3.up * MouseX);
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(CameraXRotation, 0f, 0f), Time.deltaTime * LerpSpeed);
-      //  transform.parent.Rotate(Vector3.Lerp(transform.rotation.eulerAngles, Vector3.up * MouseX, Time.deltaTime * LerpSpeed)); */
-
-
-   // }
 
    void Start()
    {
@@ -49,7 +31,18 @@ class CameraController : MonoBehaviour
 
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
        playerBody.Rotate(Vector3.up * mouseX);
-       
 
+       if(Input.GetMouseButtonDown(1) && Physics.Raycast(transform.position, transform.forward, out hit, 5) && hit.transform.GetComponent<Rigidbody>())
+       {
+           grabbedObject = hit.transform.gameObject;
+       }
+       else if(Input.GetMouseButtonUp(1))
+       {
+           grabbedObject = null;
+       } 
+       if(grabbedObject)
+       {
+           grabbedObject.GetComponent<Rigidbody>().velocity = 10 * (grabPos.position - grabbedObject.transform.position);
+       }
    }
 }
