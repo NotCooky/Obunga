@@ -26,25 +26,22 @@ public class PlayerMove : MonoBehaviour
 
     //crouch
     Vector3 crouchScale = new Vector3(1, 0.5f, 1);
-    Vector3 playerScale;
+   // Vector3 playerScale;
+   public Transform playerScale;
     Vector3 moveDirection;
-    float wantedHeight;
     bool isCrouching;
 
     Rigidbody rb;
-    CapsuleCollider playercol;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        playerScale =  transform.localScale;
-        playercol = GetComponent<CapsuleCollider>();
+       // playerScale =  transform.localScale;
     }
 
     void Update()
     {
-        playercol.height = Mathf.Lerp(playercol.height, wantedHeight, Time.deltaTime * crouchSpeed);
 
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
         MyInput();
@@ -83,18 +80,16 @@ public class PlayerMove : MonoBehaviour
 
     void Crouch()
     {
-        //transform.localScale = crouchScale;
-        //transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-        wantedHeight = 1f;
+        playerScale.localScale = new Vector3(1, 0.5f, 1);
+        transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
         isCrouching = true;
         
     }
 
     void Uncrouch()
     {
-        //transform.localScale = playerScale;
-        //transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-        wantedHeight = 2f;
+        playerScale.localScale = new Vector3(1, 1, 1);
+        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
         isCrouching = false;
     }
 
