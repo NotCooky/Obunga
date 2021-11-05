@@ -5795,8 +5795,8 @@ RectTransform:
   m_Children:
   - {fileID: 507221530}
   - {fileID: 44594114}
-  m_Father: {fileID: 1759468214}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -6071,11 +6071,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1738799145}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b76fe86d31e43c4881637a53fe18cb6, type: 3}
+  m_Script: {fileID: 11500000, guid: 19ef5a8241ada9d4eaf25dc1e36530e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smooth: 8
-  multiplier: 6
+  amount: 0.02
+  maxAmount: 0.06
+  smoothAmount: 6
+  rotationAmount: 4
+  maxRotationAmount: 5
+  smoothRotation: 12
+  rotationX: 1
+  rotationY: 1
+  rotationZ: 1
 --- !u!1 &1759468208
 GameObject:
   m_ObjectHideFlags: 0
@@ -6195,8 +6202,7 @@ Transform:
   m_LocalRotation: {x: -0.000000059604638, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -3.4500034, y: 2.7627702, z: -15.791594}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1673331189}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6322,7 +6328,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 800889112978283380}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.096, z: 0.255}
+  m_LocalPosition: {x: 0.287, y: -0.096, z: 0.255}
   m_LocalScale: {x: 0.20000002, y: 0.2, z: 0.20000002}
   m_Children:
   - {fileID: 1049490328}
@@ -6398,7 +6404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd19cf7ca5b79f6478c99cb6193e6932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shootStrength: 50
+  shootStrength: 200
   maxAmmo: 7
   reloadTime: 0.4
   fireRate: 50

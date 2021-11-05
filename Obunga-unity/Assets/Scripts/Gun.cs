@@ -79,6 +79,6 @@ public class Gun : MonoBehaviour
         currentAmmo--;
         muzzleFlash.Play();
         GameObject shotBullet = Instantiate(bullet, attackPoint.position, attackPoint.rotation);
-        shotBullet.GetComponent<Rigidbody>().AddForce(playerCam.transform.forward * shootStrength);
+        shotBullet.GetComponent<Rigidbody>().AddForce(attackPoint.forward * shootStrength);
     }
 }
