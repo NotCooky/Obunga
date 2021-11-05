@@ -28,6 +28,7 @@ public class Gun : MonoBehaviour
     void Start()
     {
        currentAmmo = maxAmmo;
+       
     }
 
    
@@ -40,6 +41,8 @@ public class Gun : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        attackPoint.LookAt(playerCam.transform.position + playerCam.transform.forward * 100);
+
         if(isReloading)
         {
             return;

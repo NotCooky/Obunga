@@ -5,14 +5,14 @@ using UnityEngine;
 public class WeaponSway2 : MonoBehaviour
 {
     //position
-    public float amount = 0.02f;
-    public float maxAmount = 0.06f;
-    public float smoothAmount = 6f;
+    public float amount;
+    public float maxAmount;
+    public float smoothAmount;
 
     //rotation
-    public float rotationAmount = 4f;
-    public float maxRotationAmount = 5f;
-    public float smoothRotation = 12f;
+    public float rotationAmount;
+    public float maxRotationAmount;
+    public float smoothRotation;
 
     public bool rotationX = true;
     public bool rotationY = true;
