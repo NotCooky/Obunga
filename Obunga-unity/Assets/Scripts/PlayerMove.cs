@@ -6,11 +6,13 @@ public class PlayerMove : MonoBehaviour
 {
     // movement
     float moveSpeed = 6f;
+    float crouchSpeed = 2f;
     float inAirSpeed = 3f;
     
     float jumpForce = 5f;
     public float movementMultiplier = 10f;
     public float airMultiplier = 5f;
+    public float crouchingMultiplier = 5f;
     public float sprintingMultiplier = 30f;
 
     float horizontalMovement;
@@ -26,12 +28,30 @@ public class PlayerMove : MonoBehaviour
 
     //crouch
     Vector3 crouchScale = new Vector3(1, 0.5f, 1);
-   // Vector3 playerScale;
-   public Transform playerScale;
-    Vector3 moveDirection;
+    public Transform playerScale;
     bool isCrouching;
 
+
+    Vector3 moveDirection;
+    Vector3 slopeMoveDirection;
+    RaycastHit slopeHit;
     Rigidbody rb;
+
+    private bool OnSlope()
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight / 2 + 0.5f))
+        {
+            if (slopeHit.normal != Vector3.up)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
 
     void Start()
     {
@@ -61,6 +81,8 @@ public class PlayerMove : MonoBehaviour
         {
             Uncrouch();
         }
+
+        slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
     }
 
@@ -119,10 +141,21 @@ public class PlayerMove : MonoBehaviour
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
         }  
+        else if (isGrounded && isCrouching)
+        {
+            rb.AddForce(moveDirection.normalized * crouchSpeed * crouchingMultiplier, ForceMode.Acceleration);
+        }
         else
         {
             rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
         }  
+
+        
+
+        if (isGrounded && OnSlope())
+        {
+            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+        }
 
 
     }
