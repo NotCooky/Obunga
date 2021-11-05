@@ -6370,7 +6370,7 @@ MonoBehaviour:
   range: 100
   shootStrength: 50
   maxAmmo: 7
-  reloadTime: 0.2
+  reloadTime: 0.4
   fireRate: 50
   muzzleFlash: {fileID: 1049490330}
   animator: {fileID: 800889112978283381}
