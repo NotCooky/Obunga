@@ -4,7 +4,7 @@ using System.Collections;
 
 public class Gun : MonoBehaviour
 {
-    public float range = 100f;
+    //gun
     public float shootStrength;
     public int maxAmmo = 7;
     private int currentAmmo;
@@ -18,6 +18,12 @@ public class Gun : MonoBehaviour
     public Camera playerCam;
 
     private float nextTimeToFire = 0f;
+
+    //bullet
+    public GameObject bullet;
+    public Transform attackPoint;
+
+    public bool allowInvoke = true;
 
     void Start()
     {
@@ -72,16 +78,7 @@ public class Gun : MonoBehaviour
     {
         currentAmmo--;
         muzzleFlash.Play();
-
-        RaycastHit hit;
-        if (Physics.Raycast(playerCam.transform.position, playerCam.transform.forward, out hit, range))
-        {
-            hit.rigidbody.AddForce(playerCam.transform.forward * shootStrength);
-           
-            
-            
-        }
+        GameObject shotBullet = Instantiate(bullet, attackPoint.position, attackPoint.rotation);
+        shotBullet.GetComponent<Rigidbody>().AddForce(playerCam.transform.forward * shootStrength);
     }
-
-  
 }
