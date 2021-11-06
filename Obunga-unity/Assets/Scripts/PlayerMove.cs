@@ -25,6 +25,7 @@ public class PlayerMove : MonoBehaviour
     //Drag
     float groundDrag = 6f;
     float airDrag = 1f;
+    float crouchDrag = 9f;
 
     //crouch
     Vector3 crouchScale = new Vector3(1, 0.5f, 1);
@@ -126,6 +127,11 @@ public class PlayerMove : MonoBehaviour
             rb.drag = airDrag;
         }
 
+        if(isGrounded && isCrouching)
+        {
+            rb.drag = crouchDrag;
+        }
+
         
     }
 
@@ -141,22 +147,14 @@ public class PlayerMove : MonoBehaviour
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
         }  
-        else if (isGrounded && isCrouching)
-        {
-            rb.AddForce(moveDirection.normalized * crouchSpeed * crouchingMultiplier, ForceMode.Acceleration);
-        }
         else
         {
             rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
         }  
 
-        
-
         if (isGrounded && OnSlope())
         {
             rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
         }
-
-
     }
 }
