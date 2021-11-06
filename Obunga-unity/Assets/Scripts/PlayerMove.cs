@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,11 +9,16 @@ public class PlayerMove : MonoBehaviour
     float crouchSpeed = 2f;
     float inAirSpeed = 3f;
     
-    float jumpForce = 5f;
+    float jumpForce = 7.5f;
     public float movementMultiplier = 10f;
     public float airMultiplier = 5f;
     public float crouchingMultiplier = 5f;
-    public float sprintingMultiplier = 30f;
+
+    //sprinting
+    float sprintingSpeed = 12f;
+    float walkSpeed = 6f;
+
+
 
     float horizontalMovement;
     float verticalMovement;
@@ -67,6 +72,7 @@ public class PlayerMove : MonoBehaviour
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
         MyInput();
         ControlDrag();
+        ControlSpeed();
 
         if(Input.GetKeyDown(KeyCode.Space) && isGrounded && !isCrouching)
         {
@@ -130,19 +136,32 @@ public class PlayerMove : MonoBehaviour
         if(isGrounded && isCrouching)
         {
             rb.drag = crouchDrag;
-        }
+        } 
+    }
 
-        
+    void ControlSpeed()
+    {
+        if(Input.GetKey(KeyCode.LeftShift) && isGrounded)
+        {
+            moveSpeed = Mathf.Lerp(moveSpeed, sprintingSpeed, Time.deltaTime);
+        }
+        else
+        {
+            moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, Time.deltaTime);
+        }
     }
 
   
     void FixedUpdate()
     {
+         rb.AddForce(Vector3.down * Time.deltaTime * 10);
+
         MovePlayer();
     }
 
     void MovePlayer()
-    {
+    {  
+
         if (isGrounded)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
