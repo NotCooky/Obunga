@@ -6,7 +6,6 @@ public class PlayerMove : MonoBehaviour
 {
     // movement
     float moveSpeed = 6f;
-    float crouchSpeed = 2f;
     float inAirSpeed = 3f;
     
     float jumpForce = 7.5f;
@@ -141,7 +140,7 @@ public class PlayerMove : MonoBehaviour
 
     void ControlSpeed()
     {
-        if(Input.GetKey(KeyCode.LeftShift) && isGrounded)
+        if(Input.GetKey(KeyCode.LeftShift))
         {
             moveSpeed = Mathf.Lerp(moveSpeed, sprintingSpeed, Time.deltaTime);
         }
