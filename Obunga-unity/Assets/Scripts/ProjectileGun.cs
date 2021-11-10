@@ -4,33 +4,29 @@ using TMPro;
 
 public class ProjectileGun : MonoBehaviour
 {
-    //bullet 
     public GameObject bullet;
 
-    //bullet force
     public float shootForce, upwardForce;
 
-    //Gun stats
     public float timeBetweenShooting, spread, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
     public bool allowButtonHold;
 
     int bulletsLeft, bulletsShot;
 
-    //Recoil
+    //recoil WIP
     public Rigidbody playerRb;
     public float recoilForce;
 
-    //bools
     bool shooting, readyToShoot, reloading;
 
-    //Reference
     public Camera fpsCam;
     public Transform attackPoint;
 
-    //Graphics
-    public GameObject muzzleFlash;
+    public ParticleSystem muzzleFlash;
     public TextMeshProUGUI ammunitionDisplay;
+
+    public Animator animator;
 
     //bug fixing :D
     public bool allowInvoke = true;
@@ -105,9 +101,7 @@ public class ProjectileGun : MonoBehaviour
         currentBullet.GetComponent<Rigidbody>().AddForce(directionWithSpread.normalized * shootForce, ForceMode.Impulse);
         currentBullet.GetComponent<Rigidbody>().AddForce(fpsCam.transform.up * upwardForce, ForceMode.Impulse);
 
-        //Instantiate muzzle flash, if you have one
-        if (muzzleFlash != null)
-            Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
+        muzzleFlash.Play();
 
         bulletsLeft--;
         bulletsShot++;
@@ -136,12 +130,14 @@ public class ProjectileGun : MonoBehaviour
     private void Reload()
     {
         reloading = true;
+        animator.SetBool("reloading", true);
         Invoke("ReloadFinished", reloadTime); //Invoke ReloadFinished function with your reloadTime as delay
     }
     private void ReloadFinished()
     {
         //Fill magazine
         bulletsLeft = magazineSize;
+        animator.SetBool("reloading", false);
         reloading = false;
     }
 }
