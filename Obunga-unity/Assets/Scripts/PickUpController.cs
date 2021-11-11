@@ -15,25 +15,27 @@ public class PickUpController : MonoBehaviour
     public bool equipped;
     public static bool slotFull;
 
-    private void Start()
+    void Start()
     {
         //Setup
         if (!equipped)
         {
             gunScript.enabled = false;
             rb.isKinematic = false;
-            coll.enabled = true;
+            rb.useGravity = true;
+            coll.isTrigger = false;
         }
         if (equipped)
         {
             gunScript.enabled = true;
             rb.isKinematic = true;
-            coll.enabled = false;
+            rb.useGravity = false;
+            coll.isTrigger = true;
             slotFull = true;
         }
     }
 
-    private void Update()
+    void FixedUpdate()
     {
         //Check if player is in range and "E" is pressed
         Vector3 distanceToPlayer = player.position - transform.position;
@@ -56,7 +58,8 @@ public class PickUpController : MonoBehaviour
 
         //Make Rigidbody kinematic and BoxCollider a trigger
         rb.isKinematic = true;
-        
+        rb.useGravity = false;
+        coll.isTrigger = true;
 
         //Enable script
         gunScript.enabled = true;
@@ -66,11 +69,14 @@ public class PickUpController : MonoBehaviour
     {
         equipped = false;
         slotFull = false;
+
         //Set parent to null
         transform.SetParent(null);
 
         //Make Rigidbody not kinematic and BoxCollider normal
         rb.isKinematic = false;
+        rb.useGravity = true;
+        coll.isTrigger = false;
 
         //Gun carries momentum of player
         rb.velocity = player.GetComponent<Rigidbody>().velocity;
