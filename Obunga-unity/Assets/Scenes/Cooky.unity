@@ -469,6 +469,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponHolder: {fileID: 1738799146}
   grabDistance: 4
+  ProjectileGun: {fileID: 0}
 --- !u!4 &67356424
 Transform:
   m_ObjectHideFlags: 0
@@ -3689,7 +3690,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1738799145}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19ef5a8241ada9d4eaf25dc1e36530e9, type: 3}
   m_Name: 
@@ -4709,7 +4710,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 800889112978283380}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1c3f4ffe8c642b440a20e9c3f11b08b6, type: 3}
   m_Name: 

@@ -9,11 +9,14 @@ public class weaponPickup : MonoBehaviour
     GameObject currentWeapon;
     GameObject wp;
 
+    public ProjectileGun ProjectileGun;
+
+
     bool isGrabbable;
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -66,6 +69,7 @@ public class weaponPickup : MonoBehaviour
         currentWeapon.transform.localEulerAngles = new Vector3(0, 0, 0);
         currentWeapon.GetComponent<Rigidbody>().isKinematic = true;
         currentWeapon.GetComponent<Collider>().isTrigger = true;
+        currentWeapon.GetComponent<ProjectileGun>().enabled = true;
     }
 
     void Drop()
@@ -73,6 +77,7 @@ public class weaponPickup : MonoBehaviour
         currentWeapon.transform.parent = null;
         currentWeapon.GetComponent<Rigidbody>().isKinematic = false;
         currentWeapon.GetComponent<Collider>().isTrigger = false;
+        currentWeapon.GetComponent<ProjectileGun>().enabled = false;
         currentWeapon = null;
     }
 }
