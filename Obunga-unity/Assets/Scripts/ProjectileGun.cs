@@ -31,14 +31,14 @@ public class ProjectileGun : MonoBehaviour
     //bug fixing :D
     public bool allowInvoke = true;
 
-    private void Awake()
+    void Awake()
     {
         //make sure magazine is full
         bulletsLeft = magazineSize;
         readyToShoot = true;
     }
 
-    private void Update()
+    void Update()
     {
         MyInput();
 
@@ -46,7 +46,7 @@ public class ProjectileGun : MonoBehaviour
         if (ammunitionDisplay != null)
             ammunitionDisplay.SetText(bulletsLeft / bulletsPerTap + " / " + magazineSize / bulletsPerTap);
     }
-    private void MyInput()
+    void MyInput()
     {
         //Check if allowed to hold down button and take corresponding input
         if (allowButtonHold) shooting = Input.GetKey(KeyCode.Mouse0);
