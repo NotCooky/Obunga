@@ -85,9 +85,9 @@ public class weaponPickup : MonoBehaviour
         currentWeapon.GetComponent<ProjectileGun>().enabled = false;
         currentWeapon = null;
 
-        currentWeapon.GetComponent<Rigidbody>().AddForce(playerCamera.forward * dropForwardForce, ForceMode.Impulse);
-        currentWeapon.GetComponent<Rigidbody>().AddForce(playerCamera.up * dropUpwardForce, ForceMode.Impulse);
-        float random = Random.Range(-1f, 1f);
-        currentWeapon.GetComponent<Rigidbody>().AddTorque(new Vector3(random, random, random) * 10);
+        //currentWeapon.GetComponent<Rigidbody>().AddForce(playerCamera.forward * dropForwardForce, ForceMode.Impulse);
+        //currentWeapon.GetComponent<Rigidbody>().AddForce(playerCamera.up * dropUpwardForce, ForceMode.Impulse);
+        //float random = Random.Range(-1f, 1f);
+        //currentWeapon.GetComponent<Rigidbody>().AddTorque(new Vector3(random, random, random) * 10);
     }
 }
