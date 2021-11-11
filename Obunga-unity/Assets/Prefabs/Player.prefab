@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 293087950974514161}
   - component: {fileID: 293087950974514173}
   - component: {fileID: 293087950974514160}
-  - component: {fileID: 293087950974514172}
+  - component: {fileID: 728086792111170593}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -193,7 +193,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &293087950974514172
+--- !u!114 &728086792111170593
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -202,13 +202,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 293087950974514170}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3649a92a36e090a489fd27ea63b02dec, type: 3}
+  m_Script: {fileID: 11500000, guid: 1ee9a54cea0345b46890e3cbedd3fff2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   weaponHolder: {fileID: 293087950448118995}
   grabDistance: 4
-  dropForwardForce: 4
-  dropUpwardForce: 1
+  dropForwardForce: 10
+  dropUpwardForce: 2
   playerCamera: {fileID: 293087951827671437}
 --- !u!1 &293087951181769292
 GameObject:
