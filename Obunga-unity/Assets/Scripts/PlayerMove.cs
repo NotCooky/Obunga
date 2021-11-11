@@ -73,7 +73,7 @@ public class PlayerMove : MonoBehaviour
         ControlDrag();
         ControlSpeed();
 
-        if(Input.GetKeyDown(KeyCode.Space) && isGrounded && !isCrouching)
+        if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             Jump();
         }
