@@ -9,7 +9,12 @@ public class weaponPickup : MonoBehaviour
     GameObject currentWeapon;
     GameObject wp;
 
-    public ProjectileGun ProjectileGun;
+
+    public float dropForwardForce;
+    public float dropUpwardForce;
+    public Transform playerCamera;
+
+    private ProjectileGun ProjectileGun;
 
 
     bool isGrabbable;
@@ -79,5 +84,10 @@ public class weaponPickup : MonoBehaviour
         currentWeapon.GetComponent<Collider>().isTrigger = false;
         currentWeapon.GetComponent<ProjectileGun>().enabled = false;
         currentWeapon = null;
+
+        currentWeapon.GetComponent<Rigidbody>().AddForce(playerCamera.forward * dropForwardForce, ForceMode.Impulse);
+        currentWeapon.GetComponent<Rigidbody>().AddForce(playerCamera.up * dropUpwardForce, ForceMode.Impulse);
+        float random = Random.Range(-1f, 1f);
+        currentWeapon.GetComponent<Rigidbody>().AddTorque(new Vector3(random, random, random) * 10);
     }
 }
