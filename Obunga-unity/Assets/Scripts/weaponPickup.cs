@@ -7,6 +7,7 @@ public class weaponPickup : MonoBehaviour
     public Transform weaponHolder;
     public float grabDistance = 4f;
     GameObject currentWeapon;
+    //Transform currentWeapon;
     GameObject wp;
 
 
@@ -15,7 +16,8 @@ public class weaponPickup : MonoBehaviour
     public Transform playerCamera;
 
     private ProjectileGun ProjectileGun;
-
+   
+    float lerpSpeed = 0.1f;
 
     bool isGrabbable;
     // Start is called before the first frame update
@@ -70,8 +72,10 @@ public class weaponPickup : MonoBehaviour
     {
         currentWeapon = wp;
         currentWeapon.transform.position = weaponHolder.position;
-        currentWeapon.transform.parent = weaponHolder;
-        currentWeapon.transform.localEulerAngles = new Vector3(0, 0, 0);
+         currentWeapon.transform.localEulerAngles = new Vector3(0, 0, 0);
+        //currentWeapon.transform.position = Vector3.Lerp(currentWeapon.position, weaponHolder.position, Time.deltaTime);
+        //currentWeapon.transform.rotation = Quaternion.Lerp(currentWeapon.rotation, weaponHolder.rotation, Time.deltaTime * lerpSpeed); 
+        currentWeapon.transform.parent = weaponHolder; 
         currentWeapon.GetComponent<Rigidbody>().isKinematic = true;
         currentWeapon.GetComponent<Collider>().isTrigger = true;
         currentWeapon.GetComponent<ProjectileGun>().enabled = true;

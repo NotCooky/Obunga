@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
+    public Transform Orientation;
     // movement
     float moveSpeed = 6f;
     float inAirSpeed = 3f;
     
-    float jumpForce = 7.5f;
+    float jumpForce = 5f;
     public float movementMultiplier = 10f;
     public float airMultiplier = 5f;
     public float crouchingMultiplier = 5f;
@@ -97,7 +98,7 @@ public class PlayerMove : MonoBehaviour
         horizontalMovement = Input.GetAxisRaw("Horizontal");
         verticalMovement = Input.GetAxisRaw("Vertical");
 
-        moveDirection = transform.forward * verticalMovement + transform.right * horizontalMovement;
+        moveDirection = Orientation.forward * verticalMovement + Orientation.right * horizontalMovement;
     }
     
 

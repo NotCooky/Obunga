@@ -4,59 +4,26 @@ using UnityEngine;
 
 public class PlayerGrab : MonoBehaviour
 {
-    public GameObject TheCamera;
-    public Grabbable Grabbed;
-    public float MaxGrabDistance;
-    public float ThrowForce;
-    public GameObject GrabText;
+    RaycastHit hit;
+    GameObject grabOBJ;
+    public Transform grabPos;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
     {
-      if(Input.GetKeyDown("e"))
-      {
-              if(Grabbed == null)
-            {
-                if(Physics.Raycast(TheCamera.transform.position, TheCamera.transform.forward, out RaycastHit hit2, MaxGrabDistance))
-                {
-                    if (hit2.rigidbody != null && hit2.rigidbody.gameObject.GetComponent<Grabbable>())
-                    {
-                        Grabbed = hit2.rigidbody.gameObject.GetComponent<Grabbable>();
-                        hit2.rigidbody.isKinematic = true;
-                    }
-                }
-    
-            }
-             else 
-            {
-               Grabbed.GetComponent<Rigidbody>().isKinematic = false; 
-               Grabbed = null;
-            }
-      }
-
-      if(Grabbed != null)
-      {
-          Grabbed.transform.position = TheCamera.transform.position + TheCamera.transform.forward * MaxGrabDistance;
-      }
-
-      if(Input.GetMouseButtonDown(1) && Grabbed != null)
-      {
-         Grabbed.GetComponent<Rigidbody>().isKinematic = false;  
-         Grabbed.GetComponent<Rigidbody>().AddForce(TheCamera.transform.forward * ThrowForce, ForceMode.Impulse); 
-         Grabbed = null;
-      }
-
-      GrabText.SetActive(Physics.Raycast(TheCamera.transform.position, TheCamera.transform.forward, out RaycastHit hit, MaxGrabDistance) && Grabbed == null &&  hit.rigidbody.gameObject.GetComponent<Grabbable>());
-
-
-
-
+       if (Input.GetMouseButtonDown(1) && Physics.Raycast(transform.position, transform.forward, out hit, 5) && hit.transform.GetComponent<Rigidbody>())
+        {
+            grabOBJ = hit.transform.gameObject;
+        }
+        else if(Input.GetMouseButtonUp(1))
+        {
+            grabOBJ = null;
+        }
+        if (grabOBJ)
+        {
+            grabOBJ.GetComponent<Rigidbody>().velocity = 10 * (grabPos.position - grabOBJ.transform.position);
+        }
     }
 
 

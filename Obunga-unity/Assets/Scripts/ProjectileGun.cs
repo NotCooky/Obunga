@@ -27,6 +27,7 @@ public class ProjectileGun : MonoBehaviour
     public TextMeshProUGUI ammunitionDisplay;
 
     public Animator animator;
+    public CameraShake cameraShake;
 
     //bug fixing :D
     public bool allowInvoke = true;
@@ -64,6 +65,8 @@ public class ProjectileGun : MonoBehaviour
             bulletsShot = 0;
 
             Shoot();
+            StartCoroutine(cameraShake.Shake(.15f, .4f));
+
         }
     }
 
