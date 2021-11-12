@@ -8186,7 +8186,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8429694999909730472}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -50.6, y: 3.8, z: 0.6}
+  m_LocalPosition: {x: -17, y: 104.2, z: 0.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8429695000158083707}
@@ -8230,7 +8230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   orientation: {fileID: 28527409}
   wallDistance: 0.9
-  minimumJumpHeight: 1
+  minimumJumpHeight: 1.5
   wallRunGravity: 1
   wallRunJumpForce: 5
   cam: {fileID: 8429694999866335960}
