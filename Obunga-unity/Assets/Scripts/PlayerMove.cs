@@ -16,6 +16,9 @@ public class PlayerMove : MonoBehaviour
     float horizontalMovement;
     float verticalMovement;
 
+    Vector3 PreviousFramePosition = Vector3.zero; // Or whatever your initial position is
+    public float Speed = 0f;
+
     //camera movement
     float mouseX;
     float mouseY;
@@ -96,6 +99,10 @@ public class PlayerMove : MonoBehaviour
         CheckForWall();
         WallRunInput();
         Look();
+
+        float movementPerFrame = Vector3.Distance (PreviousFramePosition, transform.position);
+        Speed = movementPerFrame / Time.deltaTime;
+        PreviousFramePosition = transform.position;
 
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
         
