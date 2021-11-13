@@ -1,15 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using EZCameraShake;
 
 public class PlayerMove : MonoBehaviour
 {
-    public Transform Orientation;
-    // movement
+    //assignables
+    public Transform orientation;
+    public Transform cam;
+
+    //movement
     float moveSpeed = 6f;
     float inAirSpeed = 3f;
+    float horizontalMovement;
+    float verticalMovement;
+
+    //camera movement
+    float mouseX;
+    float mouseY;
+
+    float multiplier = 0.01f;
+
+    float xRotation;
+    float yRotation;
+    public float sensX;
+    public float sensY;
     
-    float jumpForce = 5f;
+    //multipliers
     public float movementMultiplier = 10f;
     public float airMultiplier = 5f;
     public float crouchingMultiplier = 5f;
@@ -18,13 +36,9 @@ public class PlayerMove : MonoBehaviour
     float sprintingSpeed = 12f;
     float walkSpeed = 6f;
 
-
-
-    float horizontalMovement;
-    float verticalMovement;
-
-    //jumping???!?!?!
+    //jumping
     float playerHeight = 2f;
+    float jumpForce = 10f;
     bool isGrounded;
 
     //Drag
@@ -37,11 +51,18 @@ public class PlayerMove : MonoBehaviour
     public Transform playerScale;
     bool isCrouching;
 
-
+    //slope stuff
     Vector3 moveDirection;
     Vector3 slopeMoveDirection;
     RaycastHit slopeHit;
     Rigidbody rb;
+
+    //Wallrunning
+    public LayerMask whatIsWall;
+    public float wallrunForce, maxWallrunTime, maxWallSpeed;
+    bool isWallRight, isWallLeft;
+    bool isWallRunning;
+    public float maxWallRunCameraTilt, wallRunCameraTilt;
 
     private bool OnSlope()
     {
@@ -63,17 +84,21 @@ public class PlayerMove : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-       // playerScale =  transform.localScale;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
     {
-
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
         MyInput();
         ControlDrag();
         ControlSpeed();
+        CheckForWall();
+        WallRunInput();
+        Look();
 
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
+        
         if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             Jump();
@@ -93,18 +118,77 @@ public class PlayerMove : MonoBehaviour
 
     }
 
+    void Look()
+    {
+        mouseX = Input.GetAxisRaw("Mouse X");
+        mouseY = Input.GetAxisRaw("Mouse Y");
+
+        yRotation += mouseX * sensX * multiplier;
+        xRotation -= mouseY * sensY * multiplier;
+
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+        cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, wallRunCameraTilt);
+        transform.rotation = Quaternion.Euler(0, yRotation, 0);
+
+        //While Wallrunning
+        //Tilts camera in .5 second
+        if (Math.Abs(wallRunCameraTilt) < maxWallRunCameraTilt && isWallRunning && isWallRight)
+        {
+            wallRunCameraTilt += Time.deltaTime * maxWallRunCameraTilt * 10;
+        }
+            
+        if (Math.Abs(wallRunCameraTilt) < maxWallRunCameraTilt && isWallRunning && isWallLeft)
+        {
+            wallRunCameraTilt -= Time.deltaTime * maxWallRunCameraTilt * 10;
+        }    
+
+        //Tilts camera back again
+        if (wallRunCameraTilt > 0 && !isWallRight && !isWallLeft)
+        {
+            wallRunCameraTilt -= Time.deltaTime * maxWallRunCameraTilt * 10;
+        }
+
+        if (wallRunCameraTilt < 0 && !isWallRight && !isWallLeft)
+        {
+            wallRunCameraTilt += Time.deltaTime * maxWallRunCameraTilt * 10;
+        }
+
+    }
+
     void MyInput()
     {
         horizontalMovement = Input.GetAxisRaw("Horizontal");
         verticalMovement = Input.GetAxisRaw("Vertical");
 
-        moveDirection = Orientation.forward * verticalMovement + Orientation.right * horizontalMovement;
+        moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
     }
     
 
     void Jump()
     {
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+
+         //Walljump
+        if (isWallRunning)
+        {
+
+            //normal jump
+            if (isWallLeft && !Input.GetKey(KeyCode.D) || isWallRight && !Input.GetKey(KeyCode.A))
+            {
+                rb.AddForce(Vector2.up * jumpForce * 1.5f);
+                rb.AddForce(Vector3.up * jumpForce * 0.5f);
+            }
+
+            //sidwards wallhop
+            if (isWallRight || isWallLeft && Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) rb.AddForce(-orientation.up * jumpForce * 1f);
+            if (isWallRight && Input.GetKey(KeyCode.A)) rb.AddForce(-orientation.right * jumpForce * 3.2f);
+            if (isWallLeft && Input.GetKey(KeyCode.D)) rb.AddForce(orientation.right * jumpForce * 3.2f);
+
+            //Always add forward force
+            rb.AddForce(orientation.forward * jumpForce * 1f);
+
+        }
     }
 
     void Crouch()
@@ -154,14 +238,12 @@ public class PlayerMove : MonoBehaviour
   
     void FixedUpdate()
     {
-         rb.AddForce(Vector3.down * Time.deltaTime * 10);
-
+        rb.AddForce(Vector3.down * Time.deltaTime * 40);
         MovePlayer();
     }
 
     void MovePlayer()
     {  
-
         if (isGrounded)
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
@@ -174,6 +256,46 @@ public class PlayerMove : MonoBehaviour
         if (isGrounded && OnSlope())
         {
             rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+        }
+    }
+
+   private void WallRunInput() //make sure to call in void Update
+    {
+        //Wallrun
+        if (Input.GetKey(KeyCode.D) && isWallRight) StartWallrun();
+        if (Input.GetKey(KeyCode.A) && isWallLeft) StartWallrun();
+    }
+    private void StartWallrun()
+    {
+        rb.useGravity = false;
+        isWallRunning = true;
+
+        if (rb.velocity.magnitude <= maxWallSpeed)
+        {
+            rb.AddForce(orientation.forward * wallrunForce * Time.deltaTime);
+
+            //Make sure char sticks to wall
+            if (isWallRight)
+                rb.AddForce(orientation.right * wallrunForce / 5 * Time.deltaTime);
+            else
+                rb.AddForce(-orientation.right * wallrunForce / 5 * Time.deltaTime);
+        }
+    }
+    private void StopWallRun()
+    {
+        isWallRunning = false;
+        rb.useGravity = true;
+    }
+
+    void CheckForWall() //make sure to call in void Update
+    {
+        isWallRight = Physics.Raycast(transform.position, orientation.right, 1f, whatIsWall);
+        isWallLeft = Physics.Raycast(transform.position, -orientation.right, 1f, whatIsWall);
+
+        //leave wall run
+        if (!isWallLeft && !isWallRight) 
+        {
+            StopWallRun();
         }
     }
 }

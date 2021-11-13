@@ -17,7 +17,6 @@ public class weaponPickup : MonoBehaviour
 
     private ProjectileGun ProjectileGun;
    
-    float lerpSpeed = 0.1f;
 
     bool isGrabbable;
     // Start is called before the first frame update

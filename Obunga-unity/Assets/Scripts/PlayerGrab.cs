@@ -22,7 +22,7 @@ public class PlayerGrab : MonoBehaviour
         }
         if (grabOBJ)
         {
-            grabOBJ.GetComponent<Rigidbody>().velocity = 10 * (grabPos.position - grabOBJ.transform.position);
+            grabOBJ.GetComponent<Rigidbody>().velocity = 5 * (grabPos.position - grabOBJ.transform.position);
         }
     }
 
