@@ -71,9 +71,9 @@ public class weaponPickup : MonoBehaviour
     {
         currentWeapon = wp;
         currentWeapon.transform.position = weaponHolder.position;
-         currentWeapon.transform.localEulerAngles = new Vector3(0, 0, 0);
-        //currentWeapon.transform.position = Vector3.Lerp(currentWeapon.position, weaponHolder.position, Time.deltaTime);
-        //currentWeapon.transform.rotation = Quaternion.Lerp(currentWeapon.rotation, weaponHolder.rotation, Time.deltaTime * lerpSpeed); 
+        currentWeapon.transform.localEulerAngles = new Vector3(0, 0, 0);
+        //currentWeapon.transform.position = Mathf.Lerp(currentWeapon.position, weaponHolder.position, Time.deltaTime);
+        //currentWeapon.transform.rotation = Mathf.Lerp(currentWeapon.rotation, weaponHolder.rotation, Time.deltaTime * lerpSpeed); 
         currentWeapon.transform.parent = weaponHolder; 
         currentWeapon.GetComponent<Rigidbody>().isKinematic = true;
         currentWeapon.GetComponent<Collider>().isTrigger = true;
@@ -87,10 +87,5 @@ public class weaponPickup : MonoBehaviour
         currentWeapon.GetComponent<Collider>().isTrigger = false;
         currentWeapon.GetComponent<ProjectileGun>().enabled = false;
         currentWeapon = null;
-
-        //currentWeapon.GetComponent<Rigidbody>().AddForce(playerCamera.forward * dropForwardForce, ForceMode.Impulse);
-        //currentWeapon.GetComponent<Rigidbody>().AddForce(playerCamera.up * dropUpwardForce, ForceMode.Impulse);
-        //float random = Random.Range(-1f, 1f);
-        //currentWeapon.GetComponent<Rigidbody>().AddTorque(new Vector3(random, random, random) * 10);
     }
 }
