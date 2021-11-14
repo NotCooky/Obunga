@@ -77,6 +77,13 @@ public class PlayerMove : MonoBehaviour
     bool isWallRight, isWallLeft;
     bool isWallRunning;
     public float maxWallRunCameraTilt, wallRunCameraTilt;
+    
+    [Header("Camera")]
+    public Camera playerCamera;
+    public float camTilt;
+    public float camTiltTime;
+
+    public float tilt { get; private set; }
 
     private bool OnSlope()
     {
@@ -168,12 +175,12 @@ public class PlayerMove : MonoBehaviour
 
         //While Wallrunning
         //Tilts camera in .5 second
-        if (Math.Abs(wallRunCameraTilt) < maxWallRunCameraTilt && isWallRunning && isWallRight)
+        /*if (Math.Abs(wallRunCameraTilt) < maxWallRunCameraTilt && isWallRunning && isWallRight)
         {
             wallRunCameraTilt += Time.deltaTime * maxWallRunCameraTilt * 5;
-        }
+        } 
             
-        if (Math.Abs(wallRunCameraTilt) < maxWallRunCameraTilt && isWallRunning && isWallLeft)
+       if (Math.Abs(wallRunCameraTilt) < maxWallRunCameraTilt && isWallRunning && isWallLeft)
         {
             wallRunCameraTilt -= Time.deltaTime * maxWallRunCameraTilt * 5;
         }    
@@ -187,8 +194,7 @@ public class PlayerMove : MonoBehaviour
         if (wallRunCameraTilt < 0 && !isWallRight && !isWallLeft)
         {
             wallRunCameraTilt += Time.deltaTime * maxWallRunCameraTilt * 5;
-        }
-
+        } */
     }
 
     void MyInput()
@@ -308,10 +314,12 @@ public class PlayerMove : MonoBehaviour
             if (isWallRight)
             {
                 rb.AddForce(orientation.right * wallrunForce / 5 * Time.deltaTime);
+                tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
             } 
-            else
+            else if (isWallLeft)
             {
                 rb.AddForce(-orientation.right * wallrunForce / 5 * Time.deltaTime);
+                tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
             }         
         }
     }
@@ -319,6 +327,7 @@ public class PlayerMove : MonoBehaviour
     {
         isWallRunning = false;
         rb.useGravity = true;
+        tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
     }
 
     void CheckForWall() //make sure to call in void Update
