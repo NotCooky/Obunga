@@ -50,10 +50,11 @@ public class PlayerMove : MonoBehaviour
     float crouchDrag = 9f;
 
     //crouch
-    Vector3 crouchScale = new Vector3(1, 0.5f, 1);
-    Vector3 standingScale = new Vector3(1, 1, 1);
-    public Transform playerScale;
+    public CapsuleCollider playerCol;
+    float standingheight = 2f;
+    float crouchingHeight = 1f;
     bool isCrouching;
+    float crouchSpeed = 3f;
 
     //slope stuff
     Vector3 moveDirection;
@@ -112,12 +113,11 @@ public class PlayerMove : MonoBehaviour
             Jump();
         }
 
-        if(Input.GetKeyUp(KeyCode.LeftControl))
+        if(Input.GetKey(KeyCode.LeftControl))
         {
             Crouch();
         }
-
-        if(Input.GetKeyDown(KeyCode.LeftControl))
+        else
         {
             Uncrouch();
         }
@@ -180,16 +180,14 @@ public class PlayerMove : MonoBehaviour
 
     void Crouch()
     {
-       // playerScale.localScale = crouchScale;
-        playerScale.localScale = Vector3.MoveTowards(standingScale, crouchScale, Time.deltaTime * 7);
+        playerCol.height = Mathf.Lerp(playerCol.height, crouchingHeight, Time.deltaTime * crouchSpeed);
         isCrouching = true;
         
     }
 
     void Uncrouch()
     {
-        //playerScale.localScale = standingScale;
-        playerScale.localScale = Vector3.MoveTowards(crouchScale, standingScale, Time.deltaTime * 7);
+        playerCol.height = Mathf.Lerp(playerCol.height, standingheight, Time.deltaTime * crouchSpeed);
         isCrouching = false;
     }
 

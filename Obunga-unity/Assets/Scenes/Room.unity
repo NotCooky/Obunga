@@ -1860,7 +1860,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 764651594}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.6300001, z: 0}
+  m_LocalPosition: {x: 0, y: 0.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8429694999866335967}
@@ -8282,7 +8282,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8429694999909730472}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -51.19, y: 10.59, z: 5.39}
+  m_LocalPosition: {x: -51.19, y: 1.078, z: 5.39}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 764651595}
@@ -8330,7 +8330,11 @@ MonoBehaviour:
   movementMultiplier: 10
   airMultiplier: 5
   crouchingMultiplier: 5
-  playerScale: {fileID: 8429695000158083707}
+  playerCol: {fileID: 8429695000158083705}
+  HoverForce: 150
+  HoverHeight: 2
+  HoverSpringStrength: 50
+  HoverSpringDamper: 5
   whatIsWall:
     serializedVersion: 2
     m_Bits: 4096
