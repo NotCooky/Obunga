@@ -51,6 +51,7 @@ public class PlayerMove : MonoBehaviour
 
     //crouch
     Vector3 crouchScale = new Vector3(1, 0.5f, 1);
+    Vector3 standingScale = new Vector3(1, 1, 1);
     public Transform playerScale;
     bool isCrouching;
 
@@ -111,12 +112,12 @@ public class PlayerMove : MonoBehaviour
             Jump();
         }
 
-        if(Input.GetKeyDown(KeyCode.LeftControl))
+        if(Input.GetKeyUp(KeyCode.LeftControl))
         {
             Crouch();
         }
 
-        if(Input.GetKeyUp(KeyCode.LeftControl))
+        if(Input.GetKeyDown(KeyCode.LeftControl))
         {
             Uncrouch();
         }
@@ -179,16 +180,16 @@ public class PlayerMove : MonoBehaviour
 
     void Crouch()
     {
-        playerScale.localScale = new Vector3(1, 0.5f, 1);
-        transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+       // playerScale.localScale = crouchScale;
+        playerScale.localScale = Vector3.MoveTowards(standingScale, crouchScale, Time.deltaTime * 7);
         isCrouching = true;
         
     }
 
     void Uncrouch()
     {
-        playerScale.localScale = new Vector3(1, 1, 1);
-        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        //playerScale.localScale = standingScale;
+        playerScale.localScale = Vector3.MoveTowards(crouchScale, standingScale, Time.deltaTime * 7);
         isCrouching = false;
     }
 
