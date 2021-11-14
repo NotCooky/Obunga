@@ -57,6 +57,8 @@ public class PlayerMove : MonoBehaviour
     float crouchingHeight = 1f;
     bool isCrouching;
     float crouchSpeed = 3f;
+    bool aboveObstruction;
+    RaycastHit obstructionHit;
 
     [Header("Sliding")]
     float slideForce = 0.5f;
@@ -92,6 +94,7 @@ public class PlayerMove : MonoBehaviour
         return false;
     }
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -114,6 +117,8 @@ public class PlayerMove : MonoBehaviour
         PreviousFramePosition = transform.position;
 
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
+
+        aboveObstruction = Physics.Raycast(transform.position, Vector3.up, out obstructionHit, playerHeight * 2f);
         
         if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -127,7 +132,13 @@ public class PlayerMove : MonoBehaviour
         else
         {
             Uncrouch();
+        } 
+
+        if(aboveObstruction)
+        {
+            playerCol.height = crouchingHeight;
         }
+        
 
         if(Speed >= 10 && isGrounded && Input.GetKey(KeyCode.LeftControl))
         {
