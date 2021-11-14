@@ -8331,10 +8331,6 @@ MonoBehaviour:
   airMultiplier: 5
   crouchingMultiplier: 5
   playerCol: {fileID: 8429695000158083705}
-  HoverForce: 150
-  HoverHeight: 2
-  HoverSpringStrength: 50
-  HoverSpringDamper: 5
   whatIsWall:
     serializedVersion: 2
     m_Bits: 4096

@@ -6,16 +6,17 @@ using EZCameraShake;
 
 public class PlayerMove : MonoBehaviour
 {
-    //assignables
+    [Header("Assignables")]
     public Transform orientation;
     public Transform cam;
 
-    //movement
+    [Header("Movement")]
     float moveSpeed = 6f;
     float inAirSpeed = 3f;
     float horizontalMovement;
     float verticalMovement;
 
+    [Header("Speed display")]
     Vector3 PreviousFramePosition = Vector3.zero; // Or whatever your initial position is
     public float Speed = 0f;
 
@@ -30,39 +31,45 @@ public class PlayerMove : MonoBehaviour
     public float sensX;
     public float sensY;
     
-    //multipliers
+    [Header("Multipliers")]
     public float movementMultiplier = 10f;
     public float airMultiplier = 5f;
     public float crouchingMultiplier = 5f;
 
-    //sprinting
+    [Header("Sprinting")]
     float sprintingSpeed = 12f;
     float walkSpeed = 6f;
 
-    //jumping
+    [Header("Jumping")]
     float playerHeight = 2f;
     float jumpForce = 10f;
     bool isGrounded;
 
-    //Drag
+    [Header("Drag")]
     float groundDrag = 6f;
     float airDrag = 1f;
     float crouchDrag = 9f;
+    float slideDrag = 3f;
 
-    //crouch
+    [Header("Crouching")]
     public CapsuleCollider playerCol;
     float standingheight = 2f;
     float crouchingHeight = 1f;
     bool isCrouching;
     float crouchSpeed = 3f;
 
-    //slope stuff
+    [Header("Sliding")]
+    float slideForce = 0.5f;
+    bool isSliding;
+
+
+    [Header("Slope Stuff")]
     Vector3 moveDirection;
     Vector3 slopeMoveDirection;
     RaycastHit slopeHit;
     Rigidbody rb;
 
-    //Wallrunning
+    [Header("Wallrunning")]
     public LayerMask whatIsWall;
     public float wallrunForce, maxWallrunTime, maxWallSpeed;
     bool isWallRight, isWallLeft;
@@ -120,6 +127,15 @@ public class PlayerMove : MonoBehaviour
         else
         {
             Uncrouch();
+        }
+
+        if(Speed >= 10 && isGrounded && Input.GetKey(KeyCode.LeftControl))
+        {
+            StartSlide();
+        }
+        else
+        {
+            StopSlide();
         }
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
@@ -191,6 +207,19 @@ public class PlayerMove : MonoBehaviour
         isCrouching = false;
     }
 
+    void StartSlide()
+    {
+        playerCol.height = Mathf.Lerp(playerCol.height, crouchingHeight, Time.deltaTime * crouchSpeed);
+        rb.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
+        isSliding = true;
+    }
+
+    void StopSlide()
+    {
+        playerCol.height = Mathf.Lerp(playerCol.height, standingheight, Time.deltaTime * crouchSpeed);
+        isSliding = false;
+    }
+
     void ControlDrag()
     {
         if(isGrounded)
@@ -206,6 +235,11 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = crouchDrag;
         } 
+
+        if(isSliding)
+        {
+            rb.drag = slideDrag;
+        }
     }
 
     void ControlSpeed()
