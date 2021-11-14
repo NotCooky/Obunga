@@ -143,7 +143,7 @@ public class PlayerMove : MonoBehaviour
 
         if(aboveObstruction)
         {
-            playerCol.height = crouchingHeight;
+            playerCol.height = 1.5f;
         }
         
 
@@ -170,7 +170,7 @@ public class PlayerMove : MonoBehaviour
 
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, wallRunCameraTilt);
+        cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
         transform.rotation = Quaternion.Euler(0, yRotation, 0);
 
         //While Wallrunning
