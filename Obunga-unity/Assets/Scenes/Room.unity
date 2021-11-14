@@ -1918,7 +1918,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2cdf805194583274daf8da5224d09558, type: 2}
+  - {fileID: 2100000, guid: 536bf1a332be57449b65069ace3fa956, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3149,7 +3149,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1962186342}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -24.1, y: 6.1, z: 7.6}
+  m_LocalPosition: {x: -24.1, y: 6.72, z: 7.6}
   m_LocalScale: {x: 34.054573, y: 10.204103, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -8339,6 +8339,9 @@ MonoBehaviour:
   maxWallSpeed: 10
   maxWallRunCameraTilt: 15
   wallRunCameraTilt: 0
+  playerCamera: {fileID: 8429694999866335960}
+  camTilt: 10
+  camTiltTime: 1
 --- !u!1 &8429695000158083684
 GameObject:
   m_ObjectHideFlags: 0
