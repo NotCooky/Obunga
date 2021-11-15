@@ -8,7 +8,6 @@ public class PlayerMove : MonoBehaviour
 {
     [Header("Assignables")]
     public Transform orientation;
-    public Transform cam;
     public Animation playerLandAnimation;
     public ParticleSystem landParticles;
 
@@ -75,14 +74,13 @@ public class PlayerMove : MonoBehaviour
     Rigidbody rb;
 
     [Header("Wallrunning")]
-    public LayerMask whatIsWall;
     public float wallrunForce, maxWallrunTime, maxWallSpeed;
     bool isWallRight, isWallLeft;
     bool isWallRunning;
     public float maxWallRunCameraTilt, wallRunCameraTilt;
     
     [Header("Camera")]
-    public Camera playerCamera;
+    public Camera cam;
     public float camTilt;
     public float camTiltTime;
 
@@ -91,7 +89,6 @@ public class PlayerMove : MonoBehaviour
     float walkBobAmount = 0.1f;
     float defaultYPos = 0;
     float timer;
-
 
     public float tilt { get; private set; }
 
@@ -194,6 +191,7 @@ public class PlayerMove : MonoBehaviour
         verticalMovement = Input.GetAxisRaw("Vertical");
 
         moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
+        cam.transform.LookAt(cam.transform.position + rb.velocity);
     }
     
 
@@ -204,7 +202,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckAirTime()
     {
-        if(isGrounded)
+        if(isGrounded || OnSlope())
         {
             airTime = 0f;
         }
@@ -225,8 +223,9 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
-        if(airTime >= 5)
+        if(airTime >= 2.5f)
         {
+            Debug.Log("Land particles");
             landParticles.Play();
         }
     }
@@ -302,7 +301,7 @@ public class PlayerMove : MonoBehaviour
 
     void MovePlayer()
     {  
-        if (isGrounded)
+        if (isGrounded && !OnSlope())
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
         }  
@@ -374,8 +373,8 @@ public class PlayerMove : MonoBehaviour
 
     void CheckForWall() //make sure to call in void Update
     {
-        isWallRight = Physics.Raycast(transform.position, orientation.right, 0.65f, whatIsWall);
-        isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.65f, whatIsWall);
+        isWallRight = Physics.Raycast(transform.position, orientation.right, 0.65f);
+        isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.65f);
 
         //leave wall run
         if (!isWallLeft && !isWallRight) 
