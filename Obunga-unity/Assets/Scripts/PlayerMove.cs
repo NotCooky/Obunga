@@ -222,8 +222,12 @@ public class PlayerMove : MonoBehaviour
             {
                 Debug.Log("landed");
                 playerLandAnimation.Play();
-                landParticles.Play();
             }
+        }
+
+        if(airTime >= 5)
+        {
+            landParticles.Play();
         }
     }
 
