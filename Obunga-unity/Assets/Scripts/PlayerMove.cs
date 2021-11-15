@@ -9,6 +9,8 @@ public class PlayerMove : MonoBehaviour
     [Header("Assignables")]
     public Transform orientation;
     public Transform cam;
+    public Animation playerLandAnimation;
+    public ParticleSystem landParticles;
 
     [Header("Movement")]
     float moveSpeed = 6f;
@@ -39,17 +41,18 @@ public class PlayerMove : MonoBehaviour
     [Header("Sprinting")]
     float sprintingSpeed = 12f;
     float walkSpeed = 6f;
+    bool isSprinting;
 
-    [Header("Jumping")]
+    [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
     float jumpForce = 10f;
+    float airTime;
     bool isGrounded;
 
     [Header("Drag")]
     float groundDrag = 6f;
     float airDrag = 1f;
     float crouchDrag = 9f;
-    float slideDrag = 3f;
 
     [Header("Crouching")]
     public CapsuleCollider playerCol;
@@ -83,6 +86,13 @@ public class PlayerMove : MonoBehaviour
     public float camTilt;
     public float camTiltTime;
 
+    [Header("Headbobbing")]
+    float walkBobSpeed = 7f;
+    float walkBobAmount = 0.1f;
+    float defaultYPos = 0;
+    float timer;
+
+
     public float tilt { get; private set; }
 
     private bool OnSlope()
@@ -106,6 +116,7 @@ public class PlayerMove : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+        defaultYPos = cam.transform.localPosition.y;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -117,6 +128,9 @@ public class PlayerMove : MonoBehaviour
         ControlSpeed();
         CheckForWall();
         WallRunInput();
+        CheckLanding();
+        CheckAirTime();
+        HeadBob();
         Look();
 
         float movementPerFrame = Vector3.Distance (PreviousFramePosition, transform.position);
@@ -172,29 +186,6 @@ public class PlayerMove : MonoBehaviour
 
         cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
         transform.rotation = Quaternion.Euler(0, yRotation, 0);
-
-        //While Wallrunning
-        //Tilts camera in .5 second
-        /*if (Math.Abs(wallRunCameraTilt) < maxWallRunCameraTilt && isWallRunning && isWallRight)
-        {
-            wallRunCameraTilt += Time.deltaTime * maxWallRunCameraTilt * 5;
-        } 
-            
-       if (Math.Abs(wallRunCameraTilt) < maxWallRunCameraTilt && isWallRunning && isWallLeft)
-        {
-            wallRunCameraTilt -= Time.deltaTime * maxWallRunCameraTilt * 5;
-        }    
-
-        //Tilts camera back again
-        if (wallRunCameraTilt > 0 && !isWallRight && !isWallLeft)
-        {
-            wallRunCameraTilt -= Time.deltaTime * maxWallRunCameraTilt * 5;
-        }
-
-        if (wallRunCameraTilt < 0 && !isWallRight && !isWallLeft)
-        {
-            wallRunCameraTilt += Time.deltaTime * maxWallRunCameraTilt * 5;
-        } */
     }
 
     void MyInput()
@@ -209,6 +200,31 @@ public class PlayerMove : MonoBehaviour
     void Jump()
     {
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+    }
+
+    void CheckAirTime()
+    {
+        if(isGrounded)
+        {
+            airTime = 0f;
+        }
+        else
+        {
+            airTime += Time.deltaTime;
+        }
+    }
+
+    void CheckLanding()
+    {
+        if(airTime > 0)
+        {
+            if(isGrounded)
+            {
+                Debug.Log("landed");
+                playerLandAnimation.Play();
+                landParticles.Play();
+            }
+        }
     }
 
     void Crouch()
@@ -255,7 +271,7 @@ public class PlayerMove : MonoBehaviour
 
         if(isSliding)
         {
-            rb.drag = slideDrag;
+            rb.drag = crouchDrag;
         }
     }
 
@@ -264,10 +280,12 @@ public class PlayerMove : MonoBehaviour
         if(Input.GetKey(KeyCode.LeftShift))
         {
             moveSpeed = Mathf.Lerp(moveSpeed, sprintingSpeed, Time.deltaTime);
+            isSprinting = true;
         }
         else
         {
             moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, Time.deltaTime);
+            isSprinting = false;
         }
     }
 
@@ -295,13 +313,32 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-   private void WallRunInput() //make sure to call in void Update
+    void HeadBob()
+    {
+        if(!isGrounded)
+        {
+            return;
+        }
+
+        if(Mathf.Abs(moveDirection.x ) > 0.1f || Mathf.Abs(moveDirection.z) > 0.1f)
+        {
+            timer += Time.deltaTime * walkBobSpeed;
+            cam.transform.localPosition = new Vector3
+            (
+                cam.transform.localPosition.x,
+                defaultYPos + Mathf.Sin(timer) * walkBobAmount,
+                cam.transform.localPosition.z
+            );
+        }
+    }
+
+    void WallRunInput() //make sure to call in void Update
     {
         //Wallrun
         if (Input.GetKey(KeyCode.D) && isWallRight) StartWallrun();
         if (Input.GetKey(KeyCode.A) && isWallLeft) StartWallrun();
     }
-    private void StartWallrun()
+    void StartWallrun()
     {
         rb.useGravity = false;
         isWallRunning = true;
@@ -323,7 +360,8 @@ public class PlayerMove : MonoBehaviour
             }         
         }
     }
-    private void StopWallRun()
+
+    void StopWallRun()
     {
         isWallRunning = false;
         rb.useGravity = true;

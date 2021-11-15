@@ -251,7 +251,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh16782
+  m_Name: pb_Mesh16918
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -7994,6 +7994,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   orientation: {fileID: 28527409}
   cam: {fileID: 8429694999866335967}
+  playerLandAnimation: {fileID: 8429695000158083685}
   Speed: 0
   sensX: 200
   sensY: 200
@@ -8022,6 +8023,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8429695000158083707}
   - component: {fileID: 8429695000158083705}
+  - component: {fileID: 8429695000158083685}
   m_Layer: 0
   m_Name: playerBody
   m_TagString: Player
@@ -8029,6 +8031,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!111 &8429695000158083685
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8429695000158083684}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 369a3378701ffec4eb0c694d6a32da01, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 369a3378701ffec4eb0c694d6a32da01, type: 2}
+  m_WrapMode: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!136 &8429695000158083705
 CapsuleCollider:
   m_ObjectHideFlags: 0

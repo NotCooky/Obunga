@@ -7,8 +7,9 @@ public class weaponPickup : MonoBehaviour
     public Transform weaponHolder;
     public float grabDistance = 4f;
     GameObject currentWeapon;
-    //Transform currentWeapon;
     GameObject wp;
+
+    float pickupDuration = 0.5f;
 
 
     public float dropForwardForce;
@@ -35,10 +36,10 @@ public class weaponPickup : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 if (currentWeapon != null)
+                {
                     Drop();
-
-                Pickup();
-                
+                }           
+                StartCoroutine("Pickup");
             }
         }
 
@@ -67,17 +68,25 @@ public class weaponPickup : MonoBehaviour
         }
     }
 
-    void Pickup()
+    IEnumerator Pickup()
     {
         currentWeapon = wp;
-        currentWeapon.transform.position = weaponHolder.position;
-        currentWeapon.transform.localEulerAngles = new Vector3(0, 0, 0);
-        //currentWeapon.transform.position = Mathf.Lerp(currentWeapon.position, weaponHolder.position, Time.deltaTime);
-        //currentWeapon.transform.rotation = Mathf.Lerp(currentWeapon.rotation, weaponHolder.rotation, Time.deltaTime * lerpSpeed); 
+
+        float t = 0.0f;
+        while (t < pickupDuration)
+        {
+            t += Time.deltaTime;
+            float normalizedTime = t / pickupDuration;
+
+            currentWeapon.transform.position = Vector3.Lerp(currentWeapon.transform.position, weaponHolder.position, normalizedTime);
+            currentWeapon.transform.rotation = Quaternion.Slerp(currentWeapon.transform.rotation, weaponHolder.rotation, normalizedTime);
+            yield return null;
+        }
         currentWeapon.transform.parent = weaponHolder; 
         currentWeapon.GetComponent<Rigidbody>().isKinematic = true;
         currentWeapon.GetComponent<Collider>().isTrigger = true;
         currentWeapon.GetComponent<ProjectileGun>().enabled = true;
+        yield return new WaitForSeconds(2);
     }
 
     void Drop()
