@@ -44,7 +44,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
-    float jumpForce = 10f;
+    float jumpForce = 15f;
     float airTime;
     bool isGrounded;
 
@@ -78,6 +78,9 @@ public class PlayerMove : MonoBehaviour
     bool isWallRight, isWallLeft;
     bool isWallRunning;
     public float maxWallRunCameraTilt, wallRunCameraTilt;
+
+    [Header("Vaulting")]
+    bool isVaultable;
     
     [Header("Camera")]
     public Camera cam;
@@ -128,17 +131,23 @@ public class PlayerMove : MonoBehaviour
         CheckLanding();
         CheckAirTime();
         HeadBob();
+        //Vault();
         Look();
 
         float movementPerFrame = Vector3.Distance (PreviousFramePosition, transform.position);
         Speed = movementPerFrame / Time.deltaTime;
         PreviousFramePosition = transform.position;
 
+        //ground check
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
-
+        //above obstruction check
         aboveObstruction = Physics.Raycast(transform.position, Vector3.up, out obstructionHit, playerHeight * 2f);
-        
-        if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        //vaultable check
+        isVaultable = Physics.Raycast(transform.position, Vector3.forward, 0.65f);
+        Debug.DrawRay(transform.position, Vector3.forward, Color.red);
+        Debug.DrawRay(transform.position, Vector3.up * 2);
+
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             Jump();
         }
@@ -191,7 +200,7 @@ public class PlayerMove : MonoBehaviour
         verticalMovement = Input.GetAxisRaw("Vertical");
 
         moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
-        cam.transform.LookAt(cam.transform.position + rb.velocity);
+        // cam.transform.LookAt(cam.transform.position + rb.velocity);
     }
     
 
@@ -201,8 +210,8 @@ public class PlayerMove : MonoBehaviour
     }
 
     void CheckAirTime()
-    {
-        if(isGrounded || OnSlope())
+    { 
+        if(isGrounded || OnSlope() || isWallRunning)
         {
             airTime = 0f;
         }
@@ -225,10 +234,50 @@ public class PlayerMove : MonoBehaviour
 
         if(airTime >= 2.5f)
         {
-            Debug.Log("Land particles");
-            landParticles.Play();
+            if(isGrounded)
+            {
+                Debug.Log("Land particles");
+                landParticles.Play();
+            }
+            
         }
     }
+
+    /*void Vault()
+    {
+        if(isVaultable)
+        {
+            Vector3 maxVaultPos = transform.position + Vector3.up * 1.25f;
+            //players last known velocity
+            Vector3 playerMoveDir = moveDirection;
+            //position over the landing position
+            Vector3 hoverPos = maxVaultPos + playerMoveDir * 2;
+
+
+            //return if there is nothing to vault on to
+            if (Physics.Raycast(maxVaultPos, playerMoveDir, 2f))
+            {
+                return;
+            }
+
+            RaycastHit hit;
+
+            //raycast to find landing pos
+            if (Physics.Raycast(hoverPos, Vector3.down, out hit, 2.1f))
+            {
+                Vector3 landPos = hit.point + (Vector3.up * playerHeight * 0.5f);
+                transform.position = landPos;
+                rb.velocity = playerMoveDir * 0.4f;
+                
+            }
+            else
+            {
+                return;
+            }
+        }
+        
+
+    } */
 
     void Crouch()
     {
