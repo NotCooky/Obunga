@@ -243,11 +243,16 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    /*void Vault()
+    private bool IsWall(Vector3 v)
     {
-        if(isVaultable)
+        return Math.Abs(90f - Vector3.Angle(Vector3.up, v)) < 0.1f;
+    }
+    void OnCollisionEnter(Collision other)
+    {
+        Vector3 normal = other.contacts[0].normal;
+        if (IsWall(normal))
         {
-            Vector3 maxVaultPos = transform.position + Vector3.up * 1.25f;
+            Vector3 maxVaultPos = transform.position + Vector3.up;
             //players last known velocity
             Vector3 playerMoveDir = moveDirection;
             //position over the landing position
@@ -277,7 +282,7 @@ public class PlayerMove : MonoBehaviour
         }
         
 
-    } */
+    } 
 
     void Crouch()
     {
