@@ -47,6 +47,7 @@ public class PlayerMove : MonoBehaviour
     float jumpForce = 15f;
     float airTime;
     bool isGrounded;
+    bool isInAir;
 
     [Header("Drag")]
     float groundDrag = 6f;
@@ -58,7 +59,7 @@ public class PlayerMove : MonoBehaviour
     float standingheight = 2f;
     float crouchingHeight = 1f;
     bool isCrouching;
-    float crouchSpeed = 3f;
+    float crouchSpeed = 5f;
     bool aboveObstruction;
     RaycastHit obstructionHit;
 
@@ -134,6 +135,8 @@ public class PlayerMove : MonoBehaviour
         //Vault();
         Look();
 
+
+        //playervelocity calculator
         float movementPerFrame = Vector3.Distance (PreviousFramePosition, transform.position);
         Speed = movementPerFrame / Time.deltaTime;
         PreviousFramePosition = transform.position;
@@ -142,8 +145,8 @@ public class PlayerMove : MonoBehaviour
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
         //above obstruction check
         aboveObstruction = Physics.Raycast(transform.position, Vector3.up, out obstructionHit, playerHeight * 2f);
-        //vaultable check
-        isVaultable = Physics.Raycast(transform.position, Vector3.forward, 0.65f);
+
+
         Debug.DrawRay(transform.position, Vector3.forward, Color.red);
         Debug.DrawRay(transform.position, Vector3.up * 2);
 
@@ -164,6 +167,15 @@ public class PlayerMove : MonoBehaviour
         if(aboveObstruction)
         {
             playerCol.height = 1.5f;
+        }
+
+        if(isInAir && !isGrounded)
+        {
+            playerCol.center = new Vector3(0, 0.7f, 0);
+        }
+        else if(isGrounded)
+        {
+            playerCol.center = new Vector3(0, 0, 0);
         }
         
 
@@ -207,6 +219,7 @@ public class PlayerMove : MonoBehaviour
     void Jump()
     {
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        
     }
 
     void CheckAirTime()
@@ -218,6 +231,7 @@ public class PlayerMove : MonoBehaviour
         else
         {
             airTime += Time.deltaTime;
+            isInAir = true;
         }
     }
 
@@ -228,7 +242,8 @@ public class PlayerMove : MonoBehaviour
             if(isGrounded)
             {
                 Debug.Log("landed");
-                playerLandAnimation.Play();
+                playerCol.height = Mathf.Lerp(playerCol.height, standingheight, Time.deltaTime * crouchSpeed);
+               // playerLandAnimation.Play();
             }
         }
 
@@ -243,46 +258,6 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    private bool IsWall(Vector3 v)
-    {
-        return Math.Abs(90f - Vector3.Angle(Vector3.up, v)) < 0.1f;
-    }
-    void OnCollisionEnter(Collision other)
-    {
-        Vector3 normal = other.contacts[0].normal;
-        if (IsWall(normal))
-        {
-            Vector3 maxVaultPos = transform.position + Vector3.up;
-            //players last known velocity
-            Vector3 playerMoveDir = moveDirection;
-            //position over the landing position
-            Vector3 hoverPos = maxVaultPos + playerMoveDir * 2;
-
-
-            //return if there is nothing to vault on to
-            if (Physics.Raycast(maxVaultPos, playerMoveDir, 2f))
-            {
-                return;
-            }
-
-            RaycastHit hit;
-
-            //raycast to find landing pos
-            if (Physics.Raycast(hoverPos, Vector3.down, out hit, 2.1f))
-            {
-                Vector3 landPos = hit.point + (Vector3.up * playerHeight * 0.5f);
-                transform.position = landPos;
-                rb.velocity = playerMoveDir * 0.4f;
-                
-            }
-            else
-            {
-                return;
-            }
-        }
-        
-
-    } 
 
     void Crouch()
     {
@@ -389,7 +364,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    void WallRunInput() //make sure to call in void Update
+    void WallRunInput() 
     {
         //Wallrun
         if (Input.GetKey(KeyCode.D) && isWallRight) StartWallrun();
@@ -425,7 +400,7 @@ public class PlayerMove : MonoBehaviour
         tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
     }
 
-    void CheckForWall() //make sure to call in void Update
+    void CheckForWall() 
     {
         isWallRight = Physics.Raycast(transform.position, orientation.right, 0.65f);
         isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.65f);
