@@ -219,7 +219,6 @@ public class PlayerMove : MonoBehaviour
     void Jump()
     {
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-        
     }
 
     void CheckAirTime()
@@ -369,6 +368,21 @@ public class PlayerMove : MonoBehaviour
         //Wallrun
         if (Input.GetKey(KeyCode.D) && isWallRight) StartWallrun();
         if (Input.GetKey(KeyCode.A) && isWallLeft) StartWallrun();
+
+
+        if (isWallRunning)
+        {
+            if (isWallRight && Input.GetKey(KeyCode.A))
+            {
+                rb.AddForce(transform.up * jumpForce * 3); 
+                rb.AddForce(-orientation.right * jumpForce * 3.2f);
+            }
+            if (isWallLeft && Input.GetKey(KeyCode.D))
+            {
+                rb.AddForce(transform.up * jumpForce * 3);
+                rb.AddForce(orientation.right * jumpForce * 3.2f);
+            }
+        }
     }
     void StartWallrun()
     {
