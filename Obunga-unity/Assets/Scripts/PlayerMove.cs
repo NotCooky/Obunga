@@ -9,6 +9,7 @@ public class PlayerMove : MonoBehaviour
     public Transform orientation;
     public Animation playerLandAnimation;
     public ParticleSystem landParticles;
+    public ParticleSystem wooshLines;
 
     [Header("Movement")]
     float moveSpeed = 6f;
@@ -18,7 +19,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Speed display")]
     Vector3 PreviousFramePosition = Vector3.zero; // Or whatever your initial position is
-    public float Speed = 0f;
+    public float speed;
 
     //camera movement
     float mouseX;
@@ -44,7 +45,9 @@ public class PlayerMove : MonoBehaviour
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
     float jumpForce = 15f;
+    float groundDistance = 0.4f;
     float airTime;
+    public LayerMask groundMask;
     bool isGrounded;
     bool isInAir;
 
@@ -56,14 +59,14 @@ public class PlayerMove : MonoBehaviour
     [Header("Crouching")]
     public CapsuleCollider playerCol;
     float standingheight = 2f;
-    float crouchingHeight = 1f;
+    float crouchingHeight = 0.5f; // its actually 1 but i have to make it half of the height i want
     bool isCrouching;
-    float crouchSpeed = 5f;
+    float crouchSpeed = 9f;
     bool aboveObstruction;
     RaycastHit obstructionHit;
 
     [Header("Sliding")]
-    float slideForce = 0.5f;
+    float slideForce = 0.1f;
     bool isSliding;
 
 
@@ -131,23 +134,15 @@ public class PlayerMove : MonoBehaviour
         CheckLanding();
         CheckAirTime();
         HeadBob();
-        //Vault();
         Look();
 
 
-        //playervelocity calculator
-        float movementPerFrame = Vector3.Distance (PreviousFramePosition, transform.position);
-        Speed = movementPerFrame / Time.deltaTime;
-        PreviousFramePosition = transform.position;
-
         //ground check
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
+        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundDistance, groundMask);
         //above obstruction check
         aboveObstruction = Physics.Raycast(transform.position, Vector3.up, out obstructionHit, playerHeight * 2f);
 
-
-        Debug.DrawRay(transform.position, Vector3.forward, Color.red);
-        Debug.DrawRay(transform.position, Vector3.up * 2);
+        slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -165,7 +160,7 @@ public class PlayerMove : MonoBehaviour
 
         if(aboveObstruction)
         {
-            playerCol.height = 1.5f;
+            playerCol.height = 1f;
         }
 
         if(isInAir && !isGrounded)
@@ -178,7 +173,7 @@ public class PlayerMove : MonoBehaviour
         }
         
 
-        if(Speed >= 10 && isGrounded && Input.GetKey(KeyCode.LeftControl))
+        if(speed > 5 && isGrounded && Input.GetKey(KeyCode.LeftControl))
         {
             StartSlide();
         }
@@ -187,8 +182,27 @@ public class PlayerMove : MonoBehaviour
             StopSlide();
         }
 
-        slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
+        if(speed >= 10)
+        {
+            wooshLines.Play();
+        }
+        else
+        {
+            wooshLines.Stop();
+        }  
+    }
 
+    void FixedUpdate()
+    {
+
+        //player velocity calculator
+        float movementPerFrame = Vector3.Distance(PreviousFramePosition, transform.position);
+        speed = movementPerFrame / Time.deltaTime;
+        PreviousFramePosition = transform.position;
+
+        rb.AddForce(Vector3.down * Time.deltaTime * 40);
+
+        MovePlayer();
     }
 
     void Look()
@@ -241,7 +255,7 @@ public class PlayerMove : MonoBehaviour
             {
                 Debug.Log("landed");
                 playerCol.height = Mathf.Lerp(playerCol.height, standingheight, Time.deltaTime * crouchSpeed);
-               // playerLandAnimation.Play();
+                playerLandAnimation.Play();
             }
         }
 
@@ -319,27 +333,20 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-  
-    void FixedUpdate()
-    {
-        rb.AddForce(Vector3.down * Time.deltaTime * 40);
-        MovePlayer();
-    }
-
     void MovePlayer()
     {  
         if (isGrounded && !OnSlope())
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
         }  
-        else
-        {
-            rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
-        }  
-
-        if (isGrounded && OnSlope())
+        else if (isGrounded && OnSlope())
         {
             rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+        }  
+
+        if (!isGrounded)
+        {
+            rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
         }
     }
 
@@ -383,6 +390,7 @@ public class PlayerMove : MonoBehaviour
             }
         }
     }
+
     void StartWallrun()
     {
         rb.useGravity = false;
