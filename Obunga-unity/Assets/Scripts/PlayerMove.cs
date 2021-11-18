@@ -165,11 +165,11 @@ public class PlayerMove : MonoBehaviour
 
         if(isInAir && !isGrounded)
         {
-            playerCol.center = new Vector3(0, 0.7f, 0);
+            playerCol.height = Mathf.Lerp(playerCol.height, 0.4f, Time.deltaTime * crouchSpeed);
         }
         else if(isGrounded)
         {
-            playerCol.center = new Vector3(0, 0, 0);
+            playerCol.height = Mathf.Lerp(playerCol.height, 2f, Time.deltaTime * crouchSpeed);
         }
         
 
@@ -182,7 +182,7 @@ public class PlayerMove : MonoBehaviour
             StopSlide();
         }
 
-        if(speed >= 10)
+        if(speed > 9)
         {
             wooshLines.Play();
         }
