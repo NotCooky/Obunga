@@ -68,7 +68,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 0.171
+    m_Value: 0.1
     min: 0
     max: 1
 --- !u!114 &-170789057056890522
@@ -86,8 +86,8 @@ MonoBehaviour:
   active: 1
   m_AdvancedMode: 0
   intensity:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 0.3
     min: -1
     max: 1
   xMultiplier:
@@ -104,8 +104,8 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: {x: 0.5, y: 0.5}
   scale:
-    m_OverrideState: 0
-    m_Value: 1
+    m_OverrideState: 1
+    m_Value: 1.03
     min: 0.01
     max: 5
 --- !u!114 &11400000
@@ -147,7 +147,7 @@ MonoBehaviour:
     m_Value: 2
   intensity:
     m_OverrideState: 1
-    m_Value: 0.7
+    m_Value: 0.3
     min: 0
     max: 1
   clamp:
