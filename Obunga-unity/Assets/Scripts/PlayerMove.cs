@@ -287,7 +287,7 @@ public class PlayerMove : MonoBehaviour
     void StartSlide()
     {
         playerCol.height = Mathf.Lerp(playerCol.height, crouchingHeight, Time.deltaTime * crouchSpeed);
-        rb.AddForce(transform.forward * slideForce, ForceMode.VelocityChange);
+        rb.AddForce(orientation.forward * slideForce, ForceMode.VelocityChange);
         isSliding = true;
     }
 
@@ -312,11 +312,6 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = crouchDrag;
         } 
-
-        if(isSliding)
-        {
-            rb.drag = crouchDrag;
-        }
     }
 
     void ControlSpeed()
