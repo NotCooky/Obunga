@@ -59,7 +59,7 @@ public class PlayerMove : MonoBehaviour
     [Header("Crouching")]
     public CapsuleCollider playerCol;
     float standingheight = 2f;
-    float crouchingHeight = 0.5f; // its actually 1 but i have to make it half of the height i want
+    float crouchingHeight = 1f;
     bool isCrouching;
     float crouchSpeed = 9f;
     bool aboveObstruction;
@@ -128,7 +128,6 @@ public class PlayerMove : MonoBehaviour
     {
         MyInput();
         ControlDrag();
-        ControlSpeed();
         CheckForWall();
         WallRunInput();
         CheckLanding();
@@ -149,20 +148,6 @@ public class PlayerMove : MonoBehaviour
             Jump();
         }
 
-        if(Input.GetKey(KeyCode.LeftControl))
-        {
-            Crouch();
-        }
-        else
-        {
-            Uncrouch();
-        } 
-
-        if(aboveObstruction)
-        {
-            playerCol.height = 1f;
-        }
-
         if(isInAir && !isGrounded)
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 0.4f, Time.deltaTime * crouchSpeed);
@@ -181,28 +166,32 @@ public class PlayerMove : MonoBehaviour
         {
             StopSlide();
         }
-
-        if(speed > 9)
-        {
-            wooshLines.Play();
-        }
-        else
-        {
-            wooshLines.Stop();
-        }  
     }
 
     void FixedUpdate()
     {
+        ControlSpeed();
+        MovePlayer();
 
         //player velocity calculator
         float movementPerFrame = Vector3.Distance(PreviousFramePosition, transform.position);
         speed = movementPerFrame / Time.deltaTime;
         PreviousFramePosition = transform.position;
 
-        rb.AddForce(Vector3.down * Time.deltaTime * 40);
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            Crouch();
+        }
+        else
+        {
+            Uncrouch();
+        }
 
-        MovePlayer();
+        if (aboveObstruction)
+        {
+            playerCol.height = 1f;
+            airTime = 0f;
+        }
     }
 
     void Look()
@@ -274,6 +263,7 @@ public class PlayerMove : MonoBehaviour
     void Crouch()
     {
         playerCol.height = Mathf.Lerp(playerCol.height, crouchingHeight, Time.deltaTime * crouchSpeed);
+        playerCol.height = crouchingHeight;
         isCrouching = true;
         
     }
@@ -318,12 +308,12 @@ public class PlayerMove : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.LeftShift))
         {
-            moveSpeed = Mathf.Lerp(moveSpeed, sprintingSpeed, Time.deltaTime);
+            moveSpeed = Mathf.Lerp(moveSpeed, sprintingSpeed, Time.deltaTime * 2);
             isSprinting = true;
         }
         else
         {
-            moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, Time.deltaTime);
+            moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, Time.deltaTime * 2);
             isSprinting = false;
         }
     }
