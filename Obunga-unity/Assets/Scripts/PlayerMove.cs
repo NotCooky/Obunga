@@ -58,6 +58,9 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Crouching")]
     public CapsuleCollider playerCol;
+    public Transform playerScale;
+    Vector3 crouchScale = new Vector3(1, 0.5f, 1);
+    Vector3 standingScale = new Vector3(1, 1, 1);
     float standingheight = 2f;
     float crouchingHeight = 1f;
     bool isCrouching;
@@ -148,14 +151,24 @@ public class PlayerMove : MonoBehaviour
             Jump();
         }
 
-        if(isInAir && !isGrounded)
+        if (Input.GetKeyDown(KeyCode.LeftControl))
         {
-            playerCol.height = Mathf.Lerp(playerCol.height, 0.4f, Time.deltaTime * crouchSpeed);
+            Crouch();
+        }
+
+        if (Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            Uncrouch();
+        }
+
+        if (isInAir && !isGrounded)
+        {
+            playerCol.height = 0.4f;
         }
         else if(isGrounded)
         {
-            playerCol.height = Mathf.Lerp(playerCol.height, 2f, Time.deltaTime * crouchSpeed);
-        }
+            playerCol.height = 2f;
+        } 
         
 
         if(speed > 5 && isGrounded && Input.GetKey(KeyCode.LeftControl))
@@ -165,7 +178,7 @@ public class PlayerMove : MonoBehaviour
         else
         {
             StopSlide();
-        }
+        } 
     }
 
     void FixedUpdate()
@@ -178,20 +191,10 @@ public class PlayerMove : MonoBehaviour
         speed = movementPerFrame / Time.deltaTime;
         PreviousFramePosition = transform.position;
 
-        if (Input.GetKey(KeyCode.LeftControl))
-        {
-            Crouch();
-        }
-        else
-        {
-            Uncrouch();
-        }
-
         if (aboveObstruction)
         {
-            playerCol.height = 1f;
-            airTime = 0f;
-        }
+            playerScale.localScale = new Vector3(1, 0.5f, 1);
+        } 
     }
 
     void Look()
@@ -238,12 +241,11 @@ public class PlayerMove : MonoBehaviour
 
     void CheckLanding()
     {
-        if(airTime > 0)
+        if(airTime > 0.5f)
         {
             if(isGrounded)
             {
                 Debug.Log("landed");
-                playerCol.height = Mathf.Lerp(playerCol.height, standingheight, Time.deltaTime * crouchSpeed);
                 playerLandAnimation.Play();
             }
         }
@@ -262,15 +264,16 @@ public class PlayerMove : MonoBehaviour
 
     void Crouch()
     {
-        playerCol.height = Mathf.Lerp(playerCol.height, crouchingHeight, Time.deltaTime * crouchSpeed);
-        playerCol.height = crouchingHeight;
+        playerScale.localScale = new Vector3(1, 0.5f, 1);
+        transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
         isCrouching = true;
         
     }
 
     void Uncrouch()
     {
-        playerCol.height = Mathf.Lerp(playerCol.height, standingheight, Time.deltaTime * crouchSpeed);
+        playerScale.localScale = new Vector3(1, 1, 1);
+        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
         isCrouching = false;
     }
 
