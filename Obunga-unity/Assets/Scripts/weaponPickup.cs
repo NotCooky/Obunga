@@ -7,7 +7,6 @@ public class weaponPickup : MonoBehaviour
     public Transform weaponHolder;
     public float grabDistance = 4f;
     GameObject currentWeapon;
-    GameObject wp;
 
     float pickupDuration = 0.5f;
 
@@ -31,21 +30,9 @@ public class weaponPickup : MonoBehaviour
     {
         CheckWeapons();
 
-        if (isGrabbable)
+        if (isGrabbable && Input.GetKey(KeyCode.E))
         {
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                if (currentWeapon != null)
-                {
-                    Drop();
-                }           
-                StartCoroutine("Pickup");
-            }
-        }
-
-        if (currentWeapon != null && Input.GetKeyDown(KeyCode.Q))
-        {
-            Drop();
+            Pickup();
         }
     }
 
@@ -59,7 +46,7 @@ public class weaponPickup : MonoBehaviour
             {
                 Debug.Log("Grabbable");
                 isGrabbable = true;
-                wp = hit.transform.gameObject;
+                currentWeapon = hit.transform.gameObject;
             }
         }
         else
@@ -68,33 +55,14 @@ public class weaponPickup : MonoBehaviour
         }
     }
 
-    IEnumerator Pickup()
+    void Pickup()
     {
-        currentWeapon = wp;
 
-        float t = 0.0f;
-        while (t < pickupDuration)
-        {
-            t += Time.deltaTime;
-            float normalizedTime = t / pickupDuration;
-
-            currentWeapon.transform.position = Vector3.Lerp(currentWeapon.transform.position, weaponHolder.position, normalizedTime);
-            currentWeapon.transform.rotation = Quaternion.Slerp(currentWeapon.transform.rotation, weaponHolder.rotation, normalizedTime);
-            yield return null;
-        }
-        currentWeapon.transform.parent = weaponHolder; 
+        currentWeapon.transform.position = weaponHolder.position;
+        currentWeapon.transform.parent = weaponHolder;
+        currentWeapon.transform.rotation = weaponHolder.rotation;
         currentWeapon.GetComponent<Rigidbody>().isKinematic = true;
         currentWeapon.GetComponent<Collider>().isTrigger = true;
         currentWeapon.GetComponent<ProjectileGun>().enabled = true;
-        yield return new WaitForSeconds(2);
-    }
-
-    void Drop()
-    {
-        currentWeapon.transform.parent = null;
-        currentWeapon.GetComponent<Rigidbody>().isKinematic = false;
-        currentWeapon.GetComponent<Collider>().isTrigger = false;
-        currentWeapon.GetComponent<ProjectileGun>().enabled = false;
-        currentWeapon = null;
     }
 }
