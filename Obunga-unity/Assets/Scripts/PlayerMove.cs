@@ -244,6 +244,7 @@ public class PlayerMove : MonoBehaviour
         if (rb.velocity.magnitude > 0.5f)
         {
             rb.AddForce(orientation.transform.forward * slideForce);
+            wooshLines.Play();
         }
         
     }
@@ -253,19 +254,6 @@ public class PlayerMove : MonoBehaviour
         playerScale.localScale = new Vector3(1, 1, 1);
         transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
         isCrouching = false;
-    }
-
-    void StartSlide()
-    {
-        playerCol.height = Mathf.Lerp(playerCol.height, crouchingHeight, Time.deltaTime * crouchSpeed);
-        rb.AddForce(orientation.forward * slideForce, ForceMode.VelocityChange);
-        isSliding = true;
-    }
-
-    void StopSlide()
-    {
-        playerCol.height = Mathf.Lerp(playerCol.height, standingheight, Time.deltaTime * crouchSpeed);
-        isSliding = false;
     }
 
     void ControlDrag()
