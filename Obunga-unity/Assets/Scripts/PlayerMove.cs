@@ -218,16 +218,14 @@ public class PlayerMove : MonoBehaviour
         {
             if(isGrounded)
             {
-                Debug.Log("landed");
                 playerLandAnimation.Play();
             }
         }
 
-        if(airTime >= 2.5f)
+        if(rb.velocity.magnitude >= 5 && airTime >= 2f)
         {
             if(isGrounded)
             {
-                Debug.Log("Land particles");
                 landParticles.Play();
             }
             
