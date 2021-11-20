@@ -17,10 +17,6 @@ public class PlayerMove : MonoBehaviour
     float horizontalMovement;
     float verticalMovement;
 
-    [Header("Speed display")]
-    Vector3 PreviousFramePosition = Vector3.zero; // Or whatever your initial position is
-    public float speed;
-
     //camera movement
     float mouseX;
     float mouseY;
@@ -69,7 +65,7 @@ public class PlayerMove : MonoBehaviour
     RaycastHit obstructionHit;
 
     [Header("Sliding")]
-    float slideForce = 0.1f;
+    float slideForce = 500f;
     bool isSliding;
 
 
@@ -92,12 +88,6 @@ public class PlayerMove : MonoBehaviour
     public Camera cam;
     public float camTilt;
     public float camTiltTime;
-
-    [Header("Headbobbing")]
-    float walkBobSpeed = 7f;
-    float walkBobAmount = 0.1f;
-    float defaultYPos = 0;
-    float timer;
 
     public float tilt { get; private set; }
 
@@ -122,7 +112,6 @@ public class PlayerMove : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
-        defaultYPos = cam.transform.localPosition.y;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -135,7 +124,6 @@ public class PlayerMove : MonoBehaviour
         WallRunInput();
         CheckLanding();
         CheckAirTime();
-        HeadBob();
         Look();
 
 
@@ -146,7 +134,7 @@ public class PlayerMove : MonoBehaviour
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
         }
@@ -169,27 +157,12 @@ public class PlayerMove : MonoBehaviour
         {
             playerCol.height = 2f;
         } 
-        
-
-        if(speed > 5 && isGrounded && Input.GetKey(KeyCode.LeftControl))
-        {
-            StartSlide();
-        }
-        else
-        {
-            StopSlide();
-        } 
     }
 
     void FixedUpdate()
     {
         ControlSpeed();
         MovePlayer();
-
-        //player velocity calculator
-        float movementPerFrame = Vector3.Distance(PreviousFramePosition, transform.position);
-        speed = movementPerFrame / Time.deltaTime;
-        PreviousFramePosition = transform.position;
 
         if (aboveObstruction)
         {
@@ -228,7 +201,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckAirTime()
     { 
-        if(isGrounded || OnSlope() || isWallRunning)
+        if(isGrounded || OnSlope() || isWallRunning || isCrouching || isSliding || aboveObstruction)
         {
             airTime = 0f;
         }
@@ -267,6 +240,11 @@ public class PlayerMove : MonoBehaviour
         playerScale.localScale = new Vector3(1, 0.5f, 1);
         transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
         isCrouching = true;
+
+        if (rb.velocity.magnitude > 0.5f)
+        {
+            rb.AddForce(orientation.transform.forward * slideForce);
+        }
         
     }
 
@@ -335,25 +313,6 @@ public class PlayerMove : MonoBehaviour
         if (!isGrounded)
         {
             rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
-        }
-    }
-
-    void HeadBob()
-    {
-        if(!isGrounded)
-        {
-            return;
-        }
-
-        if(Mathf.Abs(moveDirection.x ) > 0.1f || Mathf.Abs(moveDirection.z) > 0.1f)
-        {
-            timer += Time.deltaTime * walkBobSpeed;
-            cam.transform.localPosition = new Vector3
-            (
-                cam.transform.localPosition.x,
-                defaultYPos + Mathf.Sin(timer) * walkBobAmount,
-                cam.transform.localPosition.z
-            );
         }
     }
 
