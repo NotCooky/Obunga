@@ -55,17 +55,13 @@ public class PlayerMove : MonoBehaviour
     [Header("Crouching")]
     public CapsuleCollider playerCol;
     public Transform playerScale;
-    Vector3 crouchScale = new Vector3(1, 0.5f, 1);
-    Vector3 standingScale = new Vector3(1, 1, 1);
-    float standingheight = 2f;
-    float crouchingHeight = 1f;
     bool isCrouching;
-    float crouchSpeed = 9f;
     bool aboveObstruction;
     RaycastHit obstructionHit;
 
-    [Header("Sliding")]
-    float slideForce = 500f;
+    [Header("Sliding & Diving")]
+    float slideForce = 20f;
+    float divesLeft = 1f;
     bool isSliding;
 
 
@@ -163,11 +159,6 @@ public class PlayerMove : MonoBehaviour
     {
         ControlSpeed();
         MovePlayer();
-
-        if (aboveObstruction)
-        {
-            playerScale.localScale = new Vector3(1, 0.5f, 1);
-        } 
     }
 
     void Look()
@@ -239,9 +230,9 @@ public class PlayerMove : MonoBehaviour
         transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
         isCrouching = true;
 
-        if (rb.velocity.magnitude > 0.5f)
+        if (rb.velocity.magnitude > 6f && isGrounded)
         {
-            rb.AddForce(orientation.transform.forward * slideForce);
+            rb.AddForce(orientation.transform.forward * slideForce, ForceMode.Impulse);
             wooshLines.Play();
         }
         
@@ -249,9 +240,14 @@ public class PlayerMove : MonoBehaviour
 
     void Uncrouch()
     {
-        playerScale.localScale = new Vector3(1, 1, 1);
-        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-        isCrouching = false;
+        if (aboveObstruction)
+        {
+            playerScale.localScale = new Vector3(1, 0.5f, 1);
+            return;
+        }
+            playerScale.localScale = new Vector3(1, 1, 1);
+            transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+            isCrouching = false; 
     }
 
     void ControlDrag()
