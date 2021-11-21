@@ -8,8 +8,8 @@ public class PlayerMove : MonoBehaviour
     [Header("Assignables")]
     public Transform orientation;
     public Animation playerLandAnimation;
-    public ParticleSystem landParticles;
     public ParticleSystem wooshLines;
+    public GameObject landParticles;
 
     [Header("Movement")]
     float moveSpeed = 6f;
@@ -17,7 +17,7 @@ public class PlayerMove : MonoBehaviour
     float horizontalMovement;
     float verticalMovement;
 
-    //camera movement
+    [Header("Cam movement")]
     float mouseX;
     float mouseY;
 
@@ -222,11 +222,11 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
-        if(rb.velocity.magnitude >= 5 && airTime >= 2f)
+        if(rb.velocity.magnitude >= 4 && airTime >= 0.5f)
         {
             if(isGrounded)
             {
-                landParticles.Play();
+                Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
             }
             
         }
@@ -313,12 +313,12 @@ public class PlayerMove : MonoBehaviour
         {
             if (isWallRight && Input.GetKey(KeyCode.A))
             {
-                rb.AddForce(transform.up * jumpForce * 3); 
+                rb.AddForce(transform.up * jumpForce * 1.5f); 
                 rb.AddForce(-orientation.right * jumpForce * 3.2f);
             }
             if (isWallLeft && Input.GetKey(KeyCode.D))
             {
-                rb.AddForce(transform.up * jumpForce * 3);
+                rb.AddForce(transform.up * jumpForce * 1.5f);
                 rb.AddForce(orientation.right * jumpForce * 3.2f);
             }
         }
