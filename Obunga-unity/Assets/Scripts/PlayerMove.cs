@@ -36,7 +36,6 @@ public class PlayerMove : MonoBehaviour
     [Header("Sprinting")]
     float sprintingSpeed = 12f;
     float walkSpeed = 6f;
-    bool isSprinting;
 
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
@@ -50,7 +49,6 @@ public class PlayerMove : MonoBehaviour
     [Header("Drag")]
     float groundDrag = 6f;
     float airDrag = 1f;
-    float crouchDrag = 9f;
 
     [Header("Crouching")]
     public CapsuleCollider playerCol;
@@ -61,7 +59,6 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Sliding & Diving")]
     float slideForce = 20f;
-    float divesLeft = 1f;
     bool isSliding;
 
 
@@ -107,7 +104,7 @@ public class PlayerMove : MonoBehaviour
     {
         Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
         yield return new WaitForSeconds(1);
-        DestroyImmediate(landParticles, true);
+        // DestroyImmediate(landParticles, true);
     }
 
 
@@ -164,11 +161,11 @@ public class PlayerMove : MonoBehaviour
 
         if (isInAir && !isGrounded)
         {
-            playerCol.height = 0.4f;
+            playerCol.height = Mathf.Lerp(playerCol.height, 0.5f, Time.deltaTime * 5);
         }
         else if(isGrounded)
         {
-            playerCol.height = Mathf.Lerp(playerCol.height, 2f, Time.deltaTime * 6);
+            playerCol.height = Mathf.Lerp(playerCol.height, 2f, Time.deltaTime * 5);
         } 
     }
 
@@ -277,12 +274,10 @@ public class PlayerMove : MonoBehaviour
         if(Input.GetKey(KeyCode.LeftShift))
         {
             moveSpeed = Mathf.Lerp(moveSpeed, sprintingSpeed, Time.deltaTime * 2);
-            isSprinting = true;
         }
         else
         {
-            moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, Time.deltaTime * 2);
-            isSprinting = false;
+            moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, Time.deltaTime * 2);         
         }
     }
 
