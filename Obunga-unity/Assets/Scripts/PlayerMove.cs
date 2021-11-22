@@ -103,6 +103,13 @@ public class PlayerMove : MonoBehaviour
         return false;
     }
 
+    IEnumerator LandParticles()
+    {
+        Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
+        yield return new WaitForSeconds(1);
+        DestroyImmediate(landParticles, true);
+    }
+
 
     void Start()
     {
@@ -121,14 +128,15 @@ public class PlayerMove : MonoBehaviour
         CheckLanding();
         CheckAirTime();
         Look();
-
-
-        //ground check
-        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundDistance, groundMask);
+    
         //above obstruction check
         aboveObstruction = Physics.Raycast(transform.position, Vector3.up, out obstructionHit, playerHeight * 2f);
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
+
+        
+        
+
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -145,13 +153,22 @@ public class PlayerMove : MonoBehaviour
             Uncrouch();
         }
 
+        if (isCrouching)
+        {
+            isGrounded = Physics.CheckSphere(transform.position, 1f, groundMask);
+        }
+        else
+        {
+            isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundDistance, groundMask);
+        }
+
         if (isInAir && !isGrounded)
         {
             playerCol.height = 0.4f;
         }
         else if(isGrounded)
         {
-            playerCol.height = 2f;
+            playerCol.height = Mathf.Lerp(playerCol.height, 2f, Time.deltaTime * 6);
         } 
     }
 
@@ -160,6 +177,7 @@ public class PlayerMove : MonoBehaviour
         ControlSpeed();
         MovePlayer();
     }
+
 
     void Look()
     {
@@ -205,19 +223,11 @@ public class PlayerMove : MonoBehaviour
 
     void CheckLanding()
     {
-        if(airTime > 0.5f)
-        {
-            if(isGrounded)
-            {
-                playerLandAnimation.Play();
-            }
-        }
-
         if(rb.velocity.magnitude >= 4 && airTime >= 0.5f)
         {
             if(isGrounded)
             {
-                Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
+                StartCoroutine("LandParticles");
             }
             
         }
@@ -260,11 +270,6 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = airDrag;
         }
-
-        if(isGrounded && isCrouching)
-        {
-            rb.drag = crouchDrag;
-        } 
     }
 
     void ControlSpeed()
