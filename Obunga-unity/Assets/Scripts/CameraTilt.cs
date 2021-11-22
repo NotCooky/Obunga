@@ -4,28 +4,27 @@ using UnityEngine;
 
 public class CameraTilt : MonoBehaviour
 {
-    public float tiltAmount = 15f;
+    Quaternion tilt = Quaternion.Euler(0, 0, 15);
+    Quaternion otherTilt = Quaternion.Euler(0, 0, -15);
  
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.A))
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, tiltAmount), Time.deltaTime);
+        { 
+            transform.rotation = Quaternion.Slerp(transform.rotation, tilt, Time.deltaTime);
         }
-        
-        if(Input.GetKeyUp(KeyCode.A))
+        else if(Input.GetKeyUp(KeyCode.A))
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, -tiltAmount), Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, otherTilt, Time.deltaTime);
         }
 
         if (Input.GetKeyDown(KeyCode.D))
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, -tiltAmount), Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, otherTilt, Time.deltaTime);
         }
-
-        if (Input.GetKeyUp(KeyCode.D))
+        else if (Input.GetKeyUp(KeyCode.D))
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, tiltAmount), Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, tilt, Time.deltaTime);
         }
     }
 }
