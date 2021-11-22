@@ -5,6 +5,8 @@ using System;
 
 public class PlayerMove : MonoBehaviour
 {
+    public float scrollSpeed;
+
     [Header("Assignables")]
     public Transform orientation;
     public Animation playerLandAnimation;
@@ -39,7 +41,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
-    float jumpForce = 15f;
+    float jumpForce = 10f;
     float groundDistance = 0.4f;
     float airTime;
     public LayerMask groundMask;
@@ -104,7 +106,6 @@ public class PlayerMove : MonoBehaviour
     {
         Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
         yield return new WaitForSeconds(1);
-        // DestroyImmediate(landParticles, true);
     }
 
 
@@ -125,7 +126,8 @@ public class PlayerMove : MonoBehaviour
         CheckLanding();
         CheckAirTime();
         Look();
-    
+        
+
         //above obstruction check
         aboveObstruction = Physics.Raycast(transform.position, Vector3.up, out obstructionHit, playerHeight * 2f);
 
@@ -173,7 +175,6 @@ public class PlayerMove : MonoBehaviour
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 0.5f, 0.3f);
         }
-        
     }
 
 
@@ -221,7 +222,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckLanding()
     {
-        if (rb.velocity.magnitude >= 4 && airTime >= 0.5f)
+        if (rb.velocity.magnitude >= 4 && airTime >= 2f)
         {
             if(isGrounded)
             {
