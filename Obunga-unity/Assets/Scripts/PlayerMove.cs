@@ -158,21 +158,22 @@ public class PlayerMove : MonoBehaviour
         {
             isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundDistance, groundMask);
         }
-
-        if (isInAir && !isGrounded)
-        {
-            playerCol.height = Mathf.Lerp(playerCol.height, 0.5f, Time.deltaTime * 5);
-        }
-        else if(isGrounded)
-        {
-            playerCol.height = Mathf.Lerp(playerCol.height, 2f, Time.deltaTime * 5);
-        } 
     }
 
     void FixedUpdate()
     {
         ControlSpeed();
         MovePlayer();
+
+        if (isGrounded)
+        {
+            playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.3f);
+        }
+        else if (!isGrounded)
+        {
+            playerCol.height = Mathf.Lerp(playerCol.height, 0.5f, 0.3f);
+        }
+        
     }
 
 
@@ -220,7 +221,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckLanding()
     {
-        if(rb.velocity.magnitude >= 4 && airTime >= 0.5f)
+        if (rb.velocity.magnitude >= 4 && airTime >= 0.5f)
         {
             if(isGrounded)
             {
