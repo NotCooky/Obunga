@@ -337,8 +337,6 @@ public class PlayerMove : MonoBehaviour
         rb.useGravity = false;
         isWallRunning = true;
 
-        if (rb.velocity.magnitude <= maxWallSpeed)
-        {
             rb.AddForce(orientation.forward * wallrunForce * Time.deltaTime);
 
             //Make sure char sticks to wall
@@ -352,7 +350,7 @@ public class PlayerMove : MonoBehaviour
                 rb.AddForce(-orientation.right * wallrunForce / 5 * Time.deltaTime);
                 tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
             }         
-        }
+        
     }
 
     void StopWallRun()
