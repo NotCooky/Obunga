@@ -10,7 +10,7 @@ public class Gun : MonoBehaviour
 
     public Camera playerCam;
     public ParticleSystem muzzleFlash;
-    //public GameObject impactEffect;
+    public GameObject impactEffect;
     public Animator gunAnimator;
 
     // Start is called before the first frame update
@@ -38,7 +38,8 @@ public class Gun : MonoBehaviour
 
         if (Physics.Raycast(playerCam.transform.position, playerCam.transform.forward, out hit, range))
         {
-            //Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+            GameObject bulletEffect = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+            Destroy(bulletEffect, 2f);
            if (hit.rigidbody != null)
            {
                 hit.rigidbody.AddForce(-hit.normal * impactForce);
