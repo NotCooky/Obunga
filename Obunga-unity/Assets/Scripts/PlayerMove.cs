@@ -15,7 +15,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Movement")]
     float moveSpeed = 6f;
-    float inAirSpeed = 3f;
+    float inAirSpeed = 6f;
     float horizontalMovement;
     float verticalMovement;
 
@@ -32,7 +32,7 @@ public class PlayerMove : MonoBehaviour
     
     [Header("Multipliers")]
     public float movementMultiplier = 10f;
-    public float airMultiplier = 5f;
+    public float airMultiplier = 20f;
     public float crouchingMultiplier = 5f;
 
     [Header("Sprinting")]
@@ -56,6 +56,8 @@ public class PlayerMove : MonoBehaviour
     public CapsuleCollider playerCol;
     public Transform playerScale;
     bool isCrouching;
+    bool canUncrouch;
+    bool canCrouch;
     bool aboveObstruction;
     RaycastHit obstructionHit;
 
@@ -158,6 +160,17 @@ public class PlayerMove : MonoBehaviour
         {
             isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f, groundMask);
         }
+
+        if(aboveObstruction)
+        {
+            canCrouch = false;
+            canUncrouch = false;
+        }
+        else
+        {
+            canCrouch = true;
+            canUncrouch = true;
+        }
     }
     void FixedUpdate()
     {
@@ -232,28 +245,28 @@ public class PlayerMove : MonoBehaviour
 
     void Crouch()
     {
-        playerScale.localScale = new Vector3(1, 0.5f, 1);
-        transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-        isCrouching = true;
-
-        if (rb.velocity.magnitude > 6f && isGrounded)
+       if(canCrouch)
         {
-            rb.AddForce(orientation.transform.forward * slideForce, ForceMode.Impulse);
-            wooshLines.Play();
+            playerScale.localScale = new Vector3(1, 0.5f, 1);
+            transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+            isCrouching = true;
+
+            if (rb.velocity.magnitude > 6f && isGrounded)
+            {
+                rb.AddForce(moveDirection * slideForce, ForceMode.Impulse);
+                wooshLines.Play();
+            }
         }
-        
     }
 
     void Uncrouch()
     {
-        if (aboveObstruction)
+       if(canUncrouch)
         {
-            playerScale.localScale = new Vector3(1, 0.5f, 1);
-            return;
-        }
             playerScale.localScale = new Vector3(1, 1, 1);
             transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-            isCrouching = false; 
+            isCrouching = false;
+        }  
     }
 
     void ControlDrag()
