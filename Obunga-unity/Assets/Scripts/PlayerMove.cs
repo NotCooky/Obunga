@@ -321,13 +321,13 @@ public class PlayerMove : MonoBehaviour
         {
             if (isWallRight && Input.GetKey(KeyCode.A))
             {
-                rb.AddForce(transform.up * jumpForce * 2f); 
-                rb.AddForce(-orientation.right * jumpForce * 5f);
+                rb.AddForce(transform.up * jumpForce * 3f); 
+                rb.AddForce(-orientation.right * jumpForce * 10f);
             }
             if (isWallLeft && Input.GetKey(KeyCode.D))
             {
-                rb.AddForce(transform.up * jumpForce * 2f);
-                rb.AddForce(orientation.right * jumpForce * 5f);
+                rb.AddForce(transform.up * jumpForce * 3f);
+                rb.AddForce(orientation.right * jumpForce * 10f);
             }
         }
     }
