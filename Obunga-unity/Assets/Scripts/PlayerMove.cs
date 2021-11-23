@@ -104,8 +104,9 @@ public class PlayerMove : MonoBehaviour
 
     IEnumerator LandParticles()
     {
-        Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
+        GameObject Particles = Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
         yield return new WaitForSeconds(1);
+        Destroy(Particles, 2f);
     }
 
 
@@ -307,13 +308,13 @@ public class PlayerMove : MonoBehaviour
         {
             if (isWallRight && Input.GetKey(KeyCode.A))
             {
-                rb.AddForce(transform.up * jumpForce * 1.5f); 
-                rb.AddForce(-orientation.right * jumpForce * 3.2f);
+                rb.AddForce(transform.up * jumpForce * 2f); 
+                rb.AddForce(-orientation.right * jumpForce * 5f);
             }
             if (isWallLeft && Input.GetKey(KeyCode.D))
             {
-                rb.AddForce(transform.up * jumpForce * 1.5f);
-                rb.AddForce(orientation.right * jumpForce * 3.2f);
+                rb.AddForce(transform.up * jumpForce * 2f);
+                rb.AddForce(orientation.right * jumpForce * 5f);
             }
         }
     }

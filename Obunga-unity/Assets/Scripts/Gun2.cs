@@ -9,7 +9,7 @@ public class Gun2 : MonoBehaviour
 
     public Camera playerCam;
     public ParticleSystem muzzleFlash;
-    public GameObject impactEffect;
+    //public GameObject impactEffect;
     public Animator gunAnimator;
 
     // Start is called before the first frame update
@@ -21,7 +21,7 @@ public class Gun2 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetButtonDown("Fire1"))
+        if(Input.GetMouseButtonDown(0))
         {
             Shoot();
         }
@@ -37,7 +37,7 @@ public class Gun2 : MonoBehaviour
 
         if (Physics.Raycast(playerCam.transform.position, playerCam.transform.forward, out hit, range))
         {
-            Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+            //Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
         }
     }
 }
