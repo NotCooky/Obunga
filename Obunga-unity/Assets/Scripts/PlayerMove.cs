@@ -1,17 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 public class PlayerMove : MonoBehaviour
 {
-    public float scrollSpeed;
 
     [Header("Assignables")]
     public Transform orientation;
     public Animation playerLandAnimation;
     public ParticleSystem wooshLines;
     public GameObject landParticles;
+    public AudioSource FootstepSound;
 
     [Header("Movement")]
     float moveSpeed = 6f;
@@ -129,6 +128,7 @@ public class PlayerMove : MonoBehaviour
         CheckLanding();
         CheckAirTime();
         Look();
+        Footsteps();
         
 
         //above obstruction check
@@ -369,6 +369,16 @@ public class PlayerMove : MonoBehaviour
         if (!isWallLeft && !isWallRight) 
         {
             StopWallRun();
+        }
+    }
+
+    void Footsteps()
+    {
+        if(isGrounded && rb.velocity.magnitude > 2f && FootstepSound.isPlaying == false)
+        {
+            FootstepSound.volume = Random.Range(0.8f, 1f);
+            FootstepSound.pitch = Random.Range(0.8f, 1f);
+            FootstepSound.Play();
         }
     }
 }

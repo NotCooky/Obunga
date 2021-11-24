@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerGrab : MonoBehaviour
 {
     RaycastHit hit;
-    GameObject grabOBJ;
+    GameObject grabbedObj;
     public Transform grabPos;
 
 
@@ -14,15 +14,15 @@ public class PlayerGrab : MonoBehaviour
     {
        if (Input.GetMouseButtonDown(1) && Physics.Raycast(transform.position, transform.forward, out hit, 5) && hit.transform.GetComponent<Rigidbody>())
         {
-            grabOBJ = hit.transform.gameObject;
+            grabbedObj = hit.transform.gameObject;
         }
         else if(Input.GetMouseButtonUp(1))
         {
-            grabOBJ = null;
+            grabbedObj = null;
         }
-        if (grabOBJ)
+        if (grabbedObj)
         {
-            grabOBJ.GetComponent<Rigidbody>().velocity = 5 * (grabPos.position - grabOBJ.transform.position);
+            grabbedObj.GetComponent<Rigidbody>().velocity = 5 * (grabPos.position - grabbedObj.transform.position);
         }
     }
 
