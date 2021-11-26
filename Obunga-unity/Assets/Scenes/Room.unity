@@ -21585,7 +21585,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8429694999909730472}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -56.8, y: 3.3, z: 0}
+  m_LocalPosition: {x: -57.16, y: 2.69, z: 12.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8429695000158083707}
@@ -21623,7 +21623,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: e142224956e5b69498d9bb5d756e5bef, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -21726,7 +21726,6 @@ MonoBehaviour:
   wooshLines: {fileID: 1585802440}
   landParticles: {fileID: 7162558221361380045, guid: 7d3123d6d2eca464db7ab495a1064816,
     type: 3}
-  FootstepSound: {fileID: 8429694999909730473}
   sensX: 200
   sensY: 200
   movementMultiplier: 10
@@ -21745,6 +21744,16 @@ MonoBehaviour:
   cam: {fileID: 8429694999866335960}
   camTilt: 10
   camTiltTime: 20
+  footstepAudioSource: {fileID: 8429694999909730473}
+  footstepClips:
+  - {fileID: 8300000, guid: 532975a5fe36c104b9c1a7a05254b03a, type: 3}
+  - {fileID: 8300000, guid: d328f689b420f9141aeb61c3baa6b74c, type: 3}
+  - {fileID: 8300000, guid: 03a05b80dee3b1844ae313ddddaaf3a5, type: 3}
+  - {fileID: 8300000, guid: 3f64283b6ece8c8428fd736701f503fb, type: 3}
+  - {fileID: 8300000, guid: d9428742e4587184598676326215fdf6, type: 3}
+  - {fileID: 8300000, guid: f52805d3419c4ba4a94b5f8dde91e53e, type: 3}
+  - {fileID: 8300000, guid: fa390dc93ceae86408c70cfd101db51b, type: 3}
+  - {fileID: 8300000, guid: 31b484dae68c7d24a956a01fc86d5166, type: 3}
 --- !u!1 &8429695000158083684
 GameObject:
   m_ObjectHideFlags: 0
