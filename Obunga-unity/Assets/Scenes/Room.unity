@@ -21625,7 +21625,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.7
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -21722,8 +21722,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orientation: {fileID: 28527409}
-  playerLandAnimation: {fileID: 0}
-  wooshLines: {fileID: 1585802440}
   landParticles: {fileID: 7162558221361380045, guid: 7d3123d6d2eca464db7ab495a1064816,
     type: 3}
   sensX: 200
@@ -21754,6 +21752,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f52805d3419c4ba4a94b5f8dde91e53e, type: 3}
   - {fileID: 8300000, guid: fa390dc93ceae86408c70cfd101db51b, type: 3}
   - {fileID: 8300000, guid: 31b484dae68c7d24a956a01fc86d5166, type: 3}
+  landingClips: []
 --- !u!1 &8429695000158083684
 GameObject:
   m_ObjectHideFlags: 0

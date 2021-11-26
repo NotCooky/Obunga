@@ -7,8 +7,6 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Assignables")]
     public Transform orientation;
-    public Animation playerLandAnimation;
-    public ParticleSystem wooshLines;
     public GameObject landParticles;
 
     [Header("Movement")]
@@ -246,7 +244,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckLanding()
     {
-        if (rb.velocity.magnitude >= 4 && airTime >= 2f)
+        if (rb.velocity.magnitude >= 1 && airTime >= 1f)
         {
             if(isGrounded)
             {
@@ -272,8 +270,7 @@ public class PlayerMove : MonoBehaviour
 
             if (rb.velocity.magnitude > 6f && isGrounded)
             {
-                rb.AddForce(moveDirection * slideForce, ForceMode.Impulse);
-                wooshLines.Play();
+                rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
             }
         }
     }
