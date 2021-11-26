@@ -12,7 +12,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject landParticles;
 
     [Header("Movement")]
-    float moveSpeed = 6f;
+    float moveSpeed = 10f;
     float inAirSpeed = 6f;
     float horizontalMovement;
     float verticalMovement;
@@ -29,14 +29,9 @@ public class PlayerMove : MonoBehaviour
     public float sensY;
     
     [Header("Multipliers")]
-    public float movementMultiplier = 10f;
+    public float movementMultiplier = 15f;
     public float airMultiplier = 20f;
-    public float crouchingMultiplier = 5f;
-
-    [Header("Sprinting")]
-    float sprintingSpeed = 12f;
-    float walkSpeed = 6f;
-    bool isSprinting;
+    public float crouchingMultiplier = 7.5f;
 
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
@@ -85,11 +80,11 @@ public class PlayerMove : MonoBehaviour
     [Header("Footsteps")]
     public AudioSource footstepAudioSource;
     public AudioClip[] footstepClips;
-    float baseStepSpeed = 0.5f;
+    public AudioClip[] landingClips;
+    float baseStepSpeed = 0.3f;
     float crouchStepMultiplier = 1.5f;
-    float sprintStepMultiplier = 0.6f;
     float footstepTimer = 0f;
-    float GetCurrentOffset => isCrouching ? baseStepSpeed * crouchStepMultiplier : isSprinting ? baseStepSpeed * sprintStepMultiplier : baseStepSpeed;
+    float GetCurrentOffset => isCrouching ? baseStepSpeed * crouchStepMultiplier : baseStepSpeed;
 
     public float tilt { get; private set; }
 
@@ -117,7 +112,6 @@ public class PlayerMove : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-
     void Update()
     {
         MyInput();
@@ -170,15 +164,9 @@ public class PlayerMove : MonoBehaviour
             canCrouch = true;
             canUncrouch = true;
         }
-
-        if (OnSlope() && isCrouching || OnSlope() && isSliding)
-        {
-            rb.AddForce(-transform.up * slideForce * 5);
-        }
     }
     void FixedUpdate()
     {
-        ControlSpeed();
         MovePlayer();
 
         if (isGrounded)
@@ -190,7 +178,6 @@ public class PlayerMove : MonoBehaviour
             playerCol.height = Mathf.Lerp(playerCol.height, 0.5f, 0.3f);
         }
     }
-
 
     void Look()
     {
@@ -214,11 +201,34 @@ public class PlayerMove : MonoBehaviour
         moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
         // cam.transform.LookAt(cam.transform.position + rb.velocity);
     }
-    
 
-    void Jump()
+    void MovePlayer()
+    {  
+        if (isGrounded && !OnSlope())
+        {
+            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+        }  
+        else if (isGrounded && OnSlope())
+        {
+            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+        }  
+
+        if (!isGrounded)
+        {
+            rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
+        }
+    }
+
+    void ControlDrag()
     {
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        if(isGrounded)
+        {
+            rb.drag = groundDrag;
+        }
+        else
+        {
+            rb.drag = airDrag;
+        }
     }
 
     void CheckAirTime()
@@ -247,6 +257,10 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    void Jump()
+    {
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+    }
 
     void Crouch()
     {
@@ -272,49 +286,6 @@ public class PlayerMove : MonoBehaviour
             transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
             isCrouching = false;
         }  
-    }
-
-    void ControlDrag()
-    {
-        if(isGrounded)
-        {
-            rb.drag = groundDrag;
-        }
-        else
-        {
-            rb.drag = airDrag;
-        }
-    }
-
-    void ControlSpeed()
-    {
-        if(Input.GetKey(KeyCode.LeftShift))
-        {
-            moveSpeed = Mathf.Lerp(moveSpeed, sprintingSpeed, Time.deltaTime * 2);
-            isSprinting = true;
-        }
-        else
-        {
-            moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, Time.deltaTime * 2);
-            isSprinting = false;
-        }
-    }
-
-    void MovePlayer()
-    {  
-        if (isGrounded && !OnSlope())
-        {
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-        }  
-        else if (isGrounded && OnSlope())
-        {
-            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-        }  
-
-        if (!isGrounded)
-        {
-            rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
-        }
     }
 
     void WallRunInput() 
@@ -381,19 +352,13 @@ public class PlayerMove : MonoBehaviour
 
     void HandleFootsteps()
     {
-        if(!isGrounded)
-        {
-            return;
-        }
+        if (!isGrounded) return;
 
-        if(rb.velocity.magnitude <= 0)
-        {
-            return;
-        }
+        if(rb.velocity.magnitude <= 0) return;
 
         footstepTimer -= Time.deltaTime;
 
-        if(footstepTimer <= 0)
+        if(rb.velocity.magnitude >= 2 && footstepTimer <= 0 && isGrounded)
         {
             footstepAudioSource.PlayOneShot(footstepClips[Random.Range(0, footstepClips.Length - 1)]);
 
