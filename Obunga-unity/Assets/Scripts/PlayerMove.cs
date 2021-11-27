@@ -42,6 +42,7 @@ public class PlayerMove : MonoBehaviour
     [Header("Drag")]
     float groundDrag = 6f;
     float airDrag = 1f;
+    float crouchDrag = 9f;
 
     [Header("Crouching")]
     public CapsuleCollider playerCol;
@@ -53,7 +54,7 @@ public class PlayerMove : MonoBehaviour
     RaycastHit obstructionHit;
 
     [Header("Sliding & Diving")]
-    float slideForce = 20f;
+    float slideForce = 25f;
     bool isSliding;
 
 
@@ -126,6 +127,9 @@ public class PlayerMove : MonoBehaviour
         //slope stuff
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
+        //ground check
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f, groundMask);
+
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             Jump();
@@ -140,16 +144,7 @@ public class PlayerMove : MonoBehaviour
         {
             Uncrouch();
         }
-
-        if (isCrouching)
-        {
-            isGrounded = Physics.CheckSphere(transform.position, 1f, groundMask);
-        }
-        else
-        {
-            isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f, groundMask);
-        }
-
+       
         if(aboveObstruction)
         {
             canCrouch = false;
@@ -233,11 +228,18 @@ public class PlayerMove : MonoBehaviour
         if(isGrounded)
         {
             rb.drag = groundDrag;
+
+            if (isCrouching)
+            {
+                rb.drag = crouchDrag;
+            }
         }
         else
         {
             rb.drag = airDrag;
         }
+
+
     }
 
     void CheckAirTime()
@@ -293,7 +295,7 @@ public class PlayerMove : MonoBehaviour
        if(canUncrouch)
         {
             playerScale.localScale = new Vector3(1, 1, 1);
-            transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+            transform.position = new Vector3(transform.position.x, transform.position.y + 0.45f, transform.position.z);
             isCrouching = false;
         }  
     }
@@ -310,12 +312,12 @@ public class PlayerMove : MonoBehaviour
             if (isWallRight && Input.GetKey(KeyCode.A))
             {
                 rb.AddForce(transform.up * jumpForce * 3f); 
-                rb.AddForce(-orientation.right * jumpForce * 10f);
+                rb.AddForce(-orientation.right * jumpForce * 5f);
             }
             if (isWallLeft && Input.GetKey(KeyCode.D))
             {
                 rb.AddForce(transform.up * jumpForce * 3f);
-                rb.AddForce(orientation.right * jumpForce * 10f);
+                rb.AddForce(orientation.right * jumpForce * 5f);
             }
         }
     }
@@ -350,8 +352,8 @@ public class PlayerMove : MonoBehaviour
 
     void CheckForWall() 
     {
-        isWallRight = Physics.Raycast(transform.position, orientation.right, 0.65f);
-        isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.65f);
+        isWallRight = Physics.Raycast(transform.position, orientation.right, 0.7f);
+        isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.7f);
 
         //leave wall run
         if (!isWallLeft && !isWallRight) 

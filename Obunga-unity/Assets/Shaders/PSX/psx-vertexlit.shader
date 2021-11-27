@@ -5,7 +5,8 @@ Shader "psx/vertexlit" {
 		_MainTex("Base (RGB)", 2D) = "white" {}
 	}
 		SubShader{
-			Tags { "RenderType" = "Opaque" }
+			Tags { "RenderType" = "Opaque" 
+		"RenderPipeline" = "UniversalPipeline"}
 			LOD 200
 
 			Pass {

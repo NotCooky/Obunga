@@ -5436,6 +5436,9 @@ MonoBehaviour:
   muzzleFlash: {fileID: 4510493716790219850}
   impactEffect: {fileID: 0}
   gunAnimator: {fileID: 5054541894417967696}
+  PlayerLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!95 &5054541894417967696
 Animator:
   serializedVersion: 3

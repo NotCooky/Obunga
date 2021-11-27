@@ -13,10 +13,12 @@ public class Gun : MonoBehaviour
     public GameObject impactEffect;
     public Animator gunAnimator;
 
+    public LayerMask PlayerLayer;
+
     // Start is called before the first frame update
     void Start()
     {
-        gameObject.tag = "Player";
+     
     }
 
     // Update is called once per frame
@@ -36,7 +38,7 @@ public class Gun : MonoBehaviour
 
         RaycastHit hit;
 
-        if (Physics.Raycast(playerCam.transform.position + new Vector3(0, 0, 0.5f), playerCam.transform.forward, out hit, range))
+        if (Physics.Raycast(playerCam.transform.position, playerCam.transform.forward, out hit, range, ~PlayerLayer))
         {
             GameObject bulletEffect = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
             Destroy(bulletEffect, 2f);
