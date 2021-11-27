@@ -34,11 +34,10 @@ public class PlayerMove : MonoBehaviour
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
     float jumpForce = 10f;
-    float groundDistance = 0.4f;
     float airTime;
     public LayerMask groundMask;
     bool isGrounded;
-    bool isInAir;
+    bool canJump;
 
     [Header("Drag")]
     float groundDrag = 6f;
@@ -54,7 +53,7 @@ public class PlayerMove : MonoBehaviour
     RaycastHit obstructionHit;
 
     [Header("Sliding & Diving")]
-    float slideForce = 40f;
+    float slideForce = 20f;
     bool isSliding;
 
 
@@ -78,7 +77,6 @@ public class PlayerMove : MonoBehaviour
     [Header("Footsteps")]
     public AudioSource footstepAudioSource;
     public AudioClip[] footstepClips;
-    public AudioClip[] landingClips;
     float baseStepSpeed = 0.3f;
     float crouchStepMultiplier = 1.5f;
     float footstepTimer = 0f;
@@ -162,6 +160,19 @@ public class PlayerMove : MonoBehaviour
             canCrouch = true;
             canUncrouch = true;
         }
+
+        if(isWallRunning)
+        {
+            canCrouch = false;
+            canUncrouch = false;
+            canJump = false;
+        }
+        else
+        {
+            canCrouch = true;
+            canUncrouch = true;
+            canJump = true;
+        }
     }
     void FixedUpdate()
     {
@@ -238,7 +249,6 @@ public class PlayerMove : MonoBehaviour
         else
         {
             airTime += Time.deltaTime;
-            isInAir = true;
         }
     }
 
@@ -257,7 +267,10 @@ public class PlayerMove : MonoBehaviour
 
     void Jump()
     {
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        if(canJump)
+        {
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        }  
     }
 
     void Crouch()
@@ -358,6 +371,7 @@ public class PlayerMove : MonoBehaviour
         if(rb.velocity.magnitude >= 2 && footstepTimer <= 0 && isGrounded)
         {
             footstepAudioSource.PlayOneShot(footstepClips[Random.Range(0, footstepClips.Length - 1)]);
+            Debug.Log("played footsteps");
 
             footstepTimer = GetCurrentOffset;
         }

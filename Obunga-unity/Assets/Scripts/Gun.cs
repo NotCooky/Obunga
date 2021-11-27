@@ -6,7 +6,7 @@ public class Gun : MonoBehaviour
 {
     float damage = 10f;
     float range = 100f;
-    float impactForce = 3000f;
+    float impactForce = 500f;
 
     public Camera playerCam;
     public ParticleSystem muzzleFlash;
@@ -16,7 +16,7 @@ public class Gun : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameObject.tag = "Player";
     }
 
     // Update is called once per frame
@@ -36,7 +36,7 @@ public class Gun : MonoBehaviour
 
         RaycastHit hit;
 
-        if (Physics.Raycast(playerCam.transform.position, playerCam.transform.forward, out hit, range))
+        if (Physics.Raycast(playerCam.transform.position + new Vector3(0, 0, 0.5f), playerCam.transform.forward, out hit, range))
         {
             GameObject bulletEffect = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
             Destroy(bulletEffect, 2f);
