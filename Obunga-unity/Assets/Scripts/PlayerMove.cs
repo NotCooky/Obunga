@@ -229,6 +229,11 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = groundDrag;
 
+            if (isSliding)
+            {
+                rb.drag = groundDrag;
+            }
+
             if (isCrouching)
             {
                 rb.drag = crouchDrag;
@@ -282,10 +287,13 @@ public class PlayerMove : MonoBehaviour
             playerScale.localScale = new Vector3(1, 0.5f, 1);
             transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
             isCrouching = true;
+            isSliding = false;
 
             if (rb.velocity.magnitude > 6f && isGrounded)
             {
                 rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
+                isCrouching = false;
+                isSliding = true;
             }
         }
     }
