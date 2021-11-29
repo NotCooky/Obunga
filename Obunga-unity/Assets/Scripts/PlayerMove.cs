@@ -280,8 +280,8 @@ public class PlayerMove : MonoBehaviour
     {
         if(canCrouch)
         {
-                playerScale.localScale = new Vector3(1, 0.5f, 1);
-                transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+                playerScale.localScale = new Vector3(1, 0.45f, 1);
+                transform.position = new Vector3(transform.position.x, transform.position.y - 0.45f, transform.position.z);
                 isCrouching = true;
                 isSliding = false;
 
