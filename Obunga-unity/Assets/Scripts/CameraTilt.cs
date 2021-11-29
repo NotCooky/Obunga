@@ -4,27 +4,29 @@ using UnityEngine;
 
 public class CameraTilt : MonoBehaviour
 {
-    Quaternion tilt = Quaternion.Euler(0, 0, 15);
-    Quaternion otherTilt = Quaternion.Euler(0, 0, -15);
- 
+
+    public float leanAngle = 5f;
+
+    float curAngle;
+    float targetAngle;
+    float angle;
+
+    float maxRot = -45.0f;
+    float rate = 2.0f;
+
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.A))
-        { 
-            transform.rotation = Quaternion.Slerp(transform.rotation, tilt, Time.deltaTime);
-        }
-        else if(Input.GetKeyUp(KeyCode.A))
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, otherTilt, Time.deltaTime);
-        }
+        LeanCamera(Input.GetAxis("Horizontal"));
+    }
 
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, otherTilt, Time.deltaTime);
-        }
-        else if (Input.GetKeyUp(KeyCode.D))
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, tilt, Time.deltaTime);
-        }
+    public void LeanCamera(float axis)
+    {
+        curAngle = transform.localEulerAngles.z;
+        targetAngle = leanAngle - axis;
+
+        if (axis == 0.0f) targetAngle = 0.0f;
+
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(transform.localRotation.x, transform.localRotation.y, axis * maxRot), Time.deltaTime * rate);
+
     }
 }

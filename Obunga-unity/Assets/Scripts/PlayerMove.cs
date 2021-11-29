@@ -117,7 +117,8 @@ public class PlayerMove : MonoBehaviour
         WallRunInput();
         CheckLanding();
         CheckAirTime();
-        Look();
+        CameraTilting();
+        Look(); 
         HandleFootsteps();
         
 
@@ -129,6 +130,7 @@ public class PlayerMove : MonoBehaviour
 
         //ground check
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f, groundMask);
+
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -183,19 +185,6 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    void Look()
-    {
-        mouseX = Input.GetAxisRaw("Mouse X");
-        mouseY = Input.GetAxisRaw("Mouse Y");
-
-        yRotation += mouseX * sensX * multiplier;
-        xRotation -= mouseY * sensY * multiplier;
-
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-        cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
-        orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
-    }
 
     void MyInput()
     {
@@ -203,7 +192,6 @@ public class PlayerMove : MonoBehaviour
         verticalMovement = Input.GetAxisRaw("Vertical");
 
         moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
-        // cam.transform.LookAt(cam.transform.position + rb.velocity);
     }
 
     void MovePlayer()
@@ -305,14 +293,29 @@ public class PlayerMove : MonoBehaviour
             playerScale.localScale = new Vector3(1, 1, 1);
             transform.position = new Vector3(transform.position.x, transform.position.y + 0.45f, transform.position.z);
             isCrouching = false;
+            isSliding = false;
         }  
     }
+
+    void Look()
+    {
+        mouseX = Input.GetAxisRaw("Mouse X");
+        mouseY = Input.GetAxisRaw("Mouse Y");
+
+        yRotation += mouseX * sensX * multiplier;
+        xRotation -= mouseY * sensY * multiplier;
+
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+        cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
+        orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
+    } 
 
     void WallRunInput() 
     {
         //Wallrun
-        if (Input.GetKey(KeyCode.D) && isWallRight) StartWallrun();
-        if (Input.GetKey(KeyCode.A) && isWallLeft) StartWallrun();
+        if (Input.GetKey(KeyCode.D) && isWallRight && !isGrounded) StartWallrun();
+        if (Input.GetKey(KeyCode.A) && isWallLeft && !isGrounded) StartWallrun();
 
 
         if (isWallRunning)
@@ -337,16 +340,15 @@ public class PlayerMove : MonoBehaviour
 
             rb.AddForce(orientation.forward * wallrunForce * Time.deltaTime);
 
-            //Make sure char sticks to wall
+            
             if (isWallRight)
             {
                 rb.AddForce(orientation.right * wallrunForce / 5 * Time.deltaTime);
-                tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
+                
             } 
             else if (isWallLeft)
             {
                 rb.AddForce(-orientation.right * wallrunForce / 5 * Time.deltaTime);
-                tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
             }         
         
     }
@@ -355,7 +357,6 @@ public class PlayerMove : MonoBehaviour
     {
         isWallRunning = false;
         rb.useGravity = true;
-        tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
     }
 
     void CheckForWall() 
@@ -385,6 +386,18 @@ public class PlayerMove : MonoBehaviour
 
             footstepTimer = GetCurrentOffset;
         }
+    }
+
+    void CameraTilting()
+    {
+        //wallrun camera tilt
+        if (isWallRight && !isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
+        if(isWallLeft && !isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
+        if(!isWallRunning) tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+
+        //sliding
+        if (isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
+        else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
     }
 
 }
