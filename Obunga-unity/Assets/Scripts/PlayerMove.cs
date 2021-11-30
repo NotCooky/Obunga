@@ -57,6 +57,17 @@ public class PlayerMove : MonoBehaviour
     float slideForce = 25f;
     bool isSliding;
 
+    [Header("Step Handling")]
+    public Transform lowerRay;
+    public Transform upperRay;
+    public Transform downRay;
+    public float stepSpeed;
+    public float landPos;
+
+    public float HoverSpringStrength;
+    public float HoverSpringDamper;
+    public float HoverHeight;
+
 
     [Header("Slope Stuff")]
     Vector3 moveDirection;
@@ -115,6 +126,9 @@ public class PlayerMove : MonoBehaviour
     }
     void Update()
     {
+        Debug.DrawRay(lowerRay.position, Vector3.forward, Color.green);
+        Debug.DrawRay(upperRay.position, Vector3.forward, Color.red);
+        Debug.DrawRay(downRay.position, Vector3.down, Color.yellow);
         MyInput();
         ControlDrag();
         CheckForWall();
@@ -125,9 +139,10 @@ public class PlayerMove : MonoBehaviour
         Look(); 
         HandleFootsteps();
         
+        Debug.DrawRay(transform.position, Vector3.up, Color.green);
 
         //above obstruction check
-        aboveObstruction = Physics.Raycast(cam.transform.position, Vector3.up, out obstructionHit, playerHeight * 2f);
+        aboveObstruction = Physics.Raycast(transform.position, Vector3.up, out obstructionHit, playerHeight * 3f);
 
         //slope stuff
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
@@ -178,15 +193,7 @@ public class PlayerMove : MonoBehaviour
     void FixedUpdate()
     {
         MovePlayer();
-
-        if (isGrounded)
-        {
-            playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.3f);
-        }
-        else if (!isGrounded)
-        {
-            playerCol.height = Mathf.Lerp(playerCol.height, 0.5f, 0.3f);
-        }
+        HandleSteps();
     }
 
 
@@ -408,4 +415,42 @@ public class PlayerMove : MonoBehaviour
         tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
     }
 
+    void HandleSteps()
+    {
+        /* RaycastHit LowerHit;
+         RaycastHit UpperHit;
+         RaycastHit DownHit;
+
+         if (Physics.Raycast(lowerRay.position, Vector3.forward, out LowerHit, 0.1f))
+         {
+
+             if(!Physics.Raycast(upperRay.position, Vector3.forward, out UpperHit, 0.2f))
+             {
+                 if(Physics.Raycast(downRay.position, Vector3.down, out DownHit, 1f))
+                 {
+                     Vector3 landPos = DownHit.point + (Vector3.up * playerHeight);
+                     transform.position = landPos;
+                 }
+             }
+         } */
+
+        Ray ray = new Ray()
+        {
+            origin = transform.position,
+            direction = Vector3.down
+        };
+
+        LayerMask mask = ~LayerMask.GetMask("Player");
+        if (Physics.Raycast(ray, out RaycastHit hit, HoverHeight, mask))
+        {
+            isGrounded = true;
+
+            Debug.DrawLine(transform.position, hit.point, Color.yellow);
+            float relVel = Vector3.Dot(ray.direction, rb.velocity);
+
+            float x = hit.distance - HoverHeight;
+            float springForce = (x * HoverSpringStrength) - (relVel * HoverSpringDamper);
+            rb.AddForce(ray.direction * springForce);
+        }
+    }
 }
