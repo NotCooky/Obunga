@@ -279,7 +279,7 @@ public class PlayerMove : MonoBehaviour
     {
        if(canCrouch)
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+            HoverHeight = 0.5f;
             isCrouching = true;
             isSliding = false;
 
@@ -297,7 +297,7 @@ public class PlayerMove : MonoBehaviour
     {
        if(canUncrouch)
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+            HoverHeight = 1f;
             isCrouching = false;
             isSliding = false;
         }  
