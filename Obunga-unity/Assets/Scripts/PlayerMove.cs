@@ -73,11 +73,15 @@ public class PlayerMove : MonoBehaviour
     [Header("Camera")]
     public Camera cam;
     public float camTilt;
+    public float WallRunCamTiltTime;
     public float camTiltTime;
+
 
     [Header("Footsteps")]
     public AudioSource footstepAudioSource;
     public AudioClip[] footstepClips;
+    public AudioClip[] landingClips;
+    public AudioClip slideClip;
     float baseStepSpeed = 0.3f;
     float crouchStepMultiplier = 1.5f;
     float footstepTimer = 0f;
@@ -258,6 +262,11 @@ public class PlayerMove : MonoBehaviour
             }
             
         }
+
+        if (rb.velocity.magnitude >= 0.5f && airTime >= 0.25f)
+        {
+            if (isGrounded) footstepAudioSource.PlayOneShot(landingClips[Random.Range(0, landingClips.Length - 1)]);
+        }
     }
 
     void Jump()
@@ -280,6 +289,7 @@ public class PlayerMove : MonoBehaviour
             if (rb.velocity.magnitude > 6f && isGrounded)
             {
                 rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
+                footstepAudioSource.PlayOneShot(slideClip);
                 isCrouching = false;
                 isSliding = true;
             }
@@ -375,14 +385,15 @@ public class PlayerMove : MonoBehaviour
     {
         if (!isGrounded) return;
 
-        if(rb.velocity.magnitude <= 0) return;
+        if (rb.velocity.magnitude <= 0) return;
+
+        if (isSliding) return;
 
         footstepTimer -= Time.deltaTime;
 
-        if(rb.velocity.magnitude >= 2 && footstepTimer <= 0 && isGrounded)
+        if (rb.velocity.magnitude >= 6 && footstepTimer <= 0 && isGrounded)
         {
             footstepAudioSource.PlayOneShot(footstepClips[Random.Range(0, footstepClips.Length - 1)]);
-            Debug.Log("played footsteps");
 
             footstepTimer = GetCurrentOffset;
         }
@@ -391,13 +402,18 @@ public class PlayerMove : MonoBehaviour
     void CameraTilting()
     {
         //wallrun camera tilt
-        if (isWallRight && !isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
-        if(isWallLeft && !isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
-        if(!isWallRunning) tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+        if (isWallRight && !isGrounded) tilt = Mathf.Lerp(tilt, camTilt, WallRunCamTiltTime * Time.deltaTime);
+        if (isWallLeft && !isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, WallRunCamTiltTime * Time.deltaTime);
+        if (!isWallRunning) tilt = Mathf.Lerp(tilt, 0, WallRunCamTiltTime * Time.deltaTime);
 
         //sliding
-        if (isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
-        else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+        if (isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
+
+        if (Input.GetKey(KeyCode.A) && isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
+
+        if (Input.GetKey(KeyCode.D) && isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime / 2);
+
+        tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
     }
 
 }
