@@ -53,6 +53,7 @@ public class PlayerMove : MonoBehaviour
     bool aboveObstruction;
     RaycastHit obstructionHit;
 
+
     [Header("Sliding & Diving")]
     float slideForce = 25f;
     bool isSliding;
@@ -113,6 +114,9 @@ public class PlayerMove : MonoBehaviour
     }
     void Update()
     {
+
+
+
         MyInput();
         ControlDrag();
         CheckForWall();
@@ -185,7 +189,7 @@ public class PlayerMove : MonoBehaviour
         }
         else if (!isGrounded)
         {
-            playerCol.height = Mathf.Lerp(playerCol.height, 0.45f, 0.3f);
+            playerCol.height = Mathf.Lerp(playerCol.height, 0.5f, 0.3f);
         }
     }
 
@@ -280,8 +284,8 @@ public class PlayerMove : MonoBehaviour
     {
         if(canCrouch)
         {
-                playerScale.localScale = new Vector3(1, 0.45f, 1);
-                transform.position = new Vector3(transform.position.x, transform.position.y - 0.45f, transform.position.z);
+                playerScale.localScale = new Vector3(1, 0.5f, 1);
+                transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
                 isCrouching = true;
                 isSliding = false;
 
