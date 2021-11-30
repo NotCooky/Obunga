@@ -127,13 +127,13 @@ public class PlayerMove : MonoBehaviour
         
 
         //above obstruction check
-        aboveObstruction = Physics.Raycast(transform.position, Vector3.up, out obstructionHit, playerHeight * 2f);
+        aboveObstruction = Physics.Raycast(cam.transform.position, Vector3.up, out obstructionHit, playerHeight * 2f);
 
         //slope stuff
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
         //ground check
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f, groundMask);
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.15f, groundMask);
 
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
