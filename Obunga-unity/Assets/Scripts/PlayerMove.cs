@@ -33,7 +33,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
-    float jumpForce = 10f;
+    float jumpForce = 12.5f;
     float airTime;
     public LayerMask groundMask;
     bool isGrounded;
@@ -58,12 +58,6 @@ public class PlayerMove : MonoBehaviour
     bool isSliding;
 
     [Header("Step Handling")]
-    public Transform lowerRay;
-    public Transform upperRay;
-    public Transform downRay;
-    public float stepSpeed;
-    public float landPos;
-
     public float HoverSpringStrength;
     public float HoverSpringDamper;
     public float HoverHeight;
@@ -126,9 +120,6 @@ public class PlayerMove : MonoBehaviour
     }
     void Update()
     {
-        Debug.DrawRay(lowerRay.position, Vector3.forward, Color.green);
-        Debug.DrawRay(upperRay.position, Vector3.forward, Color.red);
-        Debug.DrawRay(downRay.position, Vector3.down, Color.yellow);
         MyInput();
         ControlDrag();
         CheckForWall();
@@ -288,7 +279,6 @@ public class PlayerMove : MonoBehaviour
     {
        if(canCrouch)
         {
-            playerScale.localScale = new Vector3(1, 0.5f, 1);
             transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
             isCrouching = true;
             isSliding = false;
@@ -307,8 +297,7 @@ public class PlayerMove : MonoBehaviour
     {
        if(canUncrouch)
         {
-            playerScale.localScale = new Vector3(1, 1, 1);
-            transform.position = new Vector3(transform.position.x, transform.position.y + 0.45f, transform.position.z);
+            transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
             isCrouching = false;
             isSliding = false;
         }  
@@ -417,23 +406,6 @@ public class PlayerMove : MonoBehaviour
 
     void HandleSteps()
     {
-        /* RaycastHit LowerHit;
-         RaycastHit UpperHit;
-         RaycastHit DownHit;
-
-         if (Physics.Raycast(lowerRay.position, Vector3.forward, out LowerHit, 0.1f))
-         {
-
-             if(!Physics.Raycast(upperRay.position, Vector3.forward, out UpperHit, 0.2f))
-             {
-                 if(Physics.Raycast(downRay.position, Vector3.down, out DownHit, 1f))
-                 {
-                     Vector3 landPos = DownHit.point + (Vector3.up * playerHeight);
-                     transform.position = landPos;
-                 }
-             }
-         } */
-
         Ray ray = new Ray()
         {
             origin = transform.position,
