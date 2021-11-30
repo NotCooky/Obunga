@@ -33,7 +33,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
-    float jumpForce = 12f;
+    float jumpForce = 10f;
     float airTime;
     public LayerMask groundMask;
     bool isGrounded;
@@ -66,21 +66,19 @@ public class PlayerMove : MonoBehaviour
     Rigidbody rb;
 
     [Header("Wallrunning")]
-    public float wallrunForce, maxWallSpeed;
+    public float wallrunForce, maxWallrunTime, maxWallSpeed;
     bool isWallRight, isWallLeft;
     bool isWallRunning;
+    public float maxWallRunCameraTilt, wallRunCameraTilt;
     
     [Header("Camera")]
     public Camera cam;
     public float camTilt;
-    public float WallRunCamTiltTime;
     public float camTiltTime;
 
     [Header("Footsteps")]
     public AudioSource footstepAudioSource;
     public AudioClip[] footstepClips;
-    public AudioClip[] landingClips;
-    public AudioClip slideClip;
     float baseStepSpeed = 0.3f;
     float crouchStepMultiplier = 1.5f;
     float footstepTimer = 0f;
@@ -137,20 +135,18 @@ public class PlayerMove : MonoBehaviour
         //ground check
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f, groundMask);
 
-        footstepAudioSource.pitch = Random.Range(0.8f, 1);
-
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             Jump();
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftControl) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             Crouch();
         }
 
-        if (Input.GetKeyUp(KeyCode.LeftControl) && isGrounded)
+        if (Input.GetKeyUp(KeyCode.LeftControl))
         {
             Uncrouch();
         }
@@ -257,7 +253,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckLanding()
     {
-        if (rb.velocity.magnitude >= 1 && airTime >= 0.65f)
+        if (rb.velocity.magnitude >= 1 && airTime >= 1f)
         {
             if(isGrounded)
             {
@@ -265,11 +261,7 @@ public class PlayerMove : MonoBehaviour
                 Destroy(Particles, 2f);
                 footstepTimer = GetCurrentOffset;
             }
-        }
-
-        if(rb.velocity.magnitude >= 0.5f && airTime >= 0.25f)
-        {
-            if(isGrounded) footstepAudioSource.PlayOneShot(landingClips[Random.Range(0, landingClips.Length - 1)]);
+            
         }
     }
 
@@ -283,31 +275,30 @@ public class PlayerMove : MonoBehaviour
 
     void Crouch()
     {
-        if(canCrouch)
+       if(canCrouch)
         {
-                playerScale.localScale = new Vector3(1, 0.5f, 1);
-                transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-                isCrouching = true;
-                isSliding = false;
+            playerScale.localScale = new Vector3(1, 0.5f, 1);
+            transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+            isCrouching = true;
+            isSliding = false;
 
-                if (rb.velocity.magnitude > 6f && isGrounded)
-                {
-                    rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
-                    footstepAudioSource.PlayOneShot(slideClip);
-                    isCrouching = false;
-                    isSliding = true;
-                } 
+            if (rb.velocity.magnitude > 6f && isGrounded)
+            {
+                rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
+                isCrouching = false;
+                isSliding = true;
+            }
         }
     }
 
     void Uncrouch()
     {
-        if (canUncrouch)
-        { 
-                playerScale.localScale = new Vector3(1, 1, 1);
-                transform.position = new Vector3(transform.position.x, transform.position.y + 0.45f, transform.position.z);
-                isCrouching = false;
-                isSliding = false; 
+       if(canUncrouch)
+        {
+            playerScale.localScale = new Vector3(1, 1, 1);
+            transform.position = new Vector3(transform.position.x, transform.position.y + 0.45f, transform.position.z);
+            isCrouching = false;
+            isSliding = false;
         }  
     }
 
@@ -334,44 +325,22 @@ public class PlayerMove : MonoBehaviour
 
         if (isWallRunning)
         {
-            canCrouch = false;
-            canUncrouch = false;
-            canJump = false;
-
             if (isWallRight && Input.GetKey(KeyCode.A))
             {
                 rb.AddForce(transform.up * jumpForce * 3f); 
-                rb.AddForce(-orientation.right * jumpForce * 3f);
+                rb.AddForce(-orientation.right * jumpForce * 5f);
             }
             if (isWallLeft && Input.GetKey(KeyCode.D))
             {
                 rb.AddForce(transform.up * jumpForce * 3f);
-                rb.AddForce(orientation.right * jumpForce * 3f);
+                rb.AddForce(orientation.right * jumpForce * 5f);
             }
-
-            if(isWallRight && Input.GetKey(KeyCode.Space))
-            {
-                rb.AddForce(transform.up * jumpForce);
-                rb.AddForce(-orientation.right * jumpForce * 2);
-                StopWallRun();
-            }
-
-            if (isWallLeft && Input.GetKey(KeyCode.Space))
-            {
-                rb.AddForce(transform.up * jumpForce);
-                rb.AddForce(orientation.right * jumpForce * 2);
-                StopWallRun();
-            }
-        }
-
-        if(isWallRunning && isGrounded)
-        {
-            StopWallRun();
         }
     }
 
     void StartWallrun()
     {
+        rb.useGravity = false;
         isWallRunning = true;
 
             rb.AddForce(orientation.forward * wallrunForce * Time.deltaTime);
@@ -379,12 +348,12 @@ public class PlayerMove : MonoBehaviour
             
             if (isWallRight)
             {
-                rb.AddForce(orientation.right * wallrunForce * Time.deltaTime);
+                rb.AddForce(orientation.right * wallrunForce / 5 * Time.deltaTime);
                 
             } 
             else if (isWallLeft)
             {
-                rb.AddForce(-orientation.right * wallrunForce * Time.deltaTime);
+                rb.AddForce(-orientation.right * wallrunForce / 5 * Time.deltaTime);
             }         
         
     }
@@ -392,6 +361,7 @@ public class PlayerMove : MonoBehaviour
     void StopWallRun()
     {
         isWallRunning = false;
+        rb.useGravity = true;
     }
 
     void CheckForWall() 
@@ -412,13 +382,12 @@ public class PlayerMove : MonoBehaviour
 
         if(rb.velocity.magnitude <= 0) return;
 
-        if (isSliding) return;
-
         footstepTimer -= Time.deltaTime;
 
-        if(rb.velocity.magnitude >= 6 && footstepTimer <= 0 && isGrounded)
+        if(rb.velocity.magnitude >= 2 && footstepTimer <= 0 && isGrounded)
         {
             footstepAudioSource.PlayOneShot(footstepClips[Random.Range(0, footstepClips.Length - 1)]);
+            Debug.Log("played footsteps");
 
             footstepTimer = GetCurrentOffset;
         }
@@ -427,18 +396,13 @@ public class PlayerMove : MonoBehaviour
     void CameraTilting()
     {
         //wallrun camera tilt
-        if (isWallRight && !isGrounded) tilt = Mathf.Lerp(tilt, camTilt, WallRunCamTiltTime * Time.deltaTime);
-        if(isWallLeft && !isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, WallRunCamTiltTime * Time.deltaTime);
-        if(!isWallRunning) tilt = Mathf.Lerp(tilt, 0, WallRunCamTiltTime * Time.deltaTime);
+        if (isWallRight && !isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
+        if(isWallLeft && !isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime);
+        if(!isWallRunning) tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
 
         //sliding
-        if (isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
-
-        if(Input.GetKey(KeyCode.A) && isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
-
-        if (Input.GetKey(KeyCode.D) && isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime / 2);
-
-        tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+        if (isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
+        else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
     }
 
 }
