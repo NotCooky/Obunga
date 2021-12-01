@@ -314,9 +314,10 @@ public class PlayerMove : MonoBehaviour
 
     void WallRunInput() 
     {
-        //Wallrun
-        if (Input.GetKey(KeyCode.D) && isWallRight && !isGrounded) StartWallrun();
-        if (Input.GetKey(KeyCode.A) && isWallLeft && !isGrounded) StartWallrun();
+
+
+        //slowly slide down
+        rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
 
 
         if (isWallRunning)
@@ -341,9 +342,6 @@ public class PlayerMove : MonoBehaviour
         rb.useGravity = false;
         isWallRunning = true;
 
-        //slowly slide down
-        rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
-
     }
 
     void StopWallRun()
@@ -356,6 +354,9 @@ public class PlayerMove : MonoBehaviour
     {
         isWallRight = Physics.Raycast(transform.position, orientation.right, 0.7f);
         isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.7f);
+
+        if (Input.GetKey(KeyCode.D) && isWallRight && !isGrounded) StartWallrun();
+        if (Input.GetKey(KeyCode.A) && isWallLeft && !isGrounded) StartWallrun();
 
         //leave wall run
         if (!isWallLeft && !isWallRight) 
