@@ -33,7 +33,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
-    float jumpForce = 10f;
+    float jumpForce = 12f;
     float airTime;
     public LayerMask groundMask;
     bool isGrounded;
