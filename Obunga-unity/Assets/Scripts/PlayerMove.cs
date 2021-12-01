@@ -33,7 +33,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
-    float jumpForce = 12.5f;
+    float jumpForce = 10f;
     float airTime;
     public LayerMask groundMask;
     bool isGrounded;
@@ -42,7 +42,7 @@ public class PlayerMove : MonoBehaviour
     [Header("Drag")]
     float groundDrag = 6f;
     float airDrag = 1f;
-    float crouchDrag = 9f;
+    float crouchDrag = 8f;
 
     [Header("Crouching")]
     public CapsuleCollider playerCol;
@@ -126,9 +126,8 @@ public class PlayerMove : MonoBehaviour
         WallRunInput();
         CheckLanding();
         CheckAirTime();
-        CameraTilting();
-        Look(); 
         HandleFootsteps();
+        Look(); 
         
         Debug.DrawRay(transform.position, Vector3.up, Color.green);
 
@@ -184,6 +183,7 @@ public class PlayerMove : MonoBehaviour
     void FixedUpdate()
     {
         MovePlayer();
+        CameraTilting();
         HandleSteps();
     }
 
@@ -219,12 +219,7 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = groundDrag;
 
-            if (isSliding)
-            {
-                rb.drag = groundDrag;
-            }
-
-            if (isCrouching)
+            if (isSliding || isCrouching)
             {
                 rb.drag = crouchDrag;
             }
@@ -279,7 +274,7 @@ public class PlayerMove : MonoBehaviour
     {
        if(canCrouch)
         {
-            HoverHeight = 0.5f;
+            HoverHeight = 0.25f;
             isCrouching = true;
             isSliding = false;
 
@@ -389,19 +384,20 @@ public class PlayerMove : MonoBehaviour
 
     void CameraTilting()
     {
-        //wallrun camera tilt
-        if (isWallRight && !isGrounded) tilt = Mathf.Lerp(tilt, camTilt, WallRunCamTiltTime * Time.deltaTime);
-        if (isWallLeft && !isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, WallRunCamTiltTime * Time.deltaTime);
-        if (!isWallRunning) tilt = Mathf.Lerp(tilt, 0, WallRunCamTiltTime * Time.deltaTime);
-
-        //sliding
-        if (isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
+        if(isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
 
         if (Input.GetKey(KeyCode.A) && isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
-
+        else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
         if (Input.GetKey(KeyCode.D) && isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime / 2);
+        else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
 
-        tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+        if (isWallRunning)
+        {
+            //wallrun camera tilt
+            if (isWallRight && !isGrounded) tilt = Mathf.Lerp(tilt, camTilt, WallRunCamTiltTime * Time.deltaTime);
+            if (isWallLeft && !isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, WallRunCamTiltTime * Time.deltaTime);
+        }
+        else return;
     }
 
     void HandleSteps()
