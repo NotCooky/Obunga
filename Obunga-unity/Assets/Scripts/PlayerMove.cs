@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-
     [Header("Assignables")]
     public Transform orientation;
     public GameObject landParticles;
@@ -18,7 +17,6 @@ public class PlayerMove : MonoBehaviour
     [Header("Cam movement")]
     float mouseX;
     float mouseY;
-
     float multiplier = 0.01f;
 
     float xRotation;
@@ -35,9 +33,8 @@ public class PlayerMove : MonoBehaviour
     float playerHeight = 2f;
     float jumpForce = 12f;
     float airTime;
-    public LayerMask groundMask;
     bool isGrounded;
-    bool canJump;
+    public LayerMask groundMask;
 
     [Header("Drag")]
     float groundDrag = 6f;
@@ -48,11 +45,6 @@ public class PlayerMove : MonoBehaviour
     public CapsuleCollider playerCol;
     public Transform playerScale;
     bool isCrouching;
-    bool canUncrouch;
-    bool canCrouch;
-    bool aboveObstruction;
-    RaycastHit obstructionHit;
-
 
     [Header("Sliding & Diving")]
     float slideForce = 25f;
@@ -62,7 +54,6 @@ public class PlayerMove : MonoBehaviour
     public float HoverSpringStrength;
     public float HoverSpringDamper;
     public float HoverHeight;
-
 
     [Header("Slope Stuff")]
     Vector3 moveDirection;
@@ -81,7 +72,6 @@ public class PlayerMove : MonoBehaviour
     public float camTilt;
     public float WallRunCamTiltTime;
     public float camTiltTime;
-
 
     [Header("Footsteps")]
     public AudioSource footstepAudioSource;
@@ -111,7 +101,6 @@ public class PlayerMove : MonoBehaviour
         return false;
     }
 
-
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -121,29 +110,19 @@ public class PlayerMove : MonoBehaviour
     }
     void Update()
     {
-
-
-
         MyInput();
         ControlDrag();
         CheckForWall();
-        WallRunInput();
         CheckLanding();
         CheckAirTime();
         HandleFootsteps();
         Look(); 
-        
-        Debug.DrawRay(transform.position, Vector3.up, Color.green);
-
-        //above obstruction check
-        aboveObstruction = Physics.Raycast(transform.position, Vector3.up, out obstructionHit, playerHeight * 3f);
 
         //slope stuff
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
         //ground check
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.15f, groundMask);
-
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -159,30 +138,6 @@ public class PlayerMove : MonoBehaviour
         {
             Uncrouch();
         }
-       
-        if(aboveObstruction)
-        {
-            canCrouch = false;
-            canUncrouch = false;
-        }
-        else
-        {
-            canCrouch = true;
-            canUncrouch = true;
-        }
-
-        if(isWallRunning)
-        {
-            canCrouch = false;
-            canUncrouch = false;
-            canJump = false;
-        }
-        else
-        {
-            canCrouch = true;
-            canUncrouch = true;
-            canJump = true;
-        }
     }
     void FixedUpdate()
     {
@@ -190,7 +145,6 @@ public class PlayerMove : MonoBehaviour
         CameraTilting();
         HandleSteps();
     }
-
 
     void MyInput()
     {
@@ -217,6 +171,28 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    void HandleSteps()
+    {
+        Ray ray = new Ray()
+        {
+            origin = transform.position,
+            direction = Vector3.down
+        };
+
+        LayerMask mask = ~LayerMask.GetMask("Player");
+        if (Physics.Raycast(ray, out RaycastHit hit, HoverHeight, mask))
+        {
+            isGrounded = true;
+
+            Debug.DrawLine(transform.position, hit.point, Color.yellow);
+            float relVel = Vector3.Dot(ray.direction, rb.velocity);
+
+            float x = hit.distance - HoverHeight;
+            float springForce = (x * HoverSpringStrength) - (relVel * HoverSpringDamper);
+            rb.AddForce(ray.direction * springForce);
+        }
+    }
+
     void ControlDrag()
     {
         if(isGrounded)
@@ -232,13 +208,11 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = airDrag;
         }
-
-
     }
 
     void CheckAirTime()
     { 
-        if(isGrounded || OnSlope() || isWallRunning || isCrouching || isSliding || aboveObstruction)
+        if(isGrounded || OnSlope() || isWallRunning || isCrouching || isSliding)
         {
             airTime = 0f;
         }
@@ -269,38 +243,29 @@ public class PlayerMove : MonoBehaviour
 
     void Jump()
     {
-        if(canJump)
-        {
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-        }  
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse); 
     }
 
     void Crouch()
-    {
-       if(canCrouch)
-        {
-            HoverHeight = 0.25f;
-            isCrouching = true;
-            isSliding = false;
+    { 
+       HoverHeight = 0f;
+       isCrouching = true;
+       isSliding = false;
 
-            if (rb.velocity.magnitude > 6f && isGrounded)
-            {
-                rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
-                footstepAudioSource.PlayOneShot(slideClip);
-                isCrouching = false;
-                isSliding = true;
-            }
-        }
+       if (rb.velocity.magnitude > 6f && isGrounded)
+       {
+            rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
+            footstepAudioSource.PlayOneShot(slideClip);
+            isCrouching = false;
+            isSliding = true;
+       }
     }
 
     void Uncrouch()
     {
-       if(canUncrouch)
-        {
-            HoverHeight = 1f;
-            isCrouching = false;
-            isSliding = false;
-        }  
+        HoverHeight = 1f;
+        isCrouching = false;
+        isSliding = false; 
     }
 
     void Look()
@@ -317,20 +282,32 @@ public class PlayerMove : MonoBehaviour
         orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
     } 
 
-    void WallRunInput() 
+    void CheckForWall() 
     {
+        isWallRight = Physics.Raycast(transform.position, orientation.right, 0.7f);
+        isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.7f);
 
+        if (Input.GetKey(KeyCode.D) && isWallRight && !isGrounded) Wallrun();
+        if (Input.GetKey(KeyCode.A) && isWallLeft && !isGrounded) Wallrun();
 
-        //slowly slide down
-        rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
-
-
-        if (isWallRunning)
+        if (!isWallLeft && !isWallRight) 
         {
+            StopWallRun();
+        }
+    }
+
+    void Wallrun()
+    {
+        rb.useGravity = false;
+        isWallRunning = true;
+
+            //slowly slide down
+            rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
+
             if (isWallRight && Input.GetKey(KeyCode.A))
             {
                 rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.y);
-                rb.AddForce(transform.up * jumpForce * 3f); 
+                rb.AddForce(transform.up * jumpForce * 3f);
                 rb.AddForce(-orientation.right * jumpForce * 2.5f);
             }
             if (isWallLeft && Input.GetKey(KeyCode.D))
@@ -339,35 +316,12 @@ public class PlayerMove : MonoBehaviour
                 rb.AddForce(transform.up * jumpForce * 3f, ForceMode.Force);
                 rb.AddForce(orientation.right * jumpForce * 2.5f, ForceMode.Force);
             }
-        }
-    }
-
-    void StartWallrun()
-    {
-        rb.useGravity = false;
-        isWallRunning = true;
-
     }
 
     void StopWallRun()
     {
         isWallRunning = false;
         rb.useGravity = true;
-    }
-
-    void CheckForWall() 
-    {
-        isWallRight = Physics.Raycast(transform.position, orientation.right, 0.7f);
-        isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.7f);
-
-        if (Input.GetKey(KeyCode.D) && isWallRight && !isGrounded) StartWallrun();
-        if (Input.GetKey(KeyCode.A) && isWallLeft && !isGrounded) StartWallrun();
-
-        //leave wall run
-        if (!isWallLeft && !isWallRight) 
-        {
-            StopWallRun();
-        }
     }
 
     void HandleFootsteps()
@@ -390,6 +344,8 @@ public class PlayerMove : MonoBehaviour
 
     void CameraTilting()
     {
+        //what am i doing i dont know which order is best god please kill me
+
         if(isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
 
         if (Input.GetKey(KeyCode.A) && isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
@@ -406,25 +362,4 @@ public class PlayerMove : MonoBehaviour
         else return;
     }
 
-    void HandleSteps()
-    {
-        Ray ray = new Ray()
-        {
-            origin = transform.position,
-            direction = Vector3.down
-        };
-
-        LayerMask mask = ~LayerMask.GetMask("Player");
-        if (Physics.Raycast(ray, out RaycastHit hit, HoverHeight, mask))
-        {
-            isGrounded = true;
-
-            Debug.DrawLine(transform.position, hit.point, Color.yellow);
-            float relVel = Vector3.Dot(ray.direction, rb.velocity);
-
-            float x = hit.distance - HoverHeight;
-            float springForce = (x * HoverSpringStrength) - (relVel * HoverSpringDamper);
-            rb.AddForce(ray.direction * springForce);
-        }
-    }
 }
