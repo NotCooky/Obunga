@@ -252,6 +252,8 @@ public class PlayerMove : MonoBehaviour
        isCrouching = true;
        isSliding = false;
 
+        rb.AddForce(Vector3.down * 2, ForceMode.Impulse);
+
        if (rb.velocity.magnitude > 6f && isGrounded)
        {
             rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);

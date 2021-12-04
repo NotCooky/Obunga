@@ -13,21 +13,19 @@ public class JerryAI : MonoBehaviour
     public float walkPointRange;
     bool walkPointSet;
     bool playerInSightRange;
-
     public AudioSource JerryAudio;
-
     public AudioClip[] SpottedPlayer;
 
 
     void Update()
     {
+
         playerInSightRange = Physics.CheckSphere(transform.position, sightRange, Player);
 
         if (playerInSightRange)
         {
             FollowPlayer();
         }
-
         else Patrol();
     }
 
@@ -35,7 +33,7 @@ public class JerryAI : MonoBehaviour
     {
         if (!walkPointSet) SearchForWalkPoint();
 
-        if (walkPointSet) agent.SetDestination(walkPoint); 
+        if (walkPointSet) agent.SetDestination(walkPoint);
 
         Vector3 distanceToWalkPoint = transform.position - walkPoint;
 

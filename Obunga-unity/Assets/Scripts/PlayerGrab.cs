@@ -1,31 +1,38 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerGrab : MonoBehaviour
 {
-    RaycastHit hit;
-    GameObject grabbedObj;
-    public Transform grabPos;
-
-
-    // Update is called once per frame
-    void Update()
+    public Transform camPos;
+    public V3PIDController piddy;
+    public Transform targetPos;
+    public Rigidbody grabbedObj;
+    public float ForceMultiplier;
+    private void Update()
     {
-       if (Input.GetMouseButtonDown(1) && Physics.Raycast(transform.position, transform.forward, out hit, 5) && hit.transform.GetComponent<Rigidbody>())
+        RaycastHit hit;
+
+        if (Physics.Raycast(camPos.transform.position, camPos.transform.forward, out hit, 3f))
         {
-            grabbedObj = hit.transform.gameObject;
+            if (hit.rigidbody && Input.GetMouseButtonDown(1))
+            {
+                grabbedObj = hit.rigidbody;
+            }
+            else if(Input.GetMouseButtonUp(1))
+            {
+                grabbedObj = null;
+            }
         }
-        else if(Input.GetMouseButtonUp(1))
+        else
         {
             grabbedObj = null;
         }
-        if (grabbedObj)
+
+        if (grabbedObj != null)
         {
-            grabbedObj.GetComponent<Rigidbody>().velocity = 5 * (grabPos.position - grabbedObj.transform.position);
+            Vector3 Error = targetPos.position - grabbedObj.transform.position;
+            grabbedObj.AddForce(piddy.GetOutput(Error) * ForceMultiplier);
         }
     }
-
-
-
 }
