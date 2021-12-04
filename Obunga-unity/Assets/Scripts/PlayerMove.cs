@@ -224,7 +224,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckLanding()
     {
-        if (rb.velocity.magnitude >= 1 && airTime >= 1f)
+        if (rb.velocity.magnitude >= 1 && airTime >= 0.5f)
         {
             if(isGrounded)
             {
