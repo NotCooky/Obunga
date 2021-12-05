@@ -122,7 +122,7 @@ public class PlayerMove : MonoBehaviour
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
         //ground check
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.15f, groundMask);
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.15f);
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
