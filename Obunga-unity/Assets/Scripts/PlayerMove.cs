@@ -310,13 +310,13 @@ public class PlayerMove : MonoBehaviour
             {
                 rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.y);
                 rb.AddForce(transform.up * jumpForce * 3f);
-                rb.AddForce(-orientation.right * jumpForce * 2.5f);
+                rb.AddForce(-orientation.right * jumpForce * 4f);
             }
             if (isWallLeft && Input.GetKey(KeyCode.D))
             {
                 rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.y);
                 rb.AddForce(transform.up * jumpForce * 3f, ForceMode.Force);
-                rb.AddForce(orientation.right * jumpForce * 2.5f, ForceMode.Force);
+                rb.AddForce(orientation.right * jumpForce * 4f, ForceMode.Force);
             }
     }
 
