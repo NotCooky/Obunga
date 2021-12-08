@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
-    float damage = 10f;
     float range = 100f;
     float impactForce = 500f;
 
