@@ -21,7 +21,7 @@ public class PlayerGrab : MonoBehaviour
     {
         RaycastHit hit;
 
-        if (Input.GetMouseButtonDown(1) && Physics.Raycast(camPos.transform.position, camPos.transform.forward, out hit, 3f) && hit.rigidbody != null)
+        if (Input.GetMouseButtonDown(1) && Physics.Raycast(camPos.transform.position, camPos.transform.forward, out hit, 3f) && hit.rigidbody)
         {
             grabbedObj = hit.rigidbody;
         }
@@ -31,21 +31,28 @@ public class PlayerGrab : MonoBehaviour
             lr.enabled = false;
         }
 
-        if (grabbedObj)
+        if(grabbedObj != null)
         {
-            Vector3 Error = targetPos.position - grabbedObj.transform.position;
-            grabbedObj.AddForce(piddy.GetOutput(Error) * ForceMultiplier);
-
             lr.enabled = true;
             lr.SetPosition(0, targetPos.position);
             lr.SetPosition(1, grabbedObj.position);
 
-            if(Input.GetMouseButtonDown(0))
+            if(Input.GetMouseButton(0))
             {
                 grabbedObj.AddForce(camPos.transform.forward * throwingForce, ForceMode.Impulse);
                 grabbedObj = null;
                 lr.enabled = false;
             }
+        }
+    }
+
+    void FixedUpdate()
+    {
+        //pid stuff
+        if (grabbedObj != null)
+        {
+            Vector3 Error = targetPos.position - grabbedObj.transform.position;
+            grabbedObj.AddForce(piddy.GetOutput(Error) * ForceMultiplier);
         }
     }
 }
