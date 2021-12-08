@@ -199,7 +199,7 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = groundDrag;
 
-            if (isSliding || isCrouching)
+            if (isCrouching)
             {
                 rb.drag = crouchDrag;
             }
@@ -250,7 +250,6 @@ public class PlayerMove : MonoBehaviour
     { 
        HoverHeight = 0f;
        isCrouching = true;
-       isSliding = false;
 
         rb.AddForce(Vector3.down * 2, ForceMode.Impulse);
 
@@ -258,7 +257,6 @@ public class PlayerMove : MonoBehaviour
        {
             rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
             footstepAudioSource.PlayOneShot(slideClip);
-            isCrouching = false;
             isSliding = true;
        }
     }
@@ -306,13 +304,13 @@ public class PlayerMove : MonoBehaviour
             //slowly slide down
             rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
 
-            if (isWallRight && Input.GetKey(KeyCode.A))
+            if (isWallRight && Input.GetKey(KeyCode.Space))
             {
                 rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.y);
                 rb.AddForce(transform.up * jumpForce * 3f);
                 rb.AddForce(-orientation.right * jumpForce * 4f);
             }
-            if (isWallLeft && Input.GetKey(KeyCode.D))
+            if (isWallLeft && Input.GetKey(KeyCode.Space))
             {
                 rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.y);
                 rb.AddForce(transform.up * jumpForce * 3f, ForceMode.Force);
@@ -346,7 +344,7 @@ public class PlayerMove : MonoBehaviour
 
     void CameraTilting()
     {
-        //what am i doing i dont know which order is best god please kill me
+        //this stinks like shit....
 
         if(isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
 
