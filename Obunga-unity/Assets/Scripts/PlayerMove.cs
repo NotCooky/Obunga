@@ -346,7 +346,7 @@ public class PlayerMove : MonoBehaviour
     {
         //this stinks like shit....
 
-        if(isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
+        if(isSliding) tilt = Mathf.Lerp(tilt, camTilt + 5, camTiltTime * Time.deltaTime / 2);
 
         if (Input.GetKey(KeyCode.A) && isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
         else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
