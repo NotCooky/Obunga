@@ -248,10 +248,10 @@ public class PlayerMove : MonoBehaviour
     void Crouch()
     { 
        isCrouching = true;
+       playerCol.height = 1f;
+       transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
 
-        rb.AddForce(Vector3.down * 2, ForceMode.Impulse);
-
-       if (rb.velocity.magnitude > 6f && isGrounded)
+        if (rb.velocity.magnitude > 6f && isGrounded)
        {
             rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
             footstepAudioSource.PlayOneShot(slideClip);
@@ -261,6 +261,8 @@ public class PlayerMove : MonoBehaviour
 
     void Uncrouch()
     {
+        playerCol.height = 2f;
+        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
         isCrouching = false;
         isSliding = false; 
     }
