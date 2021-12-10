@@ -99,7 +99,7 @@ public class PlayerMove : MonoBehaviour
             }
         }
         return false;
-    }
+    } 
 
     void Start()
     {
@@ -155,17 +155,19 @@ public class PlayerMove : MonoBehaviour
     }
 
     void MovePlayer()
-    {  
-        if (isGrounded && !OnSlope())
+    {
+        if (isGrounded)
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-        }  
-        else if (isGrounded && OnSlope())
-        {
-            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-        }  
-
-        if (!isGrounded)
+            if(OnSlope())
+            {
+                rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            }
+            else
+            { 
+                rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+            } 
+        }
+        else
         {
             rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
         }
@@ -212,7 +214,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckAirTime()
     { 
-        if(isGrounded || OnSlope() || isWallRunning || isCrouching || isSliding)
+        if(isGrounded  || OnSlope() || isWallRunning || isCrouching || isSliding)
         {
             airTime = 0f;
         }
