@@ -51,9 +51,8 @@ public class PlayerMove : MonoBehaviour
     bool isSliding;
 
     [Header("Step Handling")]
-    public float HoverSpringStrength;
-    public float HoverSpringDamper;
-    public float HoverHeight;
+    public GameObject RayLower;
+    public GameObject RayUpper;
 
     [Header("Slope Stuff")]
     Vector3 moveDirection;
@@ -175,23 +174,21 @@ public class PlayerMove : MonoBehaviour
 
     void HandleSteps()
     {
-        Ray ray = new Ray()
+        Debug.DrawRay(RayLower.transform.position, Vector3.forward, Color.green);
+        Debug.DrawRay(RayUpper.transform.position, Vector3.forward, Color.red);
+        Debug.DrawRay(RayUpper.transform.position + new Vector3(0, 0, 0.6f), Vector3.down, Color.blue);
+
+        RaycastHit hitLower;
+        RaycastHit hitUpper;
+        RaycastHit hitDown;
+        if (Physics.Raycast(RayLower.transform.position, Vector3.forward, out hitLower, 0.125f))
         {
-            origin = transform.position,
-            direction = Vector3.down
-        };
-
-        LayerMask mask = ~LayerMask.GetMask("Player");
-        if (Physics.Raycast(ray, out RaycastHit hit, HoverHeight, mask))
-        {
-            isGrounded = true;
-
-            Debug.DrawLine(transform.position, hit.point, Color.yellow);
-            float relVel = Vector3.Dot(ray.direction, rb.velocity);
-
-            float x = hit.distance - HoverHeight;
-            float springForce = (x * HoverSpringStrength) - (relVel * HoverSpringDamper);
-            rb.AddForce(ray.direction * springForce);
+            
+            if(!Physics.Raycast(RayUpper.transform.position, Vector3.forward, out hitUpper, 0.125f) && Physics.Raycast(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, out hitDown, 1.5f))
+            {
+                //rb.AddForce((Vector3.up + transform.forward).normalized * 100);
+                transform.position = hitDown.point;
+            }
         }
     }
 
@@ -250,7 +247,6 @@ public class PlayerMove : MonoBehaviour
 
     void Crouch()
     { 
-       HoverHeight = 0f;
        isCrouching = true;
 
         rb.AddForce(Vector3.down * 2, ForceMode.Impulse);
@@ -265,7 +261,6 @@ public class PlayerMove : MonoBehaviour
 
     void Uncrouch()
     {
-        HoverHeight = 1f;
         isCrouching = false;
         isSliding = false; 
     }
