@@ -25,13 +25,13 @@ public class PlayerMove : MonoBehaviour
     public float sensY;
     
     [Header("Multipliers")]
-    public float movementMultiplier = 15f;
-    public float airMultiplier = 20f;
+    public float movementMultiplier = 12.5f;
+    public float airMultiplier = 13f;
     public float crouchingMultiplier = 7.5f;
 
     [Header("Jumping & Land Detection")]
     float playerHeight = 2f;
-    float jumpForce = 12f;
+    float jumpForce = 10f;
     float airTime;
     bool isGrounded;
     public LayerMask groundMask;
@@ -50,9 +50,10 @@ public class PlayerMove : MonoBehaviour
     float slideForce = 25f;
     bool isSliding;
 
-    [Header("Step Handling")]
+    [Header("Vaulting")]
     public GameObject RayLower;
     public GameObject RayUpper;
+    public float vaultStrength;
 
     [Header("Slope Stuff")]
     Vector3 moveDirection;
@@ -63,6 +64,7 @@ public class PlayerMove : MonoBehaviour
     [Header("Wallrunning")]
     public float wallrunForce;
     public float wallRunGravity;
+    public float wallrunSpeed;
     bool isWallRight, isWallLeft;
     bool isWallRunning;
     
@@ -115,6 +117,7 @@ public class PlayerMove : MonoBehaviour
         CheckLanding();
         CheckAirTime();
         HandleFootsteps();
+        Vault();
         Look(); 
 
         //slope stuff
@@ -122,6 +125,15 @@ public class PlayerMove : MonoBehaviour
 
         //ground check
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.15f);
+
+        if(!isGrounded)
+        {
+            playerCol.height = 1f;
+        }
+        else if(isGrounded && !isCrouching)
+        {
+            playerCol.height = 2f;
+        }
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -142,7 +154,6 @@ public class PlayerMove : MonoBehaviour
     {
         MovePlayer();
         CameraTilting();
-        HandleSteps();
     }
 
     void MyInput()
@@ -172,22 +183,66 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    void HandleSteps()
+    void Jump()
     {
-        Debug.DrawRay(RayLower.transform.position, Vector3.forward, Color.green);
-        Debug.DrawRay(RayUpper.transform.position, Vector3.forward, Color.red);
-        Debug.DrawRay(RayUpper.transform.position + new Vector3(0, 0, 0.6f), Vector3.down, Color.blue);
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse); 
+    }
 
-        RaycastHit hitLower;
-        RaycastHit hitUpper;
-        RaycastHit hitDown;
-        if (Physics.Raycast(RayLower.transform.position, Vector3.forward, out hitLower, 0.125f))
+    void Crouch()
+    { 
+       isCrouching = true;
+       playerCol.height = 1f;
+       transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+
+        if (rb.velocity.magnitude > 6f && isGrounded)
+       {
+            rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
+            footstepAudioSource.PlayOneShot(slideClip);
+            isSliding = true;
+       }
+    }
+
+    void Uncrouch()
+    {
+        playerCol.height = 2f;
+        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        isCrouching = false;
+        isSliding = false; 
+    }
+
+    void Look()
+    {
+        mouseX = Input.GetAxisRaw("Mouse X");
+        mouseY = Input.GetAxisRaw("Mouse Y");
+
+        yRotation += mouseX * sensX * multiplier;
+        xRotation -= mouseY * sensY * multiplier;
+
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+        cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
+        orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
+    } 
+
+    void Vault()
+    {
+        Debug.DrawRay(RayLower.transform.position, cam.transform.forward, Color.green);
+        Debug.DrawRay(RayUpper.transform.position, cam.transform.forward, Color.red);
+        Debug.DrawRay(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, Color.blue);
+
+        if (!isGrounded && !isWallRunning)
         {
-            
-            if(!Physics.Raycast(RayUpper.transform.position, Vector3.forward, out hitUpper, 0.125f) && Physics.Raycast(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, out hitDown, 1.5f))
+            RaycastHit hitLower;
+            RaycastHit hitUpper;
+            RaycastHit hitDown; // to find the landing pos
+
+            if (Physics.Raycast(RayLower.transform.position, cam.transform.forward, out hitLower, 0.125f))
             {
-                //rb.AddForce((Vector3.up + transform.forward).normalized * 100);
-                transform.position = hitDown.point;
+
+                if (!Physics.Raycast(RayUpper.transform.position, cam.transform.forward, out hitUpper, 0.125f) && Physics.Raycast(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, out hitDown, 1.5f))
+                {
+                    transform.position = Vector3.Lerp(transform.position, hitDown.point, rb.velocity.magnitude * 0.25f);
+                }
             }
         }
     }
@@ -240,54 +295,13 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    void Jump()
-    {
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse); 
-    }
-
-    void Crouch()
-    { 
-       isCrouching = true;
-       playerCol.height = 1f;
-       transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-
-        if (rb.velocity.magnitude > 6f && isGrounded)
-       {
-            rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
-            footstepAudioSource.PlayOneShot(slideClip);
-            isSliding = true;
-       }
-    }
-
-    void Uncrouch()
-    {
-        playerCol.height = 2f;
-        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-        isCrouching = false;
-        isSliding = false; 
-    }
-
-    void Look()
-    {
-        mouseX = Input.GetAxisRaw("Mouse X");
-        mouseY = Input.GetAxisRaw("Mouse Y");
-
-        yRotation += mouseX * sensX * multiplier;
-        xRotation -= mouseY * sensY * multiplier;
-
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-        cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
-        orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
-    } 
-
     void CheckForWall() 
     {
         isWallRight = Physics.Raycast(transform.position, orientation.right, 0.7f);
         isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.7f);
 
-        if (Input.GetKey(KeyCode.D) && isWallRight && !isGrounded) Wallrun();
-        if (Input.GetKey(KeyCode.A) && isWallLeft && !isGrounded) Wallrun();
+        if (isWallRight && !isGrounded) Wallrun();
+        if (isWallLeft && !isGrounded) Wallrun();
 
         if (!isWallLeft && !isWallRight) 
         {
@@ -303,17 +317,14 @@ public class PlayerMove : MonoBehaviour
             //slowly slide down
             rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
 
-            if (isWallRight && Input.GetKey(KeyCode.Space))
+            if (isWallRight && Input.GetKeyDown(KeyCode.Space))
             {
-                rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.y);
-                rb.AddForce(transform.up * jumpForce * 3f);
-                rb.AddForce(-orientation.right * jumpForce * 4f);
+                rb.AddForce((transform.up + orientation.right) * jumpForce * 0.8f, ForceMode.Impulse);
             }
-            if (isWallLeft && Input.GetKey(KeyCode.Space))
+
+            if (isWallLeft && Input.GetKeyDown(KeyCode.Space))
             {
-                rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.y);
-                rb.AddForce(transform.up * jumpForce * 3f, ForceMode.Force);
-                rb.AddForce(orientation.right * jumpForce * 4f, ForceMode.Force);
+                rb.AddForce((transform.up + orientation.right) * jumpForce * 0.8f, ForceMode.Impulse);
             }
     }
 

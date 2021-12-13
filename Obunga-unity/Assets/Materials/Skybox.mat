@@ -45,23 +45,23 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AtmosphereThickness: 0.56
+    - _AtmosphereThickness: 0.51
     - _Brightness: 1
     - _DetailTex: 0
-    - _Exposure: 0.97
+    - _Exposure: 0.83
     - _InvFade: 1
     - _Outline: 0.01
     - _Rotation: 0
     - _SunDisk: 0
-    - _SunSize: 0.136
+    - _SunSize: 0.15
     - _SunSizeConvergence: 5
     - _TintColor: 0
     - _VertexColor: 0
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _GroundColor: {r: 1, g: 1, b: 1, a: 1}
+    - _GroundColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-    - _SkyTint: {r: 0, g: 0.78902483, b: 1, a: 1}
+    - _SkyTint: {r: 0.15294118, g: 0.28576538, b: 0.30980393, a: 1}
     - _Tint: {r: 0.54402506, g: 0.799371, b: 1, a: 0.5}
     - _TintColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
   m_BuildTextureStacks: []
