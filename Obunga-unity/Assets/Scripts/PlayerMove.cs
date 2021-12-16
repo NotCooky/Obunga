@@ -117,7 +117,7 @@ public class PlayerMove : MonoBehaviour
         CheckLanding();
         CheckAirTime();
         HandleFootsteps();
-        Vault();
+      //  Vault();
         Look(); 
 
         //slope stuff
@@ -224,31 +224,9 @@ public class PlayerMove : MonoBehaviour
         orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
     } 
 
-    void Vault()
-    {
-        Debug.DrawRay(RayLower.transform.position, cam.transform.forward, Color.green);
-        Debug.DrawRay(RayUpper.transform.position, cam.transform.forward, Color.red);
-        Debug.DrawRay(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, Color.blue);
-
-        if (!isGrounded && !isWallRunning)
-        {
-            RaycastHit hitLower;
-            RaycastHit hitUpper;
-            RaycastHit hitDown; // to find the landing pos
-
-            if (Physics.Raycast(RayLower.transform.position, cam.transform.forward, out hitLower, 0.125f))
-            {
-
-                if (!Physics.Raycast(RayUpper.transform.position, cam.transform.forward, out hitUpper, 0.125f) && Physics.Raycast(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, out hitDown, 1.5f))
-                {
-                    transform.position = Vector3.Lerp(transform.position, hitDown.point, rb.velocity.magnitude * 0.25f);
-                }
-            }
-        }
-    }
-
     void ControlDrag()
     {
+
         if(isGrounded)
         {
             rb.drag = groundDrag;
@@ -258,9 +236,14 @@ public class PlayerMove : MonoBehaviour
                 rb.drag = crouchDrag;
             }
         }
-        else
+        else if(!isGrounded)
         {
             rb.drag = airDrag;
+        }
+
+        if(!isGrounded && isWallRunning)
+        {
+            rb.drag = airDrag * 2;
         }
     }
 
@@ -319,12 +302,12 @@ public class PlayerMove : MonoBehaviour
 
             if (isWallRight && Input.GetKeyDown(KeyCode.Space))
             {
-                rb.AddForce((transform.up + orientation.right) * jumpForce * 0.8f, ForceMode.Impulse);
+                rb.AddForce(transform.up * jumpForce + -orientation.right * jumpForce * 0.8f, ForceMode.Impulse);
             }
 
             if (isWallLeft && Input.GetKeyDown(KeyCode.Space))
             {
-                rb.AddForce((transform.up + orientation.right) * jumpForce * 0.8f, ForceMode.Impulse);
+                rb.AddForce(transform.up * jumpForce + orientation.right * jumpForce * 0.8f, ForceMode.Impulse);
             }
     }
 
@@ -373,3 +356,32 @@ public class PlayerMove : MonoBehaviour
     }
 
 }
+
+/*  void Vault()
+  {
+      Debug.DrawRay(RayLower.transform.position, cam.transform.forward, Color.green);
+      Debug.DrawRay(RayUpper.transform.position, cam.transform.forward, Color.red);
+      Debug.DrawRay(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, Color.blue);
+
+      if (!isGrounded && !isWallRunning)
+      {
+          RaycastHit hitLower;
+          RaycastHit hitUpper;
+          RaycastHit hitDown; // to find the landing pos
+
+          if (Physics.Raycast(RayLower.transform.position, cam.transform.forward, out hitLower, 0.125f))
+          {
+
+              if (!Physics.Raycast(RayUpper.transform.position, cam.transform.forward, out hitUpper, 0.125f) && Physics.Raycast(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, out hitDown, 1.5f))
+              {
+                  if(transform.position.y <= hitDown.point.y)
+                  {
+                      transform.position = Vector3.Lerp(transform.position, hitDown.point, rb.velocity.magnitude * 0.25f);
+                  }
+
+              }
+          }
+      }
+  }   */
+
+//tato stinks like shit....

@@ -5,49 +5,42 @@ using UnityEngine.AI;
 
 public class JerryAI : MonoBehaviour
 {
+    bool playerDetected;
     public NavMeshAgent agent;
     public Transform player;
-    public LayerMask Ground, Player;
-    public Vector3 walkPoint;
-    public float sightRange;
-    public float walkPointRange;
-    bool walkPointSet;
-    bool playerInSightRange;
+    public Collider detectionTrigger;
     public AudioSource JerryAudio;
-    public AudioClip[] SpottedPlayer;
+    public AudioClip[] OnDetectSFX;
+    public AudioClip[] OnLostSFX;
+    public Vector3 walkPoint;
 
-
+    void Start()
+    {
+        playerDetected = false;
+    }
     void Update()
     {
-
-        playerInSightRange = Physics.CheckSphere(transform.position, sightRange, Player);
-
-        if (playerInSightRange)
+        if (playerDetected)
         {
             FollowPlayer();
         }
-        else Patrol();
+        else return;
     }
 
-    void Patrol()
+    void OnTriggerEnter(Collider detectionTrigger)
     {
-        if (!walkPointSet) SearchForWalkPoint();
-
-        if (walkPointSet) agent.SetDestination(walkPoint);
-
-        Vector3 distanceToWalkPoint = transform.position - walkPoint;
-
-        if (distanceToWalkPoint.magnitude < 1f) walkPointSet = false;
+        if (detectionTrigger.tag == "Player")
+        {
+            playerDetected = true;
+            JerryAudio.PlayOneShot(OnDetectSFX[Random.Range(0, OnDetectSFX.Length)]);
+        }
+        else return;
     }
 
-    void SearchForWalkPoint()
+    void OnTriggerExit(Collider detectionTrigger)
     {
-        float randomZ = Random.Range(-walkPointRange, walkPointRange);
-        float randomX = Random.Range(-walkPointRange, walkPointRange);
-
-        walkPoint = new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
-
-        if (Physics.Raycast(walkPoint, -transform.up, 2f, Ground)) walkPointSet = true;
+        playerDetected = false;
+        JerryAudio.PlayOneShot(OnLostSFX[Random.Range(0, OnLostSFX.Length)]);
     }
 
     void FollowPlayer()
