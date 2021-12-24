@@ -128,12 +128,12 @@ public class PlayerMove : MonoBehaviour
 
         if(!isGrounded)
         {
-            playerCol.height = 1f;
+            playerCol.height = Mathf.Lerp(playerCol.height, 1f, 0.1f);
         }
         else if(isGrounded && !isCrouching)
         {
-            playerCol.height = 2f;
-        }
+            playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
+        } 
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -192,7 +192,10 @@ public class PlayerMove : MonoBehaviour
     { 
        isCrouching = true;
        playerCol.height = 1f;
-       transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+       if(isGrounded)
+       {
+            transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+        }
 
         if (rb.velocity.magnitude > 6f && isGrounded)
        {
@@ -205,7 +208,10 @@ public class PlayerMove : MonoBehaviour
     void Uncrouch()
     {
         playerCol.height = 2f;
-        transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        if (isGrounded)
+        {
+            transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
+        }
         isCrouching = false;
         isSliding = false; 
     }
