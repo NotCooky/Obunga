@@ -6,17 +6,18 @@ using UnityEngine.AI;
 public class JerryAI : MonoBehaviour
 {
     bool playerDetected;
-    public NavMeshAgent agent;
     public Transform player;
     public Collider detectionTrigger;
     public AudioSource JerryAudio;
     public AudioClip[] OnDetectSFX;
     public AudioClip[] OnLostSFX;
     public Vector3 walkPoint;
+    Rigidbody rb;
 
     void Start()
     {
         playerDetected = false;
+        rb = GetComponent<Rigidbody>();
     }
     void Update()
     {
@@ -44,7 +45,7 @@ public class JerryAI : MonoBehaviour
     }
 
     void FollowPlayer()
-    {
-        agent.SetDestination(player.position);
+    { 
+        rb.AddForce((player.position - transform.position).normalized);  
     }
 }
