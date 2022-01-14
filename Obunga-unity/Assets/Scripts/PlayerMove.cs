@@ -69,7 +69,7 @@ public class PlayerMove : MonoBehaviour
     bool isWallRunning;
     
     [Header("Camera")]
-    public Camera cam;
+    public Transform camHolder;
     public float camTilt;
     public float WallRunCamTiltTime;
     public float camTiltTime;
@@ -226,7 +226,7 @@ public class PlayerMove : MonoBehaviour
 
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        cam.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
+        camHolder.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
         orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
     } 
 
