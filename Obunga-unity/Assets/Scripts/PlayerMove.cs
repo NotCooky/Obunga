@@ -232,7 +232,6 @@ public class PlayerMove : MonoBehaviour
 
     void ControlDrag()
     {
-
         if(isGrounded)
         {
             rb.drag = groundDrag;
@@ -269,7 +268,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (rb.velocity.magnitude >= 1 && airTime >= 0.5f)
         {
-            if(isGrounded)
+            if(isGrounded || isGrounded && OnSlope())
             {
                 GameObject Particles = Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
                 Destroy(Particles, 2f);
@@ -280,7 +279,7 @@ public class PlayerMove : MonoBehaviour
 
         if (rb.velocity.magnitude >= 0.5f && airTime >= 0.25f)
         {
-            if (isGrounded) footstepAudioSource.PlayOneShot(landingClips[Random.Range(0, landingClips.Length - 1)]);
+            if (isGrounded || isGrounded && OnSlope()) footstepAudioSource.PlayOneShot(landingClips[Random.Range(0, landingClips.Length - 1)]);
         }
     }
 

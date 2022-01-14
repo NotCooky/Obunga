@@ -13,11 +13,13 @@ public class JerryAI : MonoBehaviour
     public AudioClip[] OnLostSFX;
     public Vector3 walkPoint;
     Rigidbody rb;
+    NavMeshAgent agent;
 
     void Start()
     {
         playerDetected = false;
         rb = GetComponent<Rigidbody>();
+        agent = GetComponent<NavMeshAgent>();
     }
     void Update()
     {
@@ -45,7 +47,7 @@ public class JerryAI : MonoBehaviour
     }
 
     void FollowPlayer()
-    { 
-        rb.AddForce((player.position - transform.position).normalized);  
+    {
+        agent.SetDestination(player.position);
     }
 }

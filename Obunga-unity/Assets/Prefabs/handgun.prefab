@@ -453,8 +453,11 @@ MonoBehaviour:
   playerCam: {fileID: 0}
   muzzleFlash: {fileID: 7169613564170415977}
   gunAnimator: {fileID: 2000368704520868211}
+  magazineSize: 5
   gunSFX:
   - {fileID: 8300000, guid: f6dd54c50c095a3429285c31d1880394, type: 3}
+  reloadSFX:
+  - {fileID: 8300000, guid: afb50a4b98659df4b96300394713ed31, type: 3}
 --- !u!95 &2000368704520868211
 Animator:
   serializedVersion: 3
@@ -1162,7 +1165,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7044606164610499233}
   m_LocalRotation: {x: 0.5215422, y: -0.5215422, z: -0.4774869, w: 0.4774869}
-  m_LocalPosition: {x: -0.018, y: -0.293, z: -0.051}
+  m_LocalPosition: {x: -0.0048, y: -0.3465, z: -0.051}
   m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
   m_Children: []
   m_Father: {fileID: 1191602399344987083}
