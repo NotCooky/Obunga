@@ -36,7 +36,7 @@ public class Gun : MonoBehaviour
             Shoot();
         }
 
-        if(bulletsLeftInMag == 0)
+        if(Input.GetKeyDown(KeyCode.R) && bulletsLeftInMag != magazineSize)
         {
             StartCoroutine("Reload");
         }
@@ -44,13 +44,13 @@ public class Gun : MonoBehaviour
 
     void Shoot()
     {
-        if (canShoot)
+        if (canShoot && bulletsLeftInMag > 0)
         {
             bulletsLeftInMag--;
             muzzleFlash.Play();
             gunAnimator.SetTrigger("Shoot");
             gunAudioSource.PlayOneShot(gunSFX[Random.Range(0, gunSFX.Length - 1)]);
-            CameraShaker.Instance.ShakeOnce(2f, 5f, 0, 0.5f);
+            CameraShaker.Instance.ShakeOnce(10f, 1f, 0, 0.5f);
 
 
             RaycastHit hit;

@@ -9,8 +9,8 @@ public class PlayerMove : MonoBehaviour
     public GameObject landParticles;
 
     [Header("Movement")]
-    float moveSpeed = 10f;
-    float inAirSpeed = 6f;
+    public float moveSpeed = 10f;
+    public float inAirSpeed = 6f;
     float horizontalMovement;
     float verticalMovement;
 
@@ -30,8 +30,8 @@ public class PlayerMove : MonoBehaviour
     public float crouchingMultiplier = 7.5f;
 
     [Header("Jumping & Land Detection")]
+    public float jumpForce = 10f;
     float playerHeight = 2f;
-    float jumpForce = 10f;
     float airTime;
     bool isGrounded;
     public LayerMask groundMask;
@@ -117,13 +117,10 @@ public class PlayerMove : MonoBehaviour
         CheckLanding();
         CheckAirTime();
         HandleFootsteps();
-      //  Vault();
         Look(); 
 
-        //slope stuff
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
-        //ground check
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.15f);
 
         if(!isGrounded)
@@ -134,6 +131,19 @@ public class PlayerMove : MonoBehaviour
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
         } 
+    }
+    void FixedUpdate()
+    {
+        MovePlayer();
+        CameraTilting();
+    }
+
+    void MyInput()
+    {
+        horizontalMovement = Input.GetAxisRaw("Horizontal");
+        verticalMovement = Input.GetAxisRaw("Vertical");
+
+        moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -149,19 +159,6 @@ public class PlayerMove : MonoBehaviour
         {
             Uncrouch();
         }
-    }
-    void FixedUpdate()
-    {
-        MovePlayer();
-        CameraTilting();
-    }
-
-    void MyInput()
-    {
-        horizontalMovement = Input.GetAxisRaw("Horizontal");
-        verticalMovement = Input.GetAxisRaw("Vertical");
-
-        moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
     }
 
     void MovePlayer()
