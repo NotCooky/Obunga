@@ -129,7 +129,7 @@ public class PlayerMove : MonoBehaviour
         }
         else if(isGrounded && !isCrouching)
         {
-            playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
+            playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.05f);
         } 
     }
     void FixedUpdate()
