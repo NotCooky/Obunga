@@ -47,7 +47,7 @@ public class PlayerMove : MonoBehaviour
     bool isCrouching;
 
     [Header("Sliding & Diving")]
-    float slideForce = 25f;
+    public float slideForce;
     bool isSliding;
 
     [Header("Vaulting")]
@@ -136,6 +136,7 @@ public class PlayerMove : MonoBehaviour
     {
         MovePlayer();
         CameraTilting();
+        Sliding();
     }
 
     void MyInput()
@@ -150,12 +151,12 @@ public class PlayerMove : MonoBehaviour
             Jump();
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        if (Input.GetKeyDown(KeyCode.C))
         {
             Crouch();
         }
 
-        if (Input.GetKeyUp(KeyCode.LeftControl))
+        if (Input.GetKeyUp(KeyCode.C))
         {
             Uncrouch();
         }
@@ -192,14 +193,28 @@ public class PlayerMove : MonoBehaviour
        if(isGrounded)
        {
             transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-        }
+       }
 
         if (rb.velocity.magnitude > 6f && isGrounded)
        {
-            rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
-            footstepAudioSource.PlayOneShot(slideClip);
-            isSliding = true;
+            StartCoroutine("SlideTimer");
        }
+    }
+
+    IEnumerator SlideTimer()
+    {
+        isSliding = true;
+        footstepAudioSource.PlayOneShot(slideClip);
+        yield return new WaitForSeconds(1.5f);
+        isSliding = false;
+    }
+
+    void Sliding()
+    {
+        if(isSliding)
+        {
+            rb.AddForce(moveDirection * slideForce, ForceMode.Acceleration);
+        }   
     }
 
     void Uncrouch()
@@ -340,26 +355,24 @@ public class PlayerMove : MonoBehaviour
     void CameraTilting()
     {
         //this stinks like shit....
-
-        if(isSliding) tilt = Mathf.Lerp(tilt, camTilt + 5, camTiltTime * Time.deltaTime / 2);
-
-        if (Input.GetKey(KeyCode.A) && isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
-        else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
-        if (Input.GetKey(KeyCode.D) && isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime / 2);
-        else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
-
         if (isWallRunning)
         {
             //wallrun camera tilt
             if (isWallRight && !isGrounded) tilt = Mathf.Lerp(tilt, camTilt, WallRunCamTiltTime * Time.deltaTime);
             if (isWallLeft && !isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, WallRunCamTiltTime * Time.deltaTime);
         }
-        else return;
+        else
+        {
+            if (Input.GetKey(KeyCode.A) && isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
+            else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+            if (Input.GetKey(KeyCode.D) && isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime / 2);
+            else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+        }
     }
 
 }
 
-/*  void Vault()
+ /* void Vault()
   {
       Debug.DrawRay(RayLower.transform.position, cam.transform.forward, Color.green);
       Debug.DrawRay(RayUpper.transform.position, cam.transform.forward, Color.red);
@@ -384,6 +397,6 @@ public class PlayerMove : MonoBehaviour
               }
           }
       }
-  }   */
+  } */
 
 //tato stinks like shit....
