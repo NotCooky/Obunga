@@ -57,6 +57,7 @@ public class PlayerMove : MonoBehaviour
     Rigidbody rb;
     float slopeAngle;
     public float playerMaxSlopeAngle;
+    public float slopeForce;
 
     [Header("Wallrunning")]
     public float wallrunForce;
@@ -168,6 +169,16 @@ public class PlayerMove : MonoBehaviour
             if(OnSlope())
             {
                 rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+                if(slopeAngle < playerMaxSlopeAngle)
+                {
+                    Vector3 gravityForce = Physics.gravity - Vector3.Project(Physics.gravity, slopeHit.normal);
+                    rb.AddForce(-gravityForce, ForceMode.Acceleration);
+                }
+
+                if(slopeAngle > playerMaxSlopeAngle)
+                {
+                    rb.AddForce(Vector3.down * playerHeight / 2 * slopeForce * Time.deltaTime);
+                }
             }
             else
             { 
@@ -212,7 +223,7 @@ public class PlayerMove : MonoBehaviour
     {
         if(isSliding)
         {
-            rb.AddForce(moveDirection * slideForce, ForceMode.Acceleration);
+            rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
         }   
     }
 

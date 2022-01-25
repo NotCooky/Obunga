@@ -12823,8 +12823,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   playerCol: {fileID: 3728141561006238993}
-  slideForce: 30
+  slideForce: 2
   playerMaxSlopeAngle: 45
+  slopeForce: 0
   wallrunForce: 5
   wallRunGravity: 0.1
   wallrunSpeed: 100
