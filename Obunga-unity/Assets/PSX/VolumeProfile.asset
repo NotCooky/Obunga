@@ -52,10 +52,10 @@ MonoBehaviour:
   active: 1
   m_AdvancedMode: 0
   patternIndex:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   ditherThreshold:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 10
   ditherStrength:
     m_OverrideState: 0
@@ -174,4 +174,4 @@ MonoBehaviour:
     m_Value: 1080
   colorPrecision:
     m_OverrideState: 1
-    m_Value: 100
+    m_Value: 50

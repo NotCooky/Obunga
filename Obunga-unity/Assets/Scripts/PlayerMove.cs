@@ -43,23 +43,20 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Crouching")]
     public CapsuleCollider playerCol;
-    public Transform playerScale;
+    bool underObstruction;
     bool isCrouching;
 
     [Header("Sliding & Diving")]
     public float slideForce;
     bool isSliding;
 
-    [Header("Vaulting")]
-    public GameObject RayLower;
-    public GameObject RayUpper;
-    public float vaultStrength;
-
     [Header("Slope Stuff")]
     Vector3 moveDirection;
     Vector3 slopeMoveDirection;
     RaycastHit slopeHit;
     Rigidbody rb;
+    float slopeAngle;
+    public float playerMaxSlopeAngle;
 
     [Header("Wallrunning")]
     public float wallrunForce;
@@ -88,10 +85,11 @@ public class PlayerMove : MonoBehaviour
 
     private bool OnSlope()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight / 2 + 0.5f))
+        if (isGrounded && Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight / 2 + 0.5f))
         {
             if (slopeHit.normal != Vector3.up)
             {
+                slopeAngle = Vector3.Angle(slopeHit.normal, Vector3.up);
                 return true;
             }
             else
@@ -117,11 +115,13 @@ public class PlayerMove : MonoBehaviour
         CheckLanding();
         CheckAirTime();
         HandleFootsteps();
-        Look(); 
+        Look();
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
         isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.15f);
+
+        underObstruction = Physics.Raycast(transform.position, Vector3.up, playerHeight / 2 + 0.15f);
 
         if(!isGrounded)
         {
@@ -138,7 +138,6 @@ public class PlayerMove : MonoBehaviour
         CameraTilting();
         Sliding();
     }
-
     void MyInput()
     {
         horizontalMovement = Input.GetAxisRaw("Horizontal");
@@ -220,7 +219,7 @@ public class PlayerMove : MonoBehaviour
     void Uncrouch()
     {
         playerCol.height = 2f;
-        if (isGrounded)
+        if (isGrounded && !underObstruction)
         {
             transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
         }
