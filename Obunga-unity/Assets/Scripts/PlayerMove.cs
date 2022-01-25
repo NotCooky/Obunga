@@ -86,7 +86,7 @@ public class PlayerMove : MonoBehaviour
 
     private bool OnSlope()
     {
-        if (isGrounded && Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight / 2 + 0.5f))
+        if (isGrounded && Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight / 2 + 1f))
         {
             if (slopeHit.normal != Vector3.up)
             {
@@ -169,6 +169,7 @@ public class PlayerMove : MonoBehaviour
             if(OnSlope())
             {
                 rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+
                 if(slopeAngle < playerMaxSlopeAngle)
                 {
                     Vector3 gravityForce = Physics.gravity - Vector3.Project(Physics.gravity, slopeHit.normal);
@@ -189,6 +190,9 @@ public class PlayerMove : MonoBehaviour
         {
             rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
         }
+
+        //just some extra gravity so player falls quicker
+        rb.AddForce(Vector3.down * 5, ForceMode.Force);
     }
 
     void Jump()
