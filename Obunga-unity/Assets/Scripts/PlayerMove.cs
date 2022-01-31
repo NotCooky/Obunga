@@ -9,20 +9,19 @@ public class PlayerMove : MonoBehaviour
     public GameObject landParticles;
 
     [Header("Movement")]
-    public float moveSpeed = 10f;
-    public float inAirSpeed = 6f;
+    public float moveSpeed;
+    public float inAirSpeed;
     float horizontalMovement;
     float verticalMovement;
 
     [Header("Cam movement")]
     float mouseX;
     float mouseY;
-    float multiplier = 0.01f;
-
     float xRotation;
     float yRotation;
-    public float sensX;
-    public float sensY;
+    float multiplier = 0.1f;
+    [Range(0, 100)]
+    public float sens;
     
     [Header("Multipliers")]
     public float movementMultiplier = 12.5f;
@@ -37,7 +36,7 @@ public class PlayerMove : MonoBehaviour
     public LayerMask groundMask;
 
     [Header("Drag")]
-    float groundDrag = 6f;
+    float groundDrag = 10f;
     float airDrag = 1f;
     float crouchDrag = 8f;
 
@@ -127,10 +126,12 @@ public class PlayerMove : MonoBehaviour
         if(!isGrounded)
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 1f, 0.1f);
+            playerCol.center = Vector3.Lerp(playerCol.center, new Vector3(0, 0.5f, 0), 0.1f);
         }
         else if(isGrounded && !isCrouching)
         {
-            playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.05f);
+            playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
+            playerCol.center = Vector3.Lerp(playerCol.center, Vector3.zero, 0.1f);
         } 
     }
     void FixedUpdate()
@@ -192,7 +193,7 @@ public class PlayerMove : MonoBehaviour
         }
 
         //just some extra gravity so player falls quicker
-        rb.AddForce(Vector3.down * 5, ForceMode.Force);
+        rb.AddForce(Vector3.down * 150, ForceMode.Force);
     }
 
     void Jump()
@@ -247,8 +248,8 @@ public class PlayerMove : MonoBehaviour
         mouseX = Input.GetAxisRaw("Mouse X");
         mouseY = Input.GetAxisRaw("Mouse Y");
 
-        yRotation += mouseX * sensX * multiplier;
-        xRotation -= mouseY * sensY * multiplier;
+        yRotation += mouseX * sens * multiplier;
+        xRotation -= mouseY * sens * multiplier;
 
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
