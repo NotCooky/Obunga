@@ -20,6 +20,7 @@ public class PlayerMove : MonoBehaviour
     float xRotation;
     float yRotation;
     float multiplier = 0.1f;
+
     [Range(0, 100)]
     public float sens;
     
@@ -38,7 +39,7 @@ public class PlayerMove : MonoBehaviour
     [Header("Drag")]
     float groundDrag = 10f;
     float airDrag = 1f;
-    float crouchDrag = 8f;
+    float crouchDrag = 12f;
 
     [Header("Crouching")]
     public CapsuleCollider playerCol;
@@ -334,12 +335,12 @@ public class PlayerMove : MonoBehaviour
 
             if (isWallRight && Input.GetKeyDown(KeyCode.Space))
             {
-                rb.AddForce(transform.up * jumpForce + -orientation.right * jumpForce * 0.8f, ForceMode.Impulse);
+                rb.AddForce(transform.up * jumpForce + -orientation.right * jumpForce / 2, ForceMode.Impulse);
             }
 
             if (isWallLeft && Input.GetKeyDown(KeyCode.Space))
             {
-                rb.AddForce(transform.up * jumpForce + orientation.right * jumpForce * 0.8f, ForceMode.Impulse);
+                rb.AddForce(transform.up * jumpForce + orientation.right * jumpForce / 2, ForceMode.Impulse);
             }
     }
 
@@ -386,32 +387,3 @@ public class PlayerMove : MonoBehaviour
     }
 
 }
-
- /* void Vault()
-  {
-      Debug.DrawRay(RayLower.transform.position, cam.transform.forward, Color.green);
-      Debug.DrawRay(RayUpper.transform.position, cam.transform.forward, Color.red);
-      Debug.DrawRay(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, Color.blue);
-
-      if (!isGrounded && !isWallRunning)
-      {
-          RaycastHit hitLower;
-          RaycastHit hitUpper;
-          RaycastHit hitDown; // to find the landing pos
-
-          if (Physics.Raycast(RayLower.transform.position, cam.transform.forward, out hitLower, 0.125f))
-          {
-
-              if (!Physics.Raycast(RayUpper.transform.position, cam.transform.forward, out hitUpper, 0.125f) && Physics.Raycast(RayUpper.transform.position + new Vector3(0, 0, 0.4f), Vector3.down, out hitDown, 1.5f))
-              {
-                  if(transform.position.y <= hitDown.point.y)
-                  {
-                      transform.position = Vector3.Lerp(transform.position, hitDown.point, rb.velocity.magnitude * 0.25f);
-                  }
-
-              }
-          }
-      }
-  } */
-
-//tato stinks like shit....
