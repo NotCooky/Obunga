@@ -7,6 +7,7 @@ public class PlayerMove : MonoBehaviour
     [Header("Assignables")]
     public Transform orientation;
     public GameObject landParticles;
+    public LayerMask playerLayerMask;
 
     [Header("Movement")]
     public float moveSpeed;
@@ -82,6 +83,8 @@ public class PlayerMove : MonoBehaviour
     float footstepTimer = 0f;
     float GetCurrentOffset => isCrouching ? baseStepSpeed * crouchStepMultiplier : baseStepSpeed;
 
+    float extraGravityForce = -500f;
+
     public float tilt { get; private set; }
 
     private bool OnSlope()
@@ -140,6 +143,8 @@ public class PlayerMove : MonoBehaviour
         MovePlayer();
         CameraTilting();
         Sliding();
+
+        rb.AddForce(Vector3.up * extraGravityForce, ForceMode.Force);
     }
     void MyInput()
     {
@@ -192,9 +197,6 @@ public class PlayerMove : MonoBehaviour
         {
             rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
         }
-
-        //just some extra gravity so player falls quicker
-        rb.AddForce(Vector3.down * 150, ForceMode.Force);
     }
 
     void Jump()
@@ -313,8 +315,8 @@ public class PlayerMove : MonoBehaviour
 
     void CheckForWall() 
     {
-        isWallRight = Physics.Raycast(transform.position, orientation.right, 0.7f);
-        isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.7f);
+        isWallRight = Physics.Raycast(transform.position, orientation.right, 0.7f, ~playerLayerMask);
+        isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.7f, ~playerLayerMask);
 
         if (isWallRight && !isGrounded) Wallrun();
         if (isWallLeft && !isGrounded) Wallrun();
