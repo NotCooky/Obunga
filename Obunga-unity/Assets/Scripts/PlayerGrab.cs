@@ -19,6 +19,7 @@ public class PlayerGrab : MonoBehaviour
 
     void Update()
     {
+
         RaycastHit hit;
 
         if (Input.GetMouseButtonDown(1) && Physics.Raycast(camPos.transform.position, camPos.transform.forward, out hit, 3f) && hit.rigidbody)
@@ -29,6 +30,7 @@ public class PlayerGrab : MonoBehaviour
         {
             grabbedObj = null;
             lr.enabled = false;
+            targetPos.localPosition = new Vector3(0, 0.04f, 1.5f);
         }
 
         if(grabbedObj != null)
@@ -37,7 +39,9 @@ public class PlayerGrab : MonoBehaviour
             lr.SetPosition(0, targetPos.position);
             lr.SetPosition(1, grabbedObj.position);
 
-            if(Input.GetMouseButton(0))
+            targetPos.position += camPos.forward * (Input.mouseScrollDelta.y / 4);
+
+            if (Input.GetMouseButton(0))
             {
                 grabbedObj.AddForce(camPos.transform.forward * throwingForce, ForceMode.Impulse);
                 grabbedObj = null;
