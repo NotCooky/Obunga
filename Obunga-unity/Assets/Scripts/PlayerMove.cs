@@ -205,24 +205,26 @@ public class PlayerMove : MonoBehaviour
     }
 
     void Crouch()
-    { 
-       isCrouching = true;
-       playerCol.height = 1f;
-       if(isGrounded)
-       {
-            transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-       }
+    {
+        if(!underObstruction)
+        {
+            isCrouching = true;
+            playerCol.height = 1f;
+            if (isGrounded)
+            {
+                transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
+            }
 
-        if (rb.velocity.magnitude > 6f && isGrounded)
-       {
-            StartCoroutine("SlideTimer");
-       }
+            if (rb.velocity.magnitude > 6f && isGrounded)
+            {
+                StartCoroutine("SlideTimer");
+            }
+        }
     }
 
     IEnumerator SlideTimer()
     {
         isSliding = true;
-        footstepAudioSource.PlayOneShot(slideClip);
         yield return new WaitForSeconds(1.5f);
         isSliding = false;
     }
