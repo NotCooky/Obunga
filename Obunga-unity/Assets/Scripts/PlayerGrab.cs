@@ -11,6 +11,7 @@ public class PlayerGrab : MonoBehaviour
     public V3PIDController piddy;
     public float ForceMultiplier;
     public float throwingForce;
+    float zPos;
 
     void Start()
     {
@@ -19,7 +20,8 @@ public class PlayerGrab : MonoBehaviour
 
     void Update()
     {
-
+        zPos += Input.mouseScrollDelta.y / 4;
+        zPos = Mathf.Clamp(zPos, 1.25f, 3);
         RaycastHit hit;
 
         if (Input.GetMouseButtonDown(1) && Physics.Raycast(camPos.transform.position, camPos.transform.forward, out hit, 3f) && hit.rigidbody)
@@ -39,7 +41,7 @@ public class PlayerGrab : MonoBehaviour
             lr.SetPosition(0, targetPos.position);
             lr.SetPosition(1, grabbedObj.position);
 
-            targetPos.position += camPos.forward * (Input.mouseScrollDelta.y / 4);
+            targetPos.position = camPos.position + camPos.forward * zPos;
 
             if (Input.GetMouseButton(0))
             {
