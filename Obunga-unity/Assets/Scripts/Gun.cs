@@ -60,6 +60,11 @@ public class Gun : MonoBehaviour
                 if (hit.rigidbody)
                 {
                     hit.rigidbody.AddForce(-hit.normal * impactForce);
+
+                    if(hit.transform.gameObject.tag == "Enemy")
+                    {
+                        Destroy(hit.transform.gameObject);
+                    }
                 }
             }
         }  
