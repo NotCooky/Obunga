@@ -82,7 +82,7 @@ public class PlayerMove : MonoBehaviour
     float footstepTimer = 0f;
     float GetCurrentOffset => isCrouching ? baseStepSpeed * crouchStepMultiplier : baseStepSpeed;
 
-    float extraGravityForce = -500f;
+    float extraGravityForce = -400f;
 
     public float tilt { get; private set; }
 
@@ -101,7 +101,12 @@ public class PlayerMove : MonoBehaviour
             }
         }
         return false;
-    } 
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(transform.position - new Vector3(0, 1, 0), 0.4f);
+    }
 
     void Start()
     {
@@ -122,11 +127,11 @@ public class PlayerMove : MonoBehaviour
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.15f);
+        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), 0.4f, ~playerLayerMask);
 
         underObstruction = Physics.Raycast(transform.position, Vector3.up, playerHeight / 2 + 0.15f);
 
-        if(!isGrounded)
+     /*   if(!isGrounded)
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 1f, 0.1f);
             playerCol.center = Vector3.Lerp(playerCol.center, new Vector3(0, 0.5f, 0), 0.1f);
@@ -135,7 +140,7 @@ public class PlayerMove : MonoBehaviour
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
             playerCol.center = Vector3.Lerp(playerCol.center, Vector3.zero, 0.1f);
-        } 
+        } */
     }
     void FixedUpdate()
     {
