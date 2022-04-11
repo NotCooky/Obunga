@@ -35,7 +35,6 @@ public class PlayerMove : MonoBehaviour
     float playerHeight = 2f;
     float airTime;
     bool isGrounded;
-    public LayerMask groundMask;
 
     [Header("Drag")]
     float groundDrag = 10f;
