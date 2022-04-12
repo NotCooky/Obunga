@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
+    #region Singleton
+    public static PlayerMove Instance;
+    void Awake()
+    {
+        Instance = this;
+    }
+    #endregion
     [Header("Assignables")]
     public Transform orientation;
     public GameObject landParticles;
@@ -21,6 +28,7 @@ public class PlayerMove : MonoBehaviour
     float xRotation;
     float yRotation;
     float multiplier = 0.1f;
+    public bool CanLook = true;
 
     [Range(0, 100)]
     public float sens;
@@ -105,7 +113,7 @@ public class PlayerMove : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(transform.position - new Vector3(0, 1, 0), 0.4f);
+        Gizmos.DrawSphere(transform.position - new Vector3(0, 0.7f, 0), 0.4f);
     }
 
     void Start()
@@ -127,7 +135,7 @@ public class PlayerMove : MonoBehaviour
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
-        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), 0.4f, ~playerLayerMask);
+        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 0.7f, 0), 0.4f, ~playerLayerMask);
 
         underObstruction = Physics.Raycast(transform.position, Vector3.up, playerHeight / 2 + 0.15f);
 
@@ -196,7 +204,7 @@ public class PlayerMove : MonoBehaviour
 
     void Jump()
     {
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse); 
+        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
     }
 
     void Crouch()
@@ -245,16 +253,19 @@ public class PlayerMove : MonoBehaviour
 
     void Look()
     {
-        mouseX = Input.GetAxisRaw("Mouse X");
-        mouseY = Input.GetAxisRaw("Mouse Y");
+        if(CanLook == true)
+        {
+            mouseX = Input.GetAxisRaw("Mouse X");
+            mouseY = Input.GetAxisRaw("Mouse Y");
 
-        yRotation += mouseX * sens * multiplier;
-        xRotation -= mouseY * sens * multiplier;
+            yRotation += mouseX * sens * multiplier;
+            xRotation -= mouseY * sens * multiplier;
 
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        camHolder.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
-        orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
+            camHolder.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
+            orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
+        }
     } 
 
     void ControlDrag()

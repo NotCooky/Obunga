@@ -74,7 +74,7 @@ MonoBehaviour:
   isEnabled: 1
   widthPixelation: 1920
   heightPixelation: 1080
-  colorPrecision: 40
+  colorPrecision: 50
 --- !u!114 &1317907359735256805
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,14 +12,25 @@ public class PlayerGrab : MonoBehaviour
     public float ForceMultiplier;
     public float throwingForce;
     float zPos;
+    float mouseX, mouseY;
+    float xRotation, yRotation;
+    PlayerMove playerMoveScript;
 
     void Start()
     {
         lr.positionCount = 2;
+        playerMoveScript = PlayerMove.Instance;
     }
 
     void Update()
     {
+        mouseX = Input.GetAxisRaw("Mouse X");
+        mouseY = Input.GetAxisRaw("Mouse Y");
+
+        yRotation += mouseX;
+        xRotation -= mouseY;
+
+
         zPos += Input.mouseScrollDelta.y / 4;
         zPos = Mathf.Clamp(zPos, 1.25f, 3);
         RaycastHit hit;
@@ -35,13 +46,18 @@ public class PlayerGrab : MonoBehaviour
             targetPos.localPosition = new Vector3(0, 0.04f, 1.5f);
         }
 
-        if(grabbedObj != null)
+        if (grabbedObj != null)
         {
             lr.enabled = true;
             lr.SetPosition(0, targetPos.position);
             lr.SetPosition(1, grabbedObj.position);
 
             targetPos.position = camPos.position + camPos.forward * zPos;
+            if (Input.GetKey(KeyCode.R))
+            {
+                PlayerMove.Instance.CanLook = false;
+                grabbedObj.transform.rotation = Quaternion.Euler(xRotation, yRotation, grabbedObj.rotation.z);
+            }
 
             if (Input.GetMouseButton(0))
             {
@@ -50,6 +66,10 @@ public class PlayerGrab : MonoBehaviour
                 lr.enabled = false;
             }
         }
+        else if (grabbedObj == null) PlayerMove.Instance.CanLook = true;
+
+
+
     }
 
     void FixedUpdate()
