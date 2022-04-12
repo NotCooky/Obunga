@@ -82,7 +82,7 @@ public class PlayerMove : MonoBehaviour
     float footstepTimer = 0f;
     float GetCurrentOffset => isCrouching ? baseStepSpeed * crouchStepMultiplier : baseStepSpeed;
 
-    float extraGravityForce = -400f;
+    float extraGravityForce = -350f;
 
     public float tilt { get; private set; }
 
@@ -131,16 +131,16 @@ public class PlayerMove : MonoBehaviour
 
         underObstruction = Physics.Raycast(transform.position, Vector3.up, playerHeight / 2 + 0.15f);
 
-     /*   if(!isGrounded)
-        {
-            playerCol.height = Mathf.Lerp(playerCol.height, 1f, 0.1f);
-            playerCol.center = Vector3.Lerp(playerCol.center, new Vector3(0, 0.5f, 0), 0.1f);
-        }
-        else if(isGrounded && !isCrouching)
+        if(isGrounded && !isCrouching)
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
             playerCol.center = Vector3.Lerp(playerCol.center, Vector3.zero, 0.1f);
-        } */
+        } 
+        else
+        {
+            playerCol.height = Mathf.Lerp(playerCol.height, 1f, 0.1f);
+            playerCol.center = Vector3.Lerp(playerCol.center, new Vector3(0, 0.5f, 0), 0.1f);
+        }     
     }
     void FixedUpdate()
     {
@@ -180,17 +180,8 @@ public class PlayerMove : MonoBehaviour
             if(OnSlope())
             {
                 rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+                Vector3 gravityForce = Physics.gravity - Vector3.Project(Physics.gravity, slopeHit.normal);
 
-                if(slopeAngle < playerMaxSlopeAngle)
-                {
-                    Vector3 gravityForce = Physics.gravity - Vector3.Project(Physics.gravity, slopeHit.normal);
-                    rb.AddForce(-gravityForce, ForceMode.Acceleration);
-                }
-
-                if(slopeAngle > playerMaxSlopeAngle)
-                {
-                    rb.AddForce(Vector3.down * playerHeight / 2 * slopeForce * Time.deltaTime);
-                }
             }
             else
             { 
