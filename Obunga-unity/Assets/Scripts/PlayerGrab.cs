@@ -53,10 +53,16 @@ public class PlayerGrab : MonoBehaviour
             lr.SetPosition(1, grabbedObj.position);
 
             targetPos.position = camPos.position + camPos.forward * zPos;
+
             if (Input.GetKey(KeyCode.R))
             {
                 PlayerMove.Instance.CanLook = false;
                 grabbedObj.transform.rotation = Quaternion.Euler(xRotation, yRotation, grabbedObj.rotation.z);
+            }
+
+            if (Input.GetKeyUp(KeyCode.R))
+            {
+                PlayerMove.Instance.CanLook = true;
             }
 
             if (Input.GetMouseButton(0))

@@ -362,11 +362,7 @@ public class PlayerMove : MonoBehaviour
 
     void HandleFootsteps()
     {
-        if (!isGrounded) return;
-
-        if (rb.velocity.magnitude <= 0) return;
-
-        if (isSliding) return;
+        if (!isGrounded || rb.velocity.magnitude <= 0 || isSliding) return;
 
         footstepTimer -= Time.deltaTime;
 
