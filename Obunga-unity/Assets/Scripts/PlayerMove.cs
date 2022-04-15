@@ -43,7 +43,6 @@ public class PlayerMove : MonoBehaviour
     float playerHeight = 2f;
     float airTime;
     bool isGrounded;
-
     [Header("Drag")]
     float groundDrag = 10f;
     float airDrag = 1f;
@@ -54,16 +53,11 @@ public class PlayerMove : MonoBehaviour
     bool underObstruction;
     bool isCrouching;
 
-    [Header("Sliding & Diving")]
-    public float slideForce;
-    bool isSliding;
-
     [Header("Slope Stuff")]
     Vector3 moveDirection;
     Vector3 slopeMoveDirection;
     RaycastHit slopeHit;
     Rigidbody rb;
-    float slopeAngle;
     public float playerMaxSlopeAngle;
     public float slopeForce;
 
@@ -100,7 +94,6 @@ public class PlayerMove : MonoBehaviour
         {
             if (slopeHit.normal != Vector3.up)
             {
-                slopeAngle = Vector3.Angle(slopeHit.normal, Vector3.up);
                 return true;
             }
             else
@@ -113,7 +106,7 @@ public class PlayerMove : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawSphere(transform.position - new Vector3(0, 0.7f, 0), 0.4f);
+        Gizmos.DrawSphere(playerCol.transform.position - new Vector3(0, 0.7f, 0), 0.4f);
     }
 
     void Start()
@@ -135,7 +128,7 @@ public class PlayerMove : MonoBehaviour
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
-        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 0.7f, 0), 0.4f, ~playerLayerMask);
+        isGrounded = Physics.CheckSphere(playerCol.transform.position - new Vector3(0, 0.7f, 0), 0.4f, ~playerLayerMask);
 
         underObstruction = Physics.Raycast(transform.position, Vector3.up, playerHeight / 2 + 0.15f);
 
@@ -154,7 +147,6 @@ public class PlayerMove : MonoBehaviour
     {
         MovePlayer();
         CameraTilting();
-        Sliding();
 
         rb.AddForce(Vector3.up * extraGravityForce, ForceMode.Force);
     }
@@ -168,16 +160,6 @@ public class PlayerMove : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             Jump();
-        }
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Crouch();
-        }
-
-        if (Input.GetKeyUp(KeyCode.C))
-        {
-            Uncrouch();
         }
     }
 
@@ -205,50 +187,6 @@ public class PlayerMove : MonoBehaviour
     void Jump()
     {
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-    }
-
-    void Crouch()
-    {
-        if(!underObstruction)
-        {
-            isCrouching = true;
-            playerCol.height = 1f;
-            if (isGrounded)
-            {
-                transform.position = new Vector3(transform.position.x, transform.position.y - 0.5f, transform.position.z);
-            }
-
-            if (rb.velocity.magnitude > 6f && isGrounded)
-            {
-                StartCoroutine("SlideTimer");
-            }
-        }
-    }
-
-    IEnumerator SlideTimer()
-    {
-        isSliding = true;
-        yield return new WaitForSeconds(1.5f);
-        isSliding = false;
-    }
-
-    void Sliding()
-    {
-        if(isSliding)
-        {
-            rb.AddForce(moveDirection * slideForce, ForceMode.VelocityChange);
-        }   
-    }
-
-    void Uncrouch()
-    {
-        playerCol.height = 2f;
-        if (isGrounded && !underObstruction)
-        {
-            transform.position = new Vector3(transform.position.x, transform.position.y + 0.5f, transform.position.z);
-        }
-        isCrouching = false;
-        isSliding = false; 
     }
 
     void Look()
@@ -292,7 +230,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckAirTime()
     { 
-        if(isGrounded  || OnSlope() || isWallRunning || isCrouching || isSliding)
+        if(isGrounded  || OnSlope() || isWallRunning || isCrouching)
         {
             airTime = 0f;
         }
@@ -362,7 +300,7 @@ public class PlayerMove : MonoBehaviour
 
     void HandleFootsteps()
     {
-        if (!isGrounded || rb.velocity.magnitude <= 0 || isSliding) return;
+        if (!isGrounded || rb.velocity.magnitude <= 0) return;
 
         footstepTimer -= Time.deltaTime;
 
