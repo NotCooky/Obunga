@@ -170,7 +170,8 @@ public class PlayerMove : MonoBehaviour
             if(OnSlope())
             {
                 rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-                Vector3 gravityForce = Physics.gravity - Vector3.Project(Physics.gravity, slopeHit.normal);
+                 //Vector3 gravityForce = Physics.gravity - Vector3.Project(Physics.gravity, slopeHit.normal);
+                // rb.AddForce(-gravityForce, ForceMode.Acceleration);
 
             }
             else
