@@ -19,6 +19,8 @@ public class PlayerMove : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed;
     public float inAirSpeed;
+    public float maxAirVelocity;
+    public float airAccelerate;
     float horizontalMovement;
     float verticalMovement;
 
@@ -32,34 +34,34 @@ public class PlayerMove : MonoBehaviour
 
     [Range(0, 100)]
     public float sens;
-    
+
     [Header("Multipliers")]
-    public float movementMultiplier = 12.5f;
-    public float airMultiplier = 13f;
-    public float crouchingMultiplier = 7.5f;
+    public float movementMultiplier;
+    public float airMultiplier;
 
     [Header("Jumping & Land Detection")]
-    public float jumpForce = 10f;
+    public bool canJump;
+    public float jumpCooldown = 0.25f; // the cooldown limit
+    public float currentJumpCooldown = 0f; //the actual cooldown
+    public float jumpForce;
     float playerHeight = 2f;
     float airTime;
     bool isGrounded;
+    bool wishJump;
+
     [Header("Drag")]
     float groundDrag = 10f;
     float airDrag = 1f;
-    float crouchDrag = 12f;
 
     [Header("Crouching")]
-    public CapsuleCollider playerCol;
+    CapsuleCollider playerCol;
     bool underObstruction;
-    bool isCrouching;
 
     [Header("Slope Stuff")]
     Vector3 moveDirection;
     Vector3 slopeMoveDirection;
     RaycastHit slopeHit;
     Rigidbody rb;
-    public float playerMaxSlopeAngle;
-    public float slopeForce;
 
     [Header("Wallrunning")]
     public float wallrunForce;
@@ -80,9 +82,8 @@ public class PlayerMove : MonoBehaviour
     public AudioClip[] landingClips;
     public AudioClip slideClip;
     float baseStepSpeed = 0.3f;
-    float crouchStepMultiplier = 1.5f;
     float footstepTimer = 0f;
-    float GetCurrentOffset => isCrouching ? baseStepSpeed * crouchStepMultiplier : baseStepSpeed;
+    float GetCurrentOffset => baseStepSpeed;
 
     float extraGravityForce = -350f;
 
@@ -104,14 +105,10 @@ public class PlayerMove : MonoBehaviour
         return false;
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawSphere(playerCol.transform.position - new Vector3(0, 0.7f, 0), 0.4f);
-    }
-
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        playerCol = GetComponentInChildren<CapsuleCollider>();
         rb.freezeRotation = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -126,13 +123,14 @@ public class PlayerMove : MonoBehaviour
         HandleFootsteps();
         Look();
 
-        slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
+        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), 0.5f, ~playerLayerMask);
+ 
 
-        isGrounded = Physics.CheckSphere(playerCol.transform.position - new Vector3(0, 0.7f, 0), 0.4f, ~playerLayerMask);
+        slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
         underObstruction = Physics.Raycast(transform.position, Vector3.up, playerHeight / 2 + 0.15f);
 
-        if(isGrounded && !isCrouching)
+        if(isGrounded)
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
             playerCol.center = Vector3.Lerp(playerCol.center, Vector3.zero, 0.1f);
@@ -143,10 +141,18 @@ public class PlayerMove : MonoBehaviour
             playerCol.center = Vector3.Lerp(playerCol.center, new Vector3(0, 0.5f, 0), 0.1f);
         }     
     }
+
     void FixedUpdate()
     {
         MovePlayer();
         CameraTilting();
+
+        if(wishJump)
+        {
+            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            wishJump = false;
+        }
 
         rb.AddForce(Vector3.up * extraGravityForce, ForceMode.Force);
     }
@@ -157,10 +163,41 @@ public class PlayerMove : MonoBehaviour
 
         moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if(currentJumpCooldown >= jumpCooldown)
+        {
+            canJump = true;
+        }
+        else
+        {
+            canJump = false;
+            currentJumpCooldown += Time.deltaTime; 
+            currentJumpCooldown = Mathf.Clamp(currentJumpCooldown, 0f, jumpCooldown);
+        }
+
+        if (Input.GetKey(KeyCode.Space) && isGrounded && canJump)
         {
             Jump();
+            currentJumpCooldown = 0f;
         }
+    }
+
+    private Vector3 Accelerate(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
+    {
+        float projVel = Vector3.Dot(prevVelocity, accelDir); // Vector projection of Current velocity onto accelDir.
+        float accelVel = accelerate * Time.fixedDeltaTime; // Accelerated velocity in direction of movment
+
+        // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
+        if (projVel + accelVel > max_velocity)
+            accelVel = max_velocity - projVel;
+
+        return prevVelocity + accelDir * accelVel;
+    }
+
+
+    private Vector3 MoveAir(Vector3 accelDir, Vector3 prevVelocity)
+    {
+        // air_accelerate and max_velocity_air are server-defined movement variables
+        return Accelerate(accelDir, prevVelocity, airAccelerate, maxAirVelocity);
     }
 
     void MovePlayer()
@@ -181,13 +218,13 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            rb.AddForce(moveDirection.normalized * inAirSpeed * airMultiplier, ForceMode.Acceleration);
+            rb.AddForce(MoveAir(moveDirection, rb.velocity));
         }
     }
 
     void Jump()
     {
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        wishJump = true;
     }
 
     void Look()
@@ -212,13 +249,9 @@ public class PlayerMove : MonoBehaviour
         if(isGrounded)
         {
             rb.drag = groundDrag;
-
-            if (isCrouching)
-            {
-                rb.drag = crouchDrag;
-            }
         }
-        else if(!isGrounded)
+        
+        if(!isGrounded)
         {
             rb.drag = airDrag;
         }
@@ -231,7 +264,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckAirTime()
     { 
-        if(isGrounded  || OnSlope() || isWallRunning || isCrouching)
+        if(isGrounded  || OnSlope() || isWallRunning)
         {
             airTime = 0f;
         }

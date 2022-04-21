@@ -1239,7 +1239,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-1442
+  m_Name: pb_Mesh-14932
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -8042,7 +8042,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &1025607555
 Mesh:
@@ -13865,7 +13865,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh20706
+  m_Name: pb_Mesh25080
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -16112,7 +16112,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh20528
+  m_Name: pb_Mesh24902
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -18644,7 +18644,7 @@ Transform:
   - {fileID: 5205279591299106704}
   - {fileID: 8285615042103030278}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &553645937855927914
 GameObject:
@@ -25535,16 +25535,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   moveSpeed: 30
-  inAirSpeed: 5
+  inAirSpeed: 30
+  maxAirVelocity: 10000
+  airAccelerate: 5000
   CanLook: 1
   sens: 25
   movementMultiplier: 5
-  airMultiplier: 1
-  crouchingMultiplier: 5
+  airMultiplier: 5
+  canJump: 0
+  jumpCooldown: 0.25
+  currentJumpCooldown: 0
   jumpForce: 400
-  playerCol: {fileID: 3728141561006238993}
-  playerMaxSlopeAngle: 45
-  slopeForce: 0
   wallrunForce: 5
   wallRunGravity: 0.1
   wallrunSpeed: 100
