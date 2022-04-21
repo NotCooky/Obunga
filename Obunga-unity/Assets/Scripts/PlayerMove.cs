@@ -19,10 +19,14 @@ public class PlayerMove : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed;
     public float inAirSpeed;
+    public float groundAccelSpeed;
+    public float maxGroundVelocity;
+    public float friction;
     public float maxAirVelocity;
     public float airAccelerate;
     float horizontalMovement;
     float verticalMovement;
+    Vector3 prevVelocity;
 
     [Header("Cam movement")]
     float mouseX;
@@ -134,6 +138,9 @@ public class PlayerMove : MonoBehaviour
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
             playerCol.center = Vector3.Lerp(playerCol.center, Vector3.zero, 0.1f);
+
+            // speed stuff
+            prevVelocity = rb.velocity;
         } 
         else
         {
@@ -193,11 +200,23 @@ public class PlayerMove : MonoBehaviour
         return prevVelocity + accelDir * accelVel;
     }
 
+    private Vector3 MoveGround(Vector3 accelDir, Vector3 prevVelocity)
+    {
+        // Apply Friction
+        float speed = prevVelocity.magnitude;
+        if (speed != 0) // To avoid divide by zero errors
+        {
+            float drop = speed * friction * Time.fixedDeltaTime;
+            prevVelocity *= Mathf.Max(speed - drop, 0) / speed; // Scale the velocity based on friction.
+        }
+
+        return Accelerate(accelDir, prevVelocity, groundAccelSpeed, maxGroundVelocity);
+
+    }
 
     private Vector3 MoveAir(Vector3 accelDir, Vector3 prevVelocity)
     {
-        // air_accelerate and max_velocity_air are server-defined movement variables
-        return Accelerate(accelDir, prevVelocity, airAccelerate, maxAirVelocity);
+    return Accelerate(accelDir, prevVelocity, airAccelerate, maxAirVelocity);
     }
 
     void MovePlayer()
@@ -213,12 +232,12 @@ public class PlayerMove : MonoBehaviour
             }
             else
             { 
-                rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+                rb.AddForce(MoveGround(moveDirection, prevVelocity));
             } 
         }
         else
         {
-            rb.AddForce(MoveAir(moveDirection, rb.velocity));
+            rb.AddForce(MoveAir(moveDirection, prevVelocity));
         }
     }
 
@@ -287,7 +306,7 @@ public class PlayerMove : MonoBehaviour
             
         }
 
-        if (rb.velocity.magnitude >= 0.5f && airTime >= 0.25f)
+        if (rb.velocity.magnitude >= 0.5f && airTime >= 3f)
         {
             if (isGrounded || isGrounded && OnSlope()) footstepAudioSource.PlayOneShot(landingClips[Random.Range(0, landingClips.Length - 1)]);
         }
