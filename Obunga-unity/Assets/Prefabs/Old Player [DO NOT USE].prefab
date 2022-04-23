@@ -712,7 +712,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2863294397980486934
 Transform:
   m_ObjectHideFlags: 0
@@ -6290,21 +6290,14 @@ MonoBehaviour:
   playerLayerMask:
     serializedVersion: 2
     m_Bits: 128
-  moveSpeed: 30
-  inAirSpeed: 30
-  groundAccelSpeed: 100000
-  maxGroundVelocity: 100000
-  friction: 0.1
-  maxAirVelocity: 10000
-  airAccelerate: 5000
+  moveSpeed: 100
+  inAirSpeed: 25
   CanLook: 1
   sens: 25
-  movementMultiplier: 5
-  airMultiplier: 5
   canJump: 0
   jumpCooldown: 0.25
   currentJumpCooldown: 0
-  jumpForce: 400
+  jumpForce: 300
   wallrunForce: 5
   wallRunGravity: 0.1
   wallrunSpeed: 100

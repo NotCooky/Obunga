@@ -19,14 +19,8 @@ public class PlayerMove : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed;
     public float inAirSpeed;
-    public float groundAccelSpeed;
-    public float maxGroundVelocity;
-    public float friction;
-    public float maxAirVelocity;
-    public float airAccelerate;
     float horizontalMovement;
     float verticalMovement;
-    Vector3 prevVelocity;
 
     [Header("Cam movement")]
     float mouseX;
@@ -38,10 +32,6 @@ public class PlayerMove : MonoBehaviour
 
     [Range(0, 100)]
     public float sens;
-
-    [Header("Multipliers")]
-    public float movementMultiplier;
-    public float airMultiplier;
 
     [Header("Jumping & Land Detection")]
     public bool canJump;
@@ -127,7 +117,7 @@ public class PlayerMove : MonoBehaviour
         HandleFootsteps();
         Look();
 
-        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), 0.5f, ~playerLayerMask);
+        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), 0.4f, ~playerLayerMask);
  
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
@@ -138,9 +128,6 @@ public class PlayerMove : MonoBehaviour
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
             playerCol.center = Vector3.Lerp(playerCol.center, Vector3.zero, 0.1f);
-
-            // speed stuff
-            prevVelocity = rb.velocity;
         } 
         else
         {
@@ -156,7 +143,6 @@ public class PlayerMove : MonoBehaviour
 
         if(wishJump)
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
             rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
             wishJump = false;
         }
@@ -188,56 +174,25 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    private Vector3 Accelerate(Vector3 accelDir, Vector3 prevVelocity, float accelerate, float max_velocity)
-    {
-        float projVel = Vector3.Dot(prevVelocity, accelDir); // Vector projection of Current velocity onto accelDir.
-        float accelVel = accelerate * Time.fixedDeltaTime; // Accelerated velocity in direction of movment
-
-        // If necessary, truncate the accelerated velocity so the vector projection does not exceed max_velocity
-        if (projVel + accelVel > max_velocity)
-            accelVel = max_velocity - projVel;
-
-        return prevVelocity + accelDir * accelVel;
-    }
-
-    private Vector3 MoveGround(Vector3 accelDir, Vector3 prevVelocity)
-    {
-        // Apply Friction
-        float speed = prevVelocity.magnitude;
-        if (speed != 0) // To avoid divide by zero errors
-        {
-            float drop = speed * friction * Time.fixedDeltaTime;
-            prevVelocity *= Mathf.Max(speed - drop, 0) / speed; // Scale the velocity based on friction.
-        }
-
-        return Accelerate(accelDir, prevVelocity, groundAccelSpeed, maxGroundVelocity);
-
-    }
-
-    private Vector3 MoveAir(Vector3 accelDir, Vector3 prevVelocity)
-    {
-    return Accelerate(accelDir, prevVelocity, airAccelerate, maxAirVelocity);
-    }
-
     void MovePlayer()
     {
         if (isGrounded)
         {
-            if(OnSlope())
+            if (OnSlope())
             {
-                rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
-                 //Vector3 gravityForce = Physics.gravity - Vector3.Project(Physics.gravity, slopeHit.normal);
+                rb.AddForce(slopeMoveDirection.normalized * moveSpeed, ForceMode.Acceleration);
+                //Vector3 gravityForce = Physics.gravity - Vector3.Project(Physics.gravity, slopeHit.normal);
                 // rb.AddForce(-gravityForce, ForceMode.Acceleration);
 
             }
             else
-            { 
-                rb.AddForce(MoveGround(moveDirection, prevVelocity));
-            } 
+            {
+                rb.AddForce(moveDirection.normalized * moveSpeed, ForceMode.Acceleration);
+            }
         }
         else
         {
-            rb.AddForce(MoveAir(moveDirection, prevVelocity));
+            rb.AddForce(moveDirection.normalized * inAirSpeed, ForceMode.Acceleration);
         }
     }
 
