@@ -79,7 +79,7 @@ public class PlayerMove : MonoBehaviour
     float footstepTimer = 0f;
     float GetCurrentOffset => baseStepSpeed;
 
-    float extraGravityForce = -350f;
+    float extraGravityForce = -200f;
 
     public float tilt { get; private set; }
 
@@ -143,7 +143,7 @@ public class PlayerMove : MonoBehaviour
 
         if(wishJump)
         {
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
             wishJump = false;
         }
 
@@ -272,8 +272,7 @@ public class PlayerMove : MonoBehaviour
         isWallRight = Physics.Raycast(transform.position, orientation.right, 0.7f, ~playerLayerMask);
         isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.7f, ~playerLayerMask);
 
-        if (isWallRight && !isGrounded) Wallrun();
-        if (isWallLeft && !isGrounded) Wallrun();
+        if (isWallRight && !isGrounded || isWallLeft && !isGrounded) Wallrun();
 
         if (!isWallLeft && !isWallRight) 
         {
