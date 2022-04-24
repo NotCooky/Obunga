@@ -321,10 +321,9 @@ public class PlayerMove : MonoBehaviour
 
     void CameraTilting()
     {
-        //this stinks like shit....
+        //this stinks like shit
         if (isWallRunning)
         {
-            //wallrun camera tilt
             if (isWallRight && !isGrounded) tilt = Mathf.Lerp(tilt, camTilt, WallRunCamTiltTime * Time.deltaTime);
             if (isWallLeft && !isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, WallRunCamTiltTime * Time.deltaTime);
         }
