@@ -33,15 +33,22 @@ public class PlayerMove : MonoBehaviour
     [Range(0, 100)]
     public float sens;
 
-    [Header("Jumping & Land Detection")]
+    [Header("Jumping")]
     public bool canJump;
     public float jumpCooldown = 0.25f; // the cooldown limit
     public float currentJumpCooldown = 0f; //the actual cooldown
     public float jumpForce;
     float playerHeight = 2f;
     float airTime;
+
+    [Header("Ground Detection")]
+    public LayerMask whatIsGround;
     bool isGrounded;
+    bool cancelGround;
+    float surfaceAngle;
+    float maxSlopeAngle = 60f;
     bool wishJump;
+    Vector3 normalVector;
 
     [Header("Drag")]
     float groundDrag = 10f;
@@ -112,19 +119,16 @@ public class PlayerMove : MonoBehaviour
         MyInput();
         ControlDrag();
         CheckForWall();
-        CheckLanding();
+        //CheckLanding();
         CheckAirTime();
         HandleFootsteps();
         Look();
-
-        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), 0.4f, ~playerLayerMask);
- 
 
         slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
 
         underObstruction = Physics.Raycast(transform.position, Vector3.up, playerHeight / 2 + 0.15f);
 
-        if(isGrounded)
+       /* if(isGrounded)
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
             playerCol.center = Vector3.Lerp(playerCol.center, Vector3.zero, 0.1f);
@@ -133,7 +137,47 @@ public class PlayerMove : MonoBehaviour
         {
             playerCol.height = Mathf.Lerp(playerCol.height, 1f, 0.1f);
             playerCol.center = Vector3.Lerp(playerCol.center, new Vector3(0, 0.5f, 0), 0.1f);
-        }     
+        }     */
+    }
+
+    private void OnCollisionStay(Collision other)
+    {
+        //Gets the layer we collided with
+        var layer = other.gameObject.layer;
+        //Shifts 1 by the layer we collided with
+        if (whatIsGround != (whatIsGround | (1 << layer))) return;
+
+        //Loop through each contact point
+        for (int i = 0; i < other.contactCount; i++)
+        {
+            Vector3 normal = other.GetContact(i).normal;
+
+            if (IsFloor(normal))
+            {
+                isGrounded = true;
+                cancelGround = false;
+                normalVector = normal;
+                CancelInvoke(nameof(StopGrounded));
+            }
+        }
+
+        float delay = 3f;
+        if (!cancelGround)
+        {
+            cancelGround = true;
+            Invoke(nameof(StopGrounded), Time.deltaTime * delay);
+        }
+    }
+
+    public bool IsFloor(Vector3 v)
+    {
+        surfaceAngle = Vector3.Angle(v, Vector3.up);
+        return surfaceAngle < maxSlopeAngle;
+    }
+
+    private void StopGrounded()
+    {
+        isGrounded = false;
     }
 
     void FixedUpdate()
@@ -199,6 +243,7 @@ public class PlayerMove : MonoBehaviour
     void Jump()
     {
         wishJump = true;
+        print("jumped");
     }
 
     void Look()
@@ -248,7 +293,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    void CheckLanding()
+   /* void CheckLanding()
     {
         if (airTime >= 0.3f)
         {
@@ -265,7 +310,7 @@ public class PlayerMove : MonoBehaviour
         {
             if (isGrounded || isGrounded && OnSlope()) footstepAudioSource.PlayOneShot(landingClips[Random.Range(0, landingClips.Length - 1)]);
         }
-    }
+    } */
 
     void CheckForWall() 
     {
