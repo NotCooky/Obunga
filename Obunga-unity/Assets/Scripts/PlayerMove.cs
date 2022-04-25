@@ -147,7 +147,7 @@ public class PlayerMove : MonoBehaviour
             wishJump = false;
         }
 
-        rb.AddForce(Vector3.up * extraGravityForce, ForceMode.Force);
+       rb.AddForce(Vector3.up * extraGravityForce, ForceMode.Force);
     }
     void MyInput()
     {
@@ -234,7 +234,7 @@ public class PlayerMove : MonoBehaviour
         {
             rb.drag = airDrag * 2;
         }
-    }
+    } 
 
     void CheckAirTime()
     { 
@@ -290,12 +290,12 @@ public class PlayerMove : MonoBehaviour
 
             if (isWallRight && Input.GetKeyDown(KeyCode.Space))
             {
-                rb.AddForce(transform.up * jumpForce + -orientation.right * jumpForce / 2, ForceMode.Impulse);
+                rb.AddForce(transform.up * jumpForce + -orientation.right, ForceMode.VelocityChange);
             }
 
             if (isWallLeft && Input.GetKeyDown(KeyCode.Space))
             {
-                rb.AddForce(transform.up * jumpForce + orientation.right * jumpForce / 2, ForceMode.Impulse);
+                rb.AddForce(transform.up * jumpForce + orientation.right, ForceMode.VelocityChange);
             }
     }
 
