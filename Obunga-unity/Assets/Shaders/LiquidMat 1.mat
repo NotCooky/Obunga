@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LiquidMat
+  m_Name: LiquidMat 1
   m_Shader: {fileID: -6465566751694194690, guid: 43dd3bcd51c396c49b16b9d162909178,
     type: 3}
   m_ShaderKeywords: 
@@ -38,7 +38,6 @@ Material:
     - _WobbleX: 0
     - _WobbleZ: 0
     m_Colors:
-    - Color_2669d6e8fe784a9fb95d6e5220df9669: {r: 1, g: 0, b: 0.029678345, a: 0}
-    - Color_43a282a1f04246fcb5f4d797a7c2e957: {r: 2.5549738, g: 0.10846583, b: 0.10846583,
-        a: 0}
+    - Color_2669d6e8fe784a9fb95d6e5220df9669: {r: 0, g: 0.58906794, b: 1, a: 0}
+    - Color_43a282a1f04246fcb5f4d797a7c2e957: {r: 0, g: 2.1256902, b: 3.2823703, a: 0}
   m_BuildTextureStacks: []

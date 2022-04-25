@@ -291,11 +291,13 @@ public class PlayerMove : MonoBehaviour
             if (isWallRight && Input.GetKeyDown(KeyCode.Space))
             {
                 rb.AddForce(transform.up * jumpForce + -orientation.right, ForceMode.VelocityChange);
-            }
+                rb.AddForce(transform.right * jumpForce + -orientation.right, ForceMode.VelocityChange);
+        }
 
             if (isWallLeft && Input.GetKeyDown(KeyCode.Space))
             {
                 rb.AddForce(transform.up * jumpForce + orientation.right, ForceMode.VelocityChange);
+            rb.AddForce(-transform.right * jumpForce + orientation.right, ForceMode.VelocityChange);
             }
     }
 
