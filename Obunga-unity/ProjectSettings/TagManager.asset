@@ -9,6 +9,7 @@ TagManager:
   - Grabbable
   - Wall
   - Interactable
+  - Weapon
   layers:
   - Default
   - TransparentFX

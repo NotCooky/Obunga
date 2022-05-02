@@ -18,9 +18,11 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Movement")]
     public float moveSpeed;
-    public float inAirSpeed;
+    public float airSpeed;
+    public float maxAirSpeed;
     float horizontalMovement;
-    float verticalMovement;
+    float verticalMovement; 
+
 
     [Header("Cam movement")]
     float mouseX;
@@ -42,7 +44,6 @@ public class PlayerMove : MonoBehaviour
     float airTime;
 
     [Header("Ground Detection")]
-    public LayerMask whatIsGround;
     bool isGrounded;
     bool cancelGround;
     float surfaceAngle;
@@ -62,7 +63,7 @@ public class PlayerMove : MonoBehaviour
     Vector3 moveDirection;
     Vector3 slopeMoveDirection;
     RaycastHit slopeHit;
-    Rigidbody rb;
+    public Rigidbody rb;
 
     [Header("Wallrunning")]
     public float wallrunForce;
@@ -142,10 +143,6 @@ public class PlayerMove : MonoBehaviour
 
     private void OnCollisionStay(Collision other)
     {
-        //Gets the layer we collided with
-        var layer = other.gameObject.layer;
-        //Shifts 1 by the layer we collided with
-        if (whatIsGround != (whatIsGround | (1 << layer))) return;
 
         //Loop through each contact point
         for (int i = 0; i < other.contactCount; i++)
@@ -225,9 +222,6 @@ public class PlayerMove : MonoBehaviour
             if (OnSlope())
             {
                 rb.AddForce(slopeMoveDirection.normalized * moveSpeed, ForceMode.Acceleration);
-                //Vector3 gravityForce = Physics.gravity - Vector3.Project(Physics.gravity, slopeHit.normal);
-                // rb.AddForce(-gravityForce, ForceMode.Acceleration);
-
             }
             else
             {
@@ -236,7 +230,7 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            rb.AddForce(moveDirection.normalized * inAirSpeed, ForceMode.Acceleration);
+            rb.AddForce(moveDirection.normalized * airSpeed, ForceMode.Acceleration);
         }
     }
 

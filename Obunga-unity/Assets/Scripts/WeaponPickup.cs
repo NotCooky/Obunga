@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class WeaponPickup : MonoBehaviour
 {
-    public Gun gunScript;
     public Transform weaponHolder;
     public Transform playerCamera;
     GameObject pickedUpWeapon;
-    Rigidbody rb;
 
     // Start is called before the first frame update
     void Start()
@@ -29,15 +27,21 @@ public class WeaponPickup : MonoBehaviour
     {
         RaycastHit hit;
 
-        if(Physics.Raycast(playerCamera.position, transform.forward, out hit, 1f))
+        if(Physics.Raycast(playerCamera.position, transform.forward, out hit, 3f))
         {
             if(hit.transform.gameObject.tag == "Weapon")
             {
                 pickedUpWeapon = hit.transform.gameObject;
 
+                pickedUpWeapon.transform.parent = weaponHolder.transform;
+                pickedUpWeapon.transform.position = Vector3.Lerp(pickedUpWeapon.transform.position, weaponHolder.transform.position, 0.1f);
+                pickedUpWeapon.transform.rotation = Quaternion.Slerp(pickedUpWeapon.transform.rotation, weaponHolder.transform.rotation, 0.1f);
 
-                pickedUpWeapon.transform.position = Vector3.Lerp(pickedUpWeapon.transform.position, weaponHolder.transform.position, 1f);
-                pickedUpWeapon.transform.rotation = Quaternion.Slerp(pickedUpWeapon.transform.rotation, weaponHolder.transform.rotation, 1f);
+                pickedUpWeapon.GetComponent<Rigidbody>().isKinematic = true;
+                pickedUpWeapon.GetComponent<Animator>().enabled = true;
+                pickedUpWeapon.GetComponent<Gun>().enabled = true;
+                pickedUpWeapon.GetComponent<BoxCollider>().enabled = false;
+                print("picked up");
             }
         }
     }
