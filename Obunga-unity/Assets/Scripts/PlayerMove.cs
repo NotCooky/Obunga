@@ -22,7 +22,7 @@ public class PlayerMove : MonoBehaviour
     public float moveSpeed;
     public float airSpeed;
     float horizontalMovement;
-    float verticalMovement; 
+    float verticalMovement;
 
 
     [Header("Cam movement")]
@@ -56,9 +56,11 @@ public class PlayerMove : MonoBehaviour
     float groundDrag = 10f;
     float airDrag = 1f;
 
-    [Header("Crouching")]
+    [Header("Crouching & Sliding")]
     CapsuleCollider playerCol;
+    public float slideForce;
     bool underObstruction;
+    bool isSliding;
 
     [Header("Slope Stuff")]
     Vector3 moveDirection;
@@ -72,7 +74,7 @@ public class PlayerMove : MonoBehaviour
     public float wallrunSpeed;
     bool isWallRight, isWallLeft;
     bool isWallRunning;
-    
+
     [Header("Camera")]
     public Transform camHolder;
     public float camTilt;
@@ -175,14 +177,15 @@ public class PlayerMove : MonoBehaviour
     {
         MovePlayer();
         CameraTilting();
+        Slide();
 
-        if(wishJump)
+        if (wishJump)
         {
             rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
             wishJump = false;
         }
 
-       rb.AddForce(Vector3.up * extraGravityForce, ForceMode.Force);
+        rb.AddForce(Vector3.up * extraGravityForce, ForceMode.Force);
     }
     void MyInput()
     {
@@ -191,14 +194,14 @@ public class PlayerMove : MonoBehaviour
 
         moveDirection = orientation.forward * verticalMovement + orientation.right * horizontalMovement;
 
-        if(currentJumpCooldown >= jumpCooldown)
+        if (currentJumpCooldown >= jumpCooldown)
         {
             canJump = true;
         }
         else
         {
             canJump = false;
-            currentJumpCooldown += Time.deltaTime; 
+            currentJumpCooldown += Time.deltaTime;
             currentJumpCooldown = Mathf.Clamp(currentJumpCooldown, 0f, jumpCooldown);
         }
 
@@ -208,12 +211,12 @@ public class PlayerMove : MonoBehaviour
             currentJumpCooldown = 0f;
         }
 
-        if(Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.C))
         {
             StartCrouch();
         }
 
-        if(Input.GetKeyUp(KeyCode.C))
+        if (Input.GetKeyUp(KeyCode.C))
         {
             StopCrouch();
         }
@@ -248,17 +251,31 @@ public class PlayerMove : MonoBehaviour
     {
         playerBody.localScale = new Vector3(1, 0.65f, 1);
         playerBody.position = new Vector3(playerBody.position.x, playerBody.position.y - 0.35f, playerBody.position.z);
+
+        if (rb.velocity.magnitude > 0.5f && isGrounded)
+        {
+            isSliding = true;
+        }
+    }
+
+    void Slide()
+    {
+        if (isSliding)
+        {
+            rb.AddForce(moveDirection * slideForce, ForceMode.Acceleration);
+        }
     }
 
     void StopCrouch()
     {
         playerBody.localScale = new Vector3(1, 1f, 1);
         playerBody.position = new Vector3(playerBody.position.x, playerBody.position.y + 0.35f, playerBody.position.z);
+        if (isSliding) isSliding = false;
     }
 
     void Look()
     {
-        if(CanLook == true)
+        if (CanLook == true)
         {
             mouseX = Input.GetAxisRaw("Mouse X");
             mouseY = Input.GetAxisRaw("Mouse Y");
@@ -271,29 +288,29 @@ public class PlayerMove : MonoBehaviour
             camHolder.transform.rotation = Quaternion.Euler(xRotation, yRotation, tilt);
             orientation.transform.rotation = Quaternion.Euler(0, yRotation, 0);
         }
-    } 
+    }
 
     void ControlDrag()
     {
-        if(isGrounded)
+        if (isGrounded)
         {
             rb.drag = groundDrag;
         }
-        
-        if(!isGrounded)
+
+        if (!isGrounded)
         {
             rb.drag = airDrag;
         }
 
-        if(!isGrounded && isWallRunning)
+        if (!isGrounded && isWallRunning)
         {
             rb.drag = airDrag * 2;
         }
-    } 
+    }
 
     void CheckAirTime()
-    { 
-        if(isGrounded  || OnSlope() || isWallRunning)
+    {
+        if (isGrounded || OnSlope() || isWallRunning)
         {
             airTime = 0f;
         }
@@ -307,24 +324,24 @@ public class PlayerMove : MonoBehaviour
     {
         if (airTime >= 0.3f)
         {
-            if(isGrounded || isGrounded && OnSlope())
+            if (isGrounded || isGrounded && OnSlope())
             {
                 GameObject Particles = Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
                 Destroy(Particles, 2f);
                 footstepTimer = GetCurrentOffset;
             }
-            
-        }
-    } 
 
-    void CheckForWall() 
+        }
+    }
+
+    void CheckForWall()
     {
         isWallRight = Physics.Raycast(transform.position, orientation.right, 0.7f, ~playerLayerMask);
         isWallLeft = Physics.Raycast(transform.position, -orientation.right, 0.7f, ~playerLayerMask);
 
         if (isWallRight && !isGrounded || isWallLeft && !isGrounded) Wallrun();
 
-        if (!isWallLeft && !isWallRight) 
+        if (!isWallLeft && !isWallRight)
         {
             StopWallRun();
         }
@@ -335,36 +352,36 @@ public class PlayerMove : MonoBehaviour
         rb.useGravity = false;
         isWallRunning = true;
 
-            //slowly slide down
-            rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
-            //slowly move forward
-            rb.AddForce(orientation.forward * moveSpeed, ForceMode.Force);
+        //slowly slide down
+        rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
+        //slowly move forward
+        rb.AddForce(orientation.forward * moveSpeed, ForceMode.Force);
 
-            if (isWallRight && Input.GetKeyDown(KeyCode.Space))
+        if (isWallRight && Input.GetKeyDown(KeyCode.Space))
+        {
+            if (Input.GetKeyDown(KeyCode.A))
             {
-                if(Input.GetKeyDown(KeyCode.A))
-                {
-                    rb.AddForce(-orientation.right * jumpForce / 2, ForceMode.VelocityChange);
-                }
-                else if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    rb.AddForce(-orientation.right * jumpForce / 2, ForceMode.VelocityChange);
-                    rb.AddForce(transform.up * jumpForce / 1.5f, ForceMode.VelocityChange);
-                }
+                rb.AddForce(-orientation.right * jumpForce / 2, ForceMode.VelocityChange);
             }
+            else if (Input.GetKeyDown(KeyCode.Space))
+            {
+                rb.AddForce(-orientation.right * jumpForce / 2, ForceMode.VelocityChange);
+                rb.AddForce(transform.up * jumpForce / 1.5f, ForceMode.VelocityChange);
+            }
+        }
 
-            if (isWallLeft)
+        if (isWallLeft)
+        {
+            if (Input.GetKeyDown(KeyCode.D))
             {
-                if(Input.GetKeyDown(KeyCode.D))
-                {
-                    rb.AddForce(orientation.right * jumpForce / 2, ForceMode.VelocityChange);
-                }
-                else if(Input.GetKeyDown(KeyCode.Space))
-                {
-                    rb.AddForce(orientation.right * jumpForce / 2, ForceMode.VelocityChange);
-                    rb.AddForce(transform.up * jumpForce / 1.5f, ForceMode.VelocityChange);
-                }
+                rb.AddForce(orientation.right * jumpForce / 2, ForceMode.VelocityChange);
             }
+            else if (Input.GetKeyDown(KeyCode.Space))
+            {
+                rb.AddForce(orientation.right * jumpForce / 2, ForceMode.VelocityChange);
+                rb.AddForce(transform.up * jumpForce / 1.5f, ForceMode.VelocityChange);
+            }
+        }
     }
 
     void StopWallRun()
@@ -375,7 +392,7 @@ public class PlayerMove : MonoBehaviour
 
     void HandleFootsteps()
     {
-        if (!isGrounded || rb.velocity.magnitude <= 0) return;
+        if (!isGrounded || isSliding || rb.velocity.magnitude <= 0) return;
 
         footstepTimer -= Time.deltaTime;
 
@@ -397,10 +414,15 @@ public class PlayerMove : MonoBehaviour
         }
         else
         {
-            if (Input.GetKey(KeyCode.A) && isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
-            else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
-            if (Input.GetKey(KeyCode.D) && isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime / 2);
-            else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+            if(isSliding) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime);
+
+            else
+            {
+                if (Input.GetKey(KeyCode.A) && isGrounded) tilt = Mathf.Lerp(tilt, camTilt, camTiltTime * Time.deltaTime / 2);
+                else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+                if (Input.GetKey(KeyCode.D) && isGrounded) tilt = Mathf.Lerp(tilt, -camTilt, camTiltTime * Time.deltaTime / 2);
+                else tilt = Mathf.Lerp(tilt, 0, camTiltTime * Time.deltaTime);
+            }
         }
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using EZCameraShake;
 
-public class Gun : MonoBehaviour
+public class Shotgun : MonoBehaviour
 {
     public Camera playerCam;
     public Rigidbody playerRb;
