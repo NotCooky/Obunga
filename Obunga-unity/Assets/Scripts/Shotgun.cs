@@ -51,7 +51,7 @@ public class Shotgun : MonoBehaviour
             bulletsLeftInMag--;
             muzzleFlash.Play();
             gunAnimator.SetTrigger("Shoot");
-           // gunAudioSource.PlayOneShot(gunSFX[Random.Range(0, gunSFX.Length - 1)]);
+            gunAudioSource.PlayOneShot(gunSFX[Random.Range(0, gunSFX.Length - 1)]);
             CameraShaker.Instance.ShakeOnce(30f, 0.3f, 0, 0.5f);
             playerRb.AddForce(-playerCam.transform.forward * 500, ForceMode.Impulse);
 
@@ -73,7 +73,7 @@ public class Shotgun : MonoBehaviour
         canShoot = false;
         bulletsLeftInMag = magazineSize;
         gunAnimator.SetTrigger("Reload");
-       // gunAudioSource.PlayOneShot(reloadSFX[Random.Range(0, reloadSFX.Length - 1)]);
+        gunAudioSource.PlayOneShot(reloadSFX[Random.Range(0, reloadSFX.Length - 1)]);
         yield return new WaitForSeconds(0.5f);
         canShoot = true;
     }

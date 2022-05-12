@@ -19,6 +19,7 @@ public class PlayerMove : MonoBehaviour
     public LayerMask playerLayerMask;
 
     [Header("Movement")]
+    public bool canMove = true;
     public float moveSpeed;
     public float airSpeed;
     float horizontalMovement;
@@ -175,9 +176,13 @@ public class PlayerMove : MonoBehaviour
 
     void FixedUpdate()
     {
-        MovePlayer();
         CameraTilting();
-        Slide();
+        if(canMove) MovePlayer();  
+        
+        if(isSliding)
+        {
+            StartCoroutine("Slide");
+        }
 
         if (wishJump)
         {
@@ -244,7 +249,6 @@ public class PlayerMove : MonoBehaviour
     void Jump()
     {
         wishJump = true;
-        print("jumped");
     }
 
     void StartCrouch()
@@ -255,15 +259,17 @@ public class PlayerMove : MonoBehaviour
         if (rb.velocity.magnitude > 0.5f && isGrounded)
         {
             isSliding = true;
+            return;
         }
     }
 
-    void Slide()
+    IEnumerator Slide()
     {
-        if (isSliding)
-        {
-            rb.AddForce(moveDirection * slideForce, ForceMode.Acceleration);
-        }
+        rb.AddForce(orientation.forward * slideForce, ForceMode.Acceleration);
+        canMove = false;
+        yield return new WaitForSeconds(2f);
+        isSliding = false;
+        canMove = true;
     }
 
     void StopCrouch()
@@ -271,6 +277,7 @@ public class PlayerMove : MonoBehaviour
         playerBody.localScale = new Vector3(1, 1f, 1);
         playerBody.position = new Vector3(playerBody.position.x, playerBody.position.y + 0.35f, playerBody.position.z);
         if (isSliding) isSliding = false;
+        if (!canMove) canMove = true;
     }
 
     void Look()
@@ -328,6 +335,7 @@ public class PlayerMove : MonoBehaviour
             {
                 GameObject Particles = Instantiate(landParticles, new Vector3(transform.position.x, transform.position.y - 0.7f, transform.position.z), Quaternion.Euler(90, 0, 0));
                 Destroy(Particles, 2f);
+                footstepAudioSource.PlayOneShot(landingClips[Random.Range(0, landingClips.Length - 1)]);
                 footstepTimer = GetCurrentOffset;
             }
 
