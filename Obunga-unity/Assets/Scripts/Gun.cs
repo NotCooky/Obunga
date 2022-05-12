@@ -6,6 +6,7 @@ using EZCameraShake;
 public class Gun : MonoBehaviour
 {
     public Camera playerCam;
+    public Rigidbody playerRb;
     public ParticleSystem muzzleFlash;
     public Animator gunAnimator;
     public float magazineSize;
@@ -22,9 +23,10 @@ public class Gun : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerCam = GameObject.Find("Camera").GetComponent<Camera>();
+        playerRb = GameObject.Find("Player").GetComponent<Rigidbody>();
         PlayerLayer = LayerMask.GetMask("Player");
         gunAudioSource = GetComponent<AudioSource>();
-        playerCam = GetComponentInParent<Camera>();
         bulletsLeftInMag = magazineSize;
     }
 
@@ -49,8 +51,9 @@ public class Gun : MonoBehaviour
             bulletsLeftInMag--;
             muzzleFlash.Play();
             gunAnimator.SetTrigger("Shoot");
-            gunAudioSource.PlayOneShot(gunSFX[Random.Range(0, gunSFX.Length - 1)]);
-            CameraShaker.Instance.ShakeOnce(10f, 1f, 0, 0.5f);
+           // gunAudioSource.PlayOneShot(gunSFX[Random.Range(0, gunSFX.Length - 1)]);
+            CameraShaker.Instance.ShakeOnce(30f, 0.3f, 0, 0.5f);
+            playerRb.AddForce(-playerCam.transform.forward * 500, ForceMode.Impulse);
 
 
             RaycastHit hit;
@@ -60,11 +63,6 @@ public class Gun : MonoBehaviour
                 if (hit.rigidbody)
                 {
                     hit.rigidbody.AddForce(-hit.normal * impactForce);
-
-                    if(hit.transform.gameObject.tag == "Enemy")
-                    {
-                        Destroy(hit.transform.gameObject);
-                    }
                 }
             }
         }  
@@ -75,7 +73,7 @@ public class Gun : MonoBehaviour
         canShoot = false;
         bulletsLeftInMag = magazineSize;
         gunAnimator.SetTrigger("Reload");
-        gunAudioSource.PlayOneShot(reloadSFX[Random.Range(0, reloadSFX.Length - 1)]);
+       // gunAudioSource.PlayOneShot(reloadSFX[Random.Range(0, reloadSFX.Length - 1)]);
         yield return new WaitForSeconds(0.5f);
         canShoot = true;
     }

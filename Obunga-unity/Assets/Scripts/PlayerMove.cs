@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EZCameraShake;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -13,13 +14,13 @@ public class PlayerMove : MonoBehaviour
     #endregion
     [Header("Assignables")]
     public Transform orientation;
+    public Transform playerBody;
     public GameObject landParticles;
     public LayerMask playerLayerMask;
 
     [Header("Movement")]
     public float moveSpeed;
     public float airSpeed;
-    public float maxAirSpeed;
     float horizontalMovement;
     float verticalMovement; 
 
@@ -77,6 +78,8 @@ public class PlayerMove : MonoBehaviour
     public float camTilt;
     public float WallRunCamTiltTime;
     public float camTiltTime;
+    float camShakeValue;
+
 
     [Header("Footsteps")]
     public AudioSource footstepAudioSource;
@@ -120,7 +123,7 @@ public class PlayerMove : MonoBehaviour
         MyInput();
         ControlDrag();
         CheckForWall();
-        //CheckLanding();
+        CheckLanding();
         CheckAirTime();
         HandleFootsteps();
         Look();
@@ -129,16 +132,7 @@ public class PlayerMove : MonoBehaviour
 
         underObstruction = Physics.Raycast(transform.position, Vector3.up, playerHeight / 2 + 0.15f);
 
-       /* if(isGrounded)
-        {
-            playerCol.height = Mathf.Lerp(playerCol.height, 2f, 0.1f);
-            playerCol.center = Vector3.Lerp(playerCol.center, Vector3.zero, 0.1f);
-        } 
-        else
-        {
-            playerCol.height = Mathf.Lerp(playerCol.height, 1f, 0.1f);
-            playerCol.center = Vector3.Lerp(playerCol.center, new Vector3(0, 0.5f, 0), 0.1f);
-        }     */
+        camShakeValue = rb.velocity.magnitude / 9f;
     }
 
     private void OnCollisionStay(Collision other)
@@ -213,6 +207,16 @@ public class PlayerMove : MonoBehaviour
             Jump();
             currentJumpCooldown = 0f;
         }
+
+        if(Input.GetKeyDown(KeyCode.C))
+        {
+            StartCrouch();
+        }
+
+        if(Input.GetKeyUp(KeyCode.C))
+        {
+            StopCrouch();
+        }
     }
 
     void MovePlayer()
@@ -238,6 +242,18 @@ public class PlayerMove : MonoBehaviour
     {
         wishJump = true;
         print("jumped");
+    }
+
+    void StartCrouch()
+    {
+        playerBody.localScale = new Vector3(1, 0.65f, 1);
+        playerBody.position = new Vector3(playerBody.position.x, playerBody.position.y - 0.35f, playerBody.position.z);
+    }
+
+    void StopCrouch()
+    {
+        playerBody.localScale = new Vector3(1, 1f, 1);
+        playerBody.position = new Vector3(playerBody.position.x, playerBody.position.y + 0.35f, playerBody.position.z);
     }
 
     void Look()
@@ -287,7 +303,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-   /* void CheckLanding()
+    void CheckLanding()
     {
         if (airTime >= 0.3f)
         {
@@ -299,12 +315,7 @@ public class PlayerMove : MonoBehaviour
             }
             
         }
-
-        if (rb.velocity.magnitude >= 0.5f && airTime >= 3f)
-        {
-            if (isGrounded || isGrounded && OnSlope()) footstepAudioSource.PlayOneShot(landingClips[Random.Range(0, landingClips.Length - 1)]);
-        }
-    } */
+    } 
 
     void CheckForWall() 
     {
@@ -326,17 +337,33 @@ public class PlayerMove : MonoBehaviour
 
             //slowly slide down
             rb.AddForce(Vector3.down * wallRunGravity, ForceMode.Force);
+            //slowly move forward
+            rb.AddForce(orientation.forward * moveSpeed, ForceMode.Force);
 
             if (isWallRight && Input.GetKeyDown(KeyCode.Space))
             {
-                rb.AddForce(transform.up * jumpForce + -orientation.right, ForceMode.VelocityChange);
-                rb.AddForce(transform.right * jumpForce + -orientation.right, ForceMode.VelocityChange);
-        }
+                if(Input.GetKeyDown(KeyCode.A))
+                {
+                    rb.AddForce(-orientation.right * jumpForce / 2, ForceMode.VelocityChange);
+                }
+                else if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    rb.AddForce(-orientation.right * jumpForce / 2, ForceMode.VelocityChange);
+                    rb.AddForce(transform.up * jumpForce / 1.5f, ForceMode.VelocityChange);
+                }
+            }
 
-            if (isWallLeft && Input.GetKeyDown(KeyCode.Space))
+            if (isWallLeft)
             {
-                rb.AddForce(transform.up * jumpForce + orientation.right, ForceMode.VelocityChange);
-            rb.AddForce(-transform.right * jumpForce + orientation.right, ForceMode.VelocityChange);
+                if(Input.GetKeyDown(KeyCode.D))
+                {
+                    rb.AddForce(orientation.right * jumpForce / 2, ForceMode.VelocityChange);
+                }
+                else if(Input.GetKeyDown(KeyCode.Space))
+                {
+                    rb.AddForce(orientation.right * jumpForce / 2, ForceMode.VelocityChange);
+                    rb.AddForce(transform.up * jumpForce / 1.5f, ForceMode.VelocityChange);
+                }
             }
     }
 

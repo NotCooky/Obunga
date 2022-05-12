@@ -1,0 +1,36 @@
+newmtl material2
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Tr 1.000000
+illum 0
+Ns 0.000000
+map_Kd texture_2.png
+map_d texture_2.png
+newmtl material3
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Tr 1.000000
+illum 0
+Ns 0.000000
+map_Kd texture_3.png
+map_d texture_3.png
+newmtl material4
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Tr 1.000000
+illum 0
+Ns 0.000000
+map_Kd texture_4.png
+map_d texture_4.png
+newmtl material5
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Tr 1.000000
+illum 0
+Ns 0.000000
+map_Kd texture_5.png
+map_d texture_5.png
