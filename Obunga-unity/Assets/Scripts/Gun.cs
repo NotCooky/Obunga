@@ -9,6 +9,8 @@ public class Gun : MonoBehaviour
     public Transform camHolder;
     public Animator animator;
     public ParticleSystem muzzleFlash;
+    public AudioSource audioSource;
+    public AudioClip[] shootSFX;
 
     float timeSinceLastShot;
 
@@ -54,7 +56,8 @@ public class Gun : MonoBehaviour
                 damageable?.TakeDamage(gunData.damage);
             }
 
-            CameraShaker.Instance.ShakeOnce(5f, 0.2f, 0.2f, 0.5f);
+            CameraShaker.Instance.ShakeOnce(0.4f, 2f, 0f, 0f);
+            audioSource.PlayOneShot(shootSFX[Random.Range(0, shootSFX.Length - 1)]);
             muzzleFlash.Play();
             gunData.currentAmmo--;
             timeSinceLastShot = 0;
