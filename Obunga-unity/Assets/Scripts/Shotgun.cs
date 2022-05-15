@@ -74,7 +74,7 @@ public class Shotgun : MonoBehaviour
         bulletsLeftInMag = magazineSize;
         gunAnimator.SetTrigger("Reload");
         gunAudioSource.PlayOneShot(reloadSFX[Random.Range(0, reloadSFX.Length - 1)]);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
         canShoot = true;
     }
 }

@@ -39,7 +39,7 @@ public class PlayerMove : MonoBehaviour
 
     [Header("Jumping")]
     public bool canJump;
-    public float jumpCooldown = 0.25f; // the cooldown limit
+    public float jumpCooldown; // the cooldown limit
     public float currentJumpCooldown = 0f; //the actual cooldown
     public float jumpForce;
     float playerHeight = 2f;
@@ -54,7 +54,7 @@ public class PlayerMove : MonoBehaviour
     Vector3 normalVector;
 
     [Header("Drag")]
-    float groundDrag = 10f;
+    float groundDrag = 6f;
     float airDrag = 1f;
 
     [Header("Crouching & Sliding")]
@@ -210,7 +210,7 @@ public class PlayerMove : MonoBehaviour
             currentJumpCooldown = Mathf.Clamp(currentJumpCooldown, 0f, jumpCooldown);
         }
 
-        if (Input.GetKey(KeyCode.Space) && isGrounded && canJump)
+        if (Input.GetKey(KeyCode.Space) && isGrounded && canJump && canMove)
         {
             Jump();
             currentJumpCooldown = 0f;
@@ -256,7 +256,7 @@ public class PlayerMove : MonoBehaviour
         playerBody.localScale = new Vector3(1, 0.65f, 1);
         playerBody.position = new Vector3(playerBody.position.x, playerBody.position.y - 0.35f, playerBody.position.z);
 
-        if (rb.velocity.magnitude > 0.5f && isGrounded)
+        if (rb.velocity.magnitude > 1f && isGrounded)
         {
             isSliding = true;
             return;
@@ -282,7 +282,7 @@ public class PlayerMove : MonoBehaviour
 
     void Look()
     {
-        if (CanLook == true)
+        if (CanLook)
         {
             mouseX = Input.GetAxisRaw("Mouse X");
             mouseY = Input.GetAxisRaw("Mouse Y");
